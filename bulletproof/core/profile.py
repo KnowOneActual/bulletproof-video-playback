@@ -32,8 +32,8 @@ class TranscodeProfile:
 
 # Built-in profiles
 BUILT_IN_PROFILES = {
-    "theater-qlab": TranscodeProfile(
-        name="theater-qlab",
+    "live-qlab": TranscodeProfile(
+        name="live-qlab",
         codec="prores",
         preset="hq",
         quality=100,
@@ -45,8 +45,8 @@ BUILT_IN_PROFILES = {
         audio_bitrate="0",
         description="ProRes HQ for QLab on macOS (best quality, largest files)",
     ),
-    "theater-prores-lt": TranscodeProfile(
-        name="theater-prores-lt",
+    "live-prores-lt": TranscodeProfile(
+        name="live-prores-lt",
         codec="prores",
         preset="lt",
         quality=85,
@@ -56,10 +56,10 @@ BUILT_IN_PROFILES = {
         scale=None,
         audio_codec="pcm_s24le",
         audio_bitrate="0",
-        description="ProRes LT for QLab (reduced file size, good quality)",
+        description="ProRes LT for live playback (reduced file size, good quality)",
     ),
-    "theater-h264": TranscodeProfile(
-        name="theater-h264",
+    "live-h264": TranscodeProfile(
+        name="live-h264",
         codec="h264",
         preset="slow",
         quality=95,
@@ -67,7 +67,7 @@ BUILT_IN_PROFILES = {
         frame_rate=None,
         pixel_format="yuv420p",
         scale=None,
-        description="H.264 for cross-platform theater playback",
+        description="H.264 for cross-platform live playback",
     ),
     "standard-playback": TranscodeProfile(
         name="standard-playback",
