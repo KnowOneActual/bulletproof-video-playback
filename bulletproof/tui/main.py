@@ -9,7 +9,7 @@ from bulletproof.core import TranscodeJob, list_profiles
 
 class TUIApp:
     """Simple TUI for bulletproof transcode.
-    
+
     Note: Full Textual implementation would be more complex.
     This is a simplified version. For production, install textual:
     pip install textual
@@ -23,9 +23,9 @@ class TUIApp:
 
     def run(self):
         """Run the TUI."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("  bulletproof-video-playback Interactive Transcode")
-        print("="*60)
+        print("=" * 60)
 
         # Input file selection
         while True:
