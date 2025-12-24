@@ -1,5 +1,5 @@
 
-# **!! It's still under development, and many great ideas are in the pipeline. It might not work as intended!!**
+# **!!This is still in the early stages of development, and many great ideas in the pipeline. Currently, it might not work as intended!!**
 
 # bulletproof-video-playback
 
