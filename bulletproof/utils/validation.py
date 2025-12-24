@@ -27,7 +27,9 @@ def validate_profile_name(name: str) -> bool:
     return (
         isinstance(name, str)
         and len(name) > 0
-        and name.replace("-", "").replace("_", "").isalnum()
+        and (
+            name.replace("-", "").replace("_", "").isalnum()
+        )
     )
 
 
