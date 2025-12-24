@@ -1,3 +1,6 @@
+
+# **!! It's still under development, and many great ideas are in the pipeline. It might not work as intended!!**
+
 # bulletproof-video-playback
 
 [![Tests](https://github.com/KnowOneActual/bulletproof-video-playback/actions/workflows/test.yml/badge.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/actions/workflows/test.yml)
