@@ -8,23 +8,31 @@ def test_list_profiles():
     """Test that all 7 profiles are available."""
     profiles = list_profiles()
     assert len(profiles) == 7
-    assert "theater-qlab" in profiles
-    assert "theater-prores-lt" in profiles
-    assert "theater-h264" in profiles
+    assert "live-qlab" in profiles
+    assert "live-prores-lt" in profiles
+    assert "live-h264" in profiles
     assert "standard-playback" in profiles
     assert "stream-hd" in profiles
     assert "stream-4k" in profiles
     assert "archival" in profiles
 
 
-def test_get_profile_theater_qlab():
-    """Test theater-qlab profile."""
-    profile = get_profile("theater-qlab")
-    assert profile.name == "theater-qlab"
+def test_get_profile_live_qlab():
+    """Test live-qlab profile."""
+    profile = get_profile("live-qlab")
+    assert profile.name == "live-qlab"
     assert profile.codec == "prores"
     assert profile.preset == "hq"
     assert profile.quality == 100
     assert profile.max_bitrate is None  # Lossless
+
+
+def test_get_profile_live_prores_lt():
+    """Test live-prores-lt profile."""
+    profile = get_profile("live-prores-lt")
+    assert profile.name == "live-prores-lt"
+    assert profile.codec == "prores"
+    assert profile.quality == 85
 
 
 def test_get_profile_standard_playback():
@@ -52,12 +60,12 @@ def test_get_profile_invalid():
 
 def test_profile_to_dict():
     """Test profile to_dict method."""
-    profile = get_profile("theater-qlab")
+    profile = get_profile("live-qlab")
     data = profile.to_dict()
     assert isinstance(data, dict)
     assert "name" in data
     assert "codec" in data
-    assert data["name"] == "theater-qlab"
+    assert data["name"] == "live-qlab"
 
 
 def test_profile_to_json():
