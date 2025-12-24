@@ -24,7 +24,11 @@ def validate_output_path(file_path: str) -> bool:
 
 def validate_profile_name(name: str) -> bool:
     """Validate profile name format."""
-    return isinstance(name, str) and len(name) > 0 and name.replace("-", "").replace("_", "").isalnum()
+    return (
+        isinstance(name, str)
+        and len(name) > 0
+        and name.replace("-", "").replace("_", "").isalnum()
+    )
 
 
 def get_file_size_mb(file_path: str) -> float:
