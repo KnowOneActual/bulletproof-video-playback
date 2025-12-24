@@ -1,21 +1,30 @@
 [build-system]
-requires = ["setuptools>=65.0", "wheel"]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "bulletproof-video-playback"
 version = "0.1.0"
-description = "Professional video transcoding for theater playback and streaming"
+description = "Professional video transcoding for theater, streaming, and archival"
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
 authors = [
-    {name = "Beau Bremer", email = "beau@beaubremer.com"}
+    {name = "Beau Bremer", email = "dev@knowoneactual.com"},
 ]
-keywords = ["video", "transcoding", "ffmpeg", "theater", "playback", "qlab"]
+keywords = [
+    "video",
+    "transcode",
+    "ffmpeg",
+    "prores",
+    "h264",
+    "h265",
+    "theater",
+    "streaming",
+    "archival",
+]
 classifiers = [
-    "Development Status :: 4 - Beta",
-    "Environment :: Console",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -23,42 +32,43 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Topic :: Multimedia :: Video :: Non-Linear Editors",
-    "Topic :: Multimedia :: Video :: Conversion",
 ]
 
 dependencies = [
-    "click>=8.1.0",
-    "rich>=13.0.0",
-    "pydantic>=2.0.0",
-    "pyyaml>=6.0",
-    "psutil>=5.9.0",
+    "click>=8.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.4.0",
-    "pytest-cov>=4.1.0",
-    "pytest-mock>=3.11.0",
-    "black>=23.0.0",
-    "flake8>=6.0.0",
-    "mypy>=1.4.0",
-    "types-PyYAML>=6.0",
-    "types-psutil>=5.9.0",
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "black>=23.0",
+    "isort>=5.0",
+    "mypy>=1.0",
+    "flake8>=6.0",
 ]
 
+tui = [
+    "textual>=0.20.0",
+]
+
+[project.urls]
+Repository = "https://github.com/KnowOneActual/bulletproof-video-playback"
+"Bug Tracker" = "https://github.com/KnowOneActual/bulletproof-video-playback/issues"
+
 [project.scripts]
-bulletproof = "bulletproof.cli:main"
+bulletproof = "bulletproof.cli:cli"
 
 [tool.setuptools]
-package-dir = { "" = "." }
-
-[tool.setuptools.packages]
-find = {}
+packages = ["bulletproof", "bulletproof.core", "bulletproof.cli", "bulletproof.cli.commands", "bulletproof.tui", "bulletproof.utils", "tests"]
 
 [tool.black]
 line-length = 100
-target-version = ["py39", "py310", "py311", "py312"]
+target-version = ['py39']
+
+[tool.isort]
+profile = "black"
+line_length = 100
 
 [tool.mypy]
 python_version = "3.9"
@@ -67,7 +77,7 @@ warn_unused_configs = true
 disallow_untyped_defs = false
 
 [tool.pytest.ini_options]
-minversion = "7.4"
+minversion = "7.0"
+addopts = "-v --strict-markers"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-addopts = "-v --cov=bulletproof --cov-report=term-missing"
