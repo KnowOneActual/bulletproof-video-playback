@@ -4,11 +4,11 @@
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Professional video transcoding for theater playback, streaming, and archival. Uses ffmpeg under the hood with seven prebuilt profiles optimized for different use cases.
+Professional video transcoding for live playback, streaming, and archival. Uses ffmpeg under the hood with seven prebuilt profiles optimized for different use cases.
 
 ## Features
 
-- **7 Transcoding Profiles**: Prebuilt profiles for theater (ProRes/H.264), streaming (H.265), and archival
+- **7 Transcoding Profiles**: Prebuilt profiles for live playback (ProRes/H.264), streaming (H.265), and archival
 - **Three Interfaces**: CLI, TUI (interactive), and Python API
 - **Batch Processing**: Transcode entire directories of videos
 - **Video Analysis**: Inspect video codec, resolution, fps, audio specs
@@ -45,7 +45,7 @@ pip install -e ".[dev]"
 bulletproof transcode --list-profiles
 
 # Transcode single file with profile
-bulletproof transcode input.mov --profile theater-qlab --output output.mov
+bulletproof transcode input.mov --profile live-qlab --output output.mov
 
 # Analyze video specs
 bulletproof analyze input.mov
@@ -68,7 +68,7 @@ from bulletproof.core import TranscodeJob, get_profile
 from pathlib import Path
 
 # Get a profile
-profile = get_profile("theater-qlab")
+profile = get_profile("live-qlab")
 
 # Create and execute a job
 job = TranscodeJob(
@@ -87,9 +87,9 @@ else:
 
 | Name | Codec | Use Case | File Size |
 |------|-------|----------|----------|
-| theater-qlab | ProRes HQ | QLab on Mac (best quality) | Very Large |
-| theater-prores-lt | ProRes LT | QLab on Mac (smaller) | Large |
-| theater-h264 | H.264 | Cross-platform theater | Medium |
+| live-qlab | ProRes HQ | QLab on Mac (best quality) | Very Large |
+| live-prores-lt | ProRes LT | Live playback (smaller) | Large |
+| live-h264 | H.264 | Cross-platform live playback | Medium |
 | standard-playback | H.264 | Miccia, VLC, preview | Small |
 | stream-hd | H.265 | 1080p streaming | Tiny |
 | stream-4k | H.265 | 4K streaming | Tiny |
