@@ -1,129 +1,101 @@
-# Bulletproof Video Playback 🎬
+# bulletproof-video-playback
 
-Professional video transcoding and optimization for theater playback (QLab, PlaybackPro, Miccia Player) and streaming platforms. CLI + TUI interface with ffmpeg integration.
+[![Tests](https://github.com/KnowOneActual/bulletproof-video-playback/actions/workflows/test.yml/badge.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/actions/workflows/test.yml)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+Professional video transcoding for theater playback, streaming, and archival. Uses ffmpeg under the hood with seven prebuilt profiles optimized for different use cases.
 
 ## Features
 
-✅ **Multi-Platform Support**
-- Theater/Live Event Playback (QLab, PlaybackPro)
-- Standard Playback (Miccia Player, VLC, etc.)
-- Streaming Optimization (H.264, H.265)
+- **7 Transcoding Profiles**: Prebuilt profiles for theater (ProRes/H.264), streaming (H.265), and archival
+- **Three Interfaces**: CLI, TUI (interactive), and Python API
+- **Batch Processing**: Transcode entire directories of videos
+- **Video Analysis**: Inspect video codec, resolution, fps, audio specs
+- **Professional Codecs**: ProRes HQ, ProRes LT, H.264, H.265
+- **CI/CD Ready**: Includes GitHub Actions workflows for testing and releases
 
-✅ **Smart Codec Selection**
-- ProRes (HQ, LT, Proxy) for theater on macOS
-- H.264/H.265 for cross-platform compatibility
-- VP9 for web streaming
-- Intelligent quality scaling
+## Installation
 
-✅ **Dual Interface**
-- **CLI**: Fast, scriptable, automation-friendly
-- **TUI**: Interactive, progress tracking, real-time stats
+### Requirements
+- Python 3.9+
+- ffmpeg (`brew install ffmpeg` on macOS, `apt install ffmpeg` on Linux)
+- ffprobe (usually included with ffmpeg)
 
-✅ **Production Ready**
-- Unit + integration tests
-- GitHub Actions CI/CD
-- Semantic versioning & releases
-- Comprehensive error handling
-- Performance profiling
-
-✅ **Quality of Life**
-- Preset profiles (theater, cinema, streaming, archival)
-- Batch processing with progress tracking
-- Video analysis (codec detection, validation)
-- Configuration files (.bulletproof.yaml)
-- Color-coded terminal output
-
-## Quick Start
-
-### Installation
+### From PyPI
 
 ```bash
-# Clone repo
-git clone https://github.com/KnowOneActual/bulletproof-video-playback.git
-cd bulletproof-video-playback
-
-# Install (requires Python 3.9+, ffmpeg)
-pip install -e .
-
-# Verify
-bulletproof --version
+pip install bulletproof-video-playback
 ```
+
+### From GitHub (Development)
+
+```bash
+git clone https://github.com/KnowOneActual/bulletproof-video-playback
+cd bulletproof-video-playback
+pip install -e ".[dev]"
+```
+
+## Quick Start
 
 ### CLI Usage
 
 ```bash
-# Quick transcode with profile
+# List available profiles
+bulletproof transcode --list-profiles
+
+# Transcode single file with profile
 bulletproof transcode input.mov --profile theater-qlab --output output.mov
 
-# Analyze video
-bulletproof analyze video.mov
+# Analyze video specs
+bulletproof analyze input.mov
 
-# Batch process
-bulletproof batch transcode --config jobs.yaml
-
-# Get help
-bulletproof --help
-bulletproof transcode --help
+# Batch process directory
+bulletproof batch ./videos --profile standard-playback --output-dir ./output
 ```
 
-### TUI Usage
+### TUI (Interactive Mode)
 
 ```bash
-# Interactive interface
 bulletproof tui
+# Navigate with prompts to select file, profile, and output location
 ```
 
-Navigate with arrow keys, select presets, monitor real-time encoding stats.
+### Python API
+
+```python
+from bulletproof.core import TranscodeJob, get_profile
+from pathlib import Path
+
+# Get a profile
+profile = get_profile("theater-qlab")
+
+# Create and execute a job
+job = TranscodeJob(
+    input_file=Path("input.mov"),
+    output_file=Path("output.mov"),
+    profile=profile
+)
+
+if job.execute():
+    print(f"Success! Output: {job.output_file}")
+else:
+    print(f"Failed: {job.error_message}")
+```
 
 ## Profiles
 
-| Profile | Codec | Container | Use Case |
-|---------|-------|-----------|----------|
-| `theater-qlab` | ProRes HQ | MOV | QLab on macOS (best quality) |
-| `theater-prores-lt` | ProRes LT | MOV | QLab, reduced file size |
-| `theater-h264` | H.264 | MP4 | Cross-platform theater |
-| `standard-playback` | H.264 | MP4 | Miccia, VLC, general use |
-| `stream-hd` | H.265 | MP4 | Streaming (1080p) |
-| `stream-4k` | H.265 | MP4 | Streaming (2160p) |
-| `archival` | ProRes HQ | MOV | Long-term storage |
+| Name | Codec | Use Case | File Size |
+|------|-------|----------|----------|
+| theater-qlab | ProRes HQ | QLab on Mac (best quality) | Very Large |
+| theater-prores-lt | ProRes LT | QLab on Mac (smaller) | Large |
+| theater-h264 | H.264 | Cross-platform theater | Medium |
+| standard-playback | H.264 | Miccia, VLC, preview | Small |
+| stream-hd | H.265 | 1080p streaming | Tiny |
+| stream-4k | H.265 | 4K streaming | Tiny |
+| archival | ProRes HQ | Long-term storage | Very Large |
 
-## Configuration
-
-Create `.bulletproof.yaml` in your project root:
-
-```yaml
-profiles:
-  custom-theater:
-    codec: prores
-    preset: hq
-    quality: 100
-    max_bitrate: null
-    frame_rate: 23.976
-
-batch:
-  max_concurrent: 2
-  verify_output: true
-  cleanup_on_error: false
-
-output:
-  naming: "{basename}_{profile}_{timestamp}{ext}"
-  directory: "./transcoded"
-```
-
-## Architecture
-
-```
-bulletproof/
-├── core/           # Codec & ffmpeg logic
-├── cli/            # Click CLI interface
-├── tui/            # Rich TUI interface
-├── profiles/       # Preset configurations
-├── utils/          # Validation, analysis
-├── tests/          # Unit + integration tests
-└── config/         # Config file handling
-```
-
-## Development
+## Testing
 
 ```bash
 # Install dev dependencies
@@ -132,61 +104,91 @@ pip install -e ".[dev]"
 # Run tests
 pytest -v
 
-# Code quality
-black bulletproof/
-flake8 bulletproof/
-mypy bulletproof/
+# Run with coverage
+pytest --cov=bulletproof tests/
 
-# Build distribution
-python -m build
+# Format code
+black bulletproof tests
 ```
 
-## Requirements
+## Development
 
-- **Python**: 3.9+
-- **ffmpeg**: 4.4+
-- **ffprobe**: Bundled with ffmpeg
+### Adding a New Profile
 
-Install ffmpeg:
+Edit `bulletproof/core/profile.py` and add to `BUILT_IN_PROFILES`:
+
+```python
+BUILT_IN_PROFILES["my-profile"] = TranscodeProfile(
+    name="my-profile",
+    codec="h265",
+    preset="medium",
+    quality=85,
+    max_bitrate="10M",
+    # ... other settings
+)
+```
+
+### Adding a New Command
+
+Create `bulletproof/cli/commands/my_command.py`:
+
+```python
+import click
+
+@click.command()
+@click.argument("input_file")
+def my_command(input_file):
+    """Description of my command."""
+    # Implementation
+    pass
+```
+
+Then register in `bulletproof/cli/main.py`:
+
+```python
+cli.add_command(my_command)
+```
+
+## Releases
+
+To release a new version:
+
 ```bash
-# macOS
-brew install ffmpeg
+# Tag a release
+git tag v0.2.0
+git push origin v0.2.0
 
-# Ubuntu/Debian
-sudo apt install ffmpeg
-
-# Fedora
-sudo dnf install ffmpeg
+# GitHub Actions will:
+# 1. Run tests
+# 2. Build package
+# 3. Create GitHub release
+# 4. Upload to PyPI (requires PYPI_API_TOKEN secret)
 ```
 
-## Performance
+## Architecture
 
-Real-time encoding stats & progress:
-- Encoding speed (fps, %)
-- ETA calculation
-- File size estimation
-- CPU/Memory usage (Linux/macOS)
+```
+bulletproof/
+├── core/              # Transcode logic
+│   ├── profile.py     # Profile definitions
+│   └── job.py         # Transcode execution
+├── cli/               # Command-line interface
+│   ├── main.py        # CLI entry point
+│   └── commands/      # Subcommands
+├── tui/               # Terminal UI
+└── utils/             # Utilities (validation, etc)
 
-## CI/CD
-
-GitHub Actions:
-- ✅ Pytest on Python 3.9-3.12
-- ✅ Linting (Black, Flake8)
-- ✅ Type checking (MyPy)
-- ✅ Auto-release on tag
-- ✅ Upload to PyPI
-
-## Philosophy
-
-> What actually matters is understanding why each codec exists and when to use it. ProRes is not objectively better, but it is better for QLab on Mac. H.265 is not a downgrade, it is just optimized for a different platform.
->
-> Once you stop asking "what is the best codec" and start asking "what does this system need," everything gets less frustrating.
-
-This tool automates that question-asking process.
+tests/                # Test suite
+.github/workflows/    # CI/CD
+```
 
 ## License
 
-MIT
+MIT License - see LICENSE file
+
+## Author
+
+Beau Bremer ([@KnowOneActual](https://github.com/KnowOneActual))
 
 ## Contributing
 
@@ -194,18 +196,5 @@ Contributions welcome! Please:
 1. Fork the repo
 2. Create a feature branch
 3. Add tests for new functionality
-4. Submit a pull request
-
-## Roadmap
-
-- [ ] GPU acceleration detection (NVIDIA/AMD)
-- [ ] Real-time frame preview
-- [ ] Audio-only extraction & optimization
-- [ ] Subtitle handling
-- [ ] WebUI dashboard
-- [ ] Integration with CasparCG workflows
-
-## Support
-
-Issues, PRs, and discussions welcome on GitHub!
-
+4. Ensure tests pass and code is formatted
+5. Submit a pull request
