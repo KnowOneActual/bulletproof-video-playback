@@ -52,7 +52,7 @@ class TUIApp:
         # Generate smart default output filename
         default_output = (
             self.input_file.parent
-            / f"{self.input_file.stem}__{self.selected_profile}.{extension}"
+            / f"{self.input_file.stem}__processed__{self.selected_profile}.{extension}"
         )
 
         # Output file selection with safety checks
