@@ -1,0 +1,123 @@
+{
+  "version": "1.0.0",
+  "description": "Linux-native video transcoding profiles optimized for live playback, streaming, and archival",
+  "metadata": {
+    "platform": "linux",
+    "requires": ["ffmpeg", "ffprobe"],
+    "optional_python": false,
+    "min_ffmpeg_version": "4.2.0"
+  },
+  "profiles": {
+    "live-h264-linux": {
+      "name": "live-h264-linux",
+      "codec": "h264",
+      "codec_profile": "high",
+      "bitrate": "15M",
+      "preset": "fast",
+      "extension": "mp4",
+      "quality": 85,
+      "description": "H.264 for cross-platform live playback on Linux (QLab-like, Miccia Player, VLC)",
+      "use_case": "Live theater playback, streaming to networked clients",
+      "speed_estimate": "Medium (4-6 hrs for 2hr video)",
+      "notes": "Universal codec, good quality, widely supported on Linux desktop and ARM devices"
+    },
+    "standard-playback": {
+      "name": "standard-playback",
+      "codec": "h264",
+      "codec_profile": "main",
+      "bitrate": "10M",
+      "preset": "medium",
+      "extension": "mp4",
+      "quality": 75,
+      "description": "H.264 for general-purpose playback on Linux (lower bandwidth)",
+      "use_case": "Archive playback, streaming with limited bandwidth",
+      "speed_estimate": "Medium (5-7 hrs for 2hr video)",
+      "notes": "Optimized for smaller file sizes while maintaining good quality"
+    },
+    "stream-hd": {
+      "name": "stream-hd",
+      "codec": "hevc",
+      "codec_profile": "main",
+      "bitrate": "6M",
+      "preset": "medium",
+      "extension": "mp4",
+      "quality": 80,
+      "description": "H.265/HEVC for 1080p streaming (smaller file size, modern codec)",
+      "use_case": "OTT streaming, bandwidth-constrained networks, 1080p delivery",
+      "speed_estimate": "Medium (6-8 hrs for 2hr video)",
+      "notes": "H.265 codec; check client support before deployment (older players may not support)"
+    },
+    "stream-4k": {
+      "name": "stream-4k",
+      "codec": "hevc",
+      "codec_profile": "main10",
+      "bitrate": "15M",
+      "preset": "medium",
+      "extension": "mp4",
+      "quality": 90,
+      "description": "H.265/HEVC for 4K streaming (higher quality, efficient compression)",
+      "use_case": "4K delivery, high-bandwidth networks, modern clients",
+      "speed_estimate": "Slow (8-12 hrs for 2hr video)",
+      "notes": "Requires modern ffmpeg with libx265; 10-bit profile for better quality"
+    },
+    "archival-lossless": {
+      "name": "archival-lossless",
+      "codec": "ffv1",
+      "codec_profile": "level3",
+      "bitrate": "unlimited",
+      "preset": "slow",
+      "extension": "mkv",
+      "quality": 100,
+      "description": "FFv1 lossless codec for long-term archival on Linux (no codec licensing concerns)",
+      "use_case": "Long-term storage, digital preservation, legal archival",
+      "speed_estimate": "Slow (10-15 hrs for 2hr video)",
+      "notes": "Lossless, royalty-free codec; outputs MKV container for maximum compatibility"
+    },
+    "archival-prores-alt": {
+      "name": "archival-prores-alt",
+      "codec": "prores",
+      "codec_profile": "hq",
+      "bitrate": "500M",
+      "preset": "slow",
+      "extension": "mov",
+      "quality": 98,
+      "description": "ProRes HQ (if available) for archive with broad compatibility",
+      "use_case": "Professional archival, migration from macOS workflows",
+      "speed_estimate": "Slow (7-10 hrs for 2hr video)",
+      "notes": "Requires ffmpeg compiled with libprores; check 'ffmpeg -codecs | grep prores'"
+    },
+    "web-compat": {
+      "name": "web-compat",
+      "codec": "h264",
+      "codec_profile": "baseline",
+      "bitrate": "3M",
+      "preset": "fast",
+      "extension": "mp4",
+      "quality": 60,
+      "description": "H.264 Baseline for maximum web compatibility (older browsers, mobile)",
+      "use_case": "Web embedding, maximum device compatibility, low bandwidth",
+      "speed_estimate": "Fast (3-4 hrs for 2hr video)",
+      "notes": "Baseline profile ensures playback on even older browsers and mobile devices"
+    }
+  },
+  "speed_presets": {
+    "fast": {
+      "description": "Fast encoding, trade some quality for speed (time-sensitive live playback)",
+      "ffmpeg_preset": "veryfast",
+      "quality_loss": "5-10% (minimal)",
+      "use_when": "Live playback deadline approaching, acceptable minor quality loss"
+    },
+    "normal": {
+      "description": "Balanced encoding (default, recommended)",
+      "ffmpeg_preset": "medium",
+      "quality_loss": "baseline",
+      "use_when": "Most use cases, good quality-to-time tradeoff"
+    },
+    "slow": {
+      "description": "High-quality encoding, longer encode time",
+      "ffmpeg_preset": "slow",
+      "quality_loss": "-5% (better quality)",
+      "use_when": "Archival, maximum quality needed, encode time not critical"
+    }
+  }
+}
