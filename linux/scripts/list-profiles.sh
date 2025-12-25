@@ -43,12 +43,13 @@ if [[ "$VERBOSE" == true ]]; then
         "  Speed Estimate: \(.value.speed_estimate)\n" +
         "  Notes: \(.value.notes)\n"' "$PROFILES_FILE"
 else
-    # Concise table output - simple, no column command
+    # Concise table output using jq's @tsv for safe formatting
     printf "%-28s %-12s %-8s %s\n" "Name" "Codec" "Ext" "Description"
     printf "%-28s %-12s %-8s %s\n" "----" "-----" "---" "-----------"
     jq -r '.profiles | to_entries[] | 
-        "\(.value.name)|||\(.value.codec)|||\(.value.extension)|||\(.value.description[0:35])"' "$PROFILES_FILE" | \
-    while IFS='|||' read -r name codec ext desc; do
+        [.value.name, .value.codec, .value.extension, .value.description[0:35]] | 
+        @tsv' "$PROFILES_FILE" | \
+    while IFS=$'\t' read -r name codec ext desc; do
         printf "%-28s %-12s %-8s %s\n" "$name" "$codec" "$ext" "$desc"
     done
 fi
