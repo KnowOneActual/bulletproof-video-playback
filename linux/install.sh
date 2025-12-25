@@ -103,24 +103,33 @@ ROOT_DIR="$(cd .. && pwd)"
 UNIVERSAL_TOOLS=("analyze.sh" "list-profiles.sh")
 
 for tool in "${UNIVERSAL_TOOLS[@]}"; do
-    if [[ -f "${ROOT_DIR}/scripts/${tool}" ]]; then
-        # Remove existing symlink if it exists
-        if [[ -L "scripts/${tool}" ]]; then
-            rm "scripts/${tool}"
+    TARGET_FILE="scripts/${tool}"
+    SOURCE_FILE="${ROOT_DIR}/scripts/${tool}"
+    
+    if [[ -f "$SOURCE_FILE" ]]; then
+        # Remove existing file or symlink if it exists
+        if [[ -e "$TARGET_FILE" ]]; then
+            rm -f "$TARGET_FILE"
         fi
-        # Create symlink to root scripts/
-        ln -s "${ROOT_DIR}/scripts/${tool}" "scripts/${tool}"
-        echo "  + Symlinked ${tool} from root scripts/"
+        # Create relative symlink to root scripts/
+        ln -s "$SOURCE_FILE" "$TARGET_FILE"
+        echo "  + Symlinked $tool from ../scripts/"
+    else
+        echo -e "  ${YELLOW}⚠${NC} Source not found: $SOURCE_FILE"
     fi
 done
 
 # Symlink profiles.json from root scripts/
-if [[ -f "${ROOT_DIR}/scripts/profiles.json" ]]; then
-    if [[ -L "profiles.json" ]] || [[ -f "profiles.json" ]]; then
-        rm "profiles.json"
+SOURCE_PROFILES="${ROOT_DIR}/scripts/profiles.json"
+TARGET_PROFILES="profiles.json"
+if [[ -f "$SOURCE_PROFILES" ]]; then
+    if [[ -e "$TARGET_PROFILES" ]]; then
+        rm -f "$TARGET_PROFILES"
     fi
-    ln -s "${ROOT_DIR}/scripts/profiles.json" "profiles.json"
-    echo "  + Symlinked profiles.json from root scripts/"
+    ln -s "$SOURCE_PROFILES" "$TARGET_PROFILES"
+    echo "  + Symlinked profiles.json from ../scripts/"
+else
+    echo -e "  ${YELLOW}⚠${NC} Source not found: $SOURCE_PROFILES"
 fi
 echo ""
 
@@ -180,6 +189,6 @@ echo ""
 echo "Configuration saved to: $CONFIG_DIR"
 echo "Config file: ${CONFIG_DIR}/config.json"
 echo ""
-echo "Note: Universal tools (analyze.sh, list-profiles.sh) are symlinked from root scripts/"
+echo "Note: Universal tools (analyze.sh, list-profiles.sh) are symlinked from ../scripts/"
 echo "      This allows cross-platform access and single-source maintenance."
 echo ""
