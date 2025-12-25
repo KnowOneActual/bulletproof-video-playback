@@ -57,34 +57,28 @@ class TUIApp:
 
         # Output file selection with safety checks
         while True:
-            output_input = input(
-                f"\nOutput file path [{default_output}]: "
-            ).strip()
+            output_input = input(f"\nOutput file path [{default_output}]: ").strip()
 
             # If user pressed Enter (empty), use default
             if not output_input:
                 output_file = default_output
             else:
                 # User provided a path
-                output_path_raw = output_input.replace("\\ ", " ").replace(
-                    "\\(", "("
-                ).replace("\\)", ")")
+                output_path_raw = (
+                    output_input.replace("\\ ", " ").replace("\\(", "(").replace("\\)", ")")
+                )
                 output_file = Path(os.path.expanduser(output_path_raw))
 
             # Safety check: prevent accidental overwrite of input
             if output_file == self.input_file:
-                print(
-                    "\n⚠️  ERROR: Output would overwrite input file!"
-                )
+                print("\n⚠️  ERROR: Output would overwrite input file!")
                 print(f"   Refusing to overwrite: {self.input_file}")
                 print("   Please choose a different output filename.\n")
                 continue
 
             # Warn if output already exists
             if output_file.exists():
-                overwrite = input(
-                    f"⚠️  Output file already exists. Overwrite? (y/n): "
-                )
+                overwrite = input(f"⚠️  Output file already exists. Overwrite? (y/n): ")
                 if overwrite.lower() != "y":
                     print("   Cancelled. Choose a different filename.\n")
                     continue

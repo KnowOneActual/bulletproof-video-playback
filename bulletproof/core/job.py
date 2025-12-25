@@ -47,9 +47,7 @@ class TranscodeJob:
                 "default=noprint_wrappers=1:nokey=1:noprint_wrappers=1",
                 str(self.input_file),
             ]
-            result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=10
-            )
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
             if result.returncode == 0:
                 return float(result.stdout.strip())
         except (subprocess.TimeoutExpired, ValueError, FileNotFoundError):
@@ -106,9 +104,7 @@ class TranscodeJob:
 
         return cmd
 
-    def _print_progress_bar(
-        self, current: int, total: int, prefix: str = "", decimals: int = 1
-    ):
+    def _print_progress_bar(self, current: int, total: int, prefix: str = "", decimals: int = 1):
         """Print a simple progress bar to terminal."""
         if total <= 0:
             return
@@ -165,9 +161,7 @@ class TranscodeJob:
                     if time_match:
                         time_ms = int(time_match.group(1))
                         elapsed_seconds = time_ms / 1_000_000
-                        progress = min(
-                            100, (elapsed_seconds / duration_seconds) * 100
-                        )
+                        progress = min(100, (elapsed_seconds / duration_seconds) * 100)
                         self.progress = progress
                         self._print_progress_bar(
                             int(elapsed_seconds),
@@ -180,9 +174,7 @@ class TranscodeJob:
 
             if process.returncode != 0:
                 stderr = process.stderr.read() if process.stderr else ""
-                raise subprocess.CalledProcessError(
-                    process.returncode, cmd, stderr=stderr
-                )
+                raise subprocess.CalledProcessError(process.returncode, cmd, stderr=stderr)
 
             if show_progress:
                 print("\n")  # New line after progress bar
@@ -194,9 +186,7 @@ class TranscodeJob:
 
         except subprocess.CalledProcessError as e:
             self.status = "error"
-            self.error_message = (
-                e.stderr if isinstance(e.stderr, str) else str(e.stderr)
-            )
+            self.error_message = e.stderr if isinstance(e.stderr, str) else str(e.stderr)
             if "ffmpeg" in self.error_message.lower():
                 print(f"\n✗ FFmpeg error: {self.error_message[:200]}")
             return False
