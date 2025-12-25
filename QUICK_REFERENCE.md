@@ -142,7 +142,7 @@ bulletproof transcode input.mov --preset slow
 
 ---
 
-## 📊 File Output Naming
+## 📂 File Output Naming
 
 The tool auto-generates helpful filenames:
 
@@ -277,30 +277,32 @@ black bulletproof tests
 
 ---
 
-## ✅ What's New (This Update)
+## ✨ What's New (Latest Update)
 
-✨ **Config Support** - Save your defaults in `~/.bulletproof/config.json`
-- Default profile
-- Default output directory
-- Speed preset preference
+🎯 **Config Command Fully Integrated** - Now registered in main CLI
+- `bulletproof config set-default-profile`
+- `bulletproof config set-output-dir`
+- `bulletproof config set-preset`
+- `bulletproof config show`
+- `bulletproof config reset`
 
-✨ **Speed Presets** - Control encode time vs quality
+⚡ **Speed Presets Working** - Control encode time vs quality
 - `--preset fast` for time-sensitive playback
 - `--preset normal` for balanced quality/speed
 - `--preset slow` for maximum quality
 
-✨ **Terminology Update** - Changed "theater" → "live" throughout
+🎬 **Terminology Updated** - Changed "theater" → "live" throughout
 - `live-qlab`, `live-prores-lt`, `live-h264`
 - Cleaner naming for playback workflows
 
-✨ **18 Tests Passing** - Full test coverage
+📊 **18 Tests Passing** - Full test coverage
 - Config manager tests
 - Profile tests
 - Validation tests
 
 ---
 
-## 🛟 Troubleshooting
+## 🔍 Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
@@ -309,10 +311,11 @@ black bulletproof tests
 | Tests failing | Run: `pytest -v` for details |
 | Want to reset config | Run: `bulletproof config reset` |
 | Import errors | Ensure venv: `source .venv/bin/activate` |
+| Config command not found | Run: `git pull && pip install -e .` |
 
 ---
 
-## 📚 Next Steps
+## 🚀 Next Steps
 
 After you're comfortable with config + presets:
 
@@ -338,7 +341,7 @@ Each profile + preset is a prepackaged answer.
 
 ---
 
-## 🎬 Share It
+## 📤 Share It
 
 Your project is now production-ready!
 
@@ -353,4 +356,4 @@ git push origin v0.2.0
 
 ---
 
-**Status:** ✅ Production Ready | 18 Tests Passing | Config + Presets Enabled
+**Status:** ✅ Production Ready | 18 Tests Passing | Config + Presets Enabled | Config CLI Working
