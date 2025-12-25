@@ -15,6 +15,8 @@ Professional video transcoding for live playback, streaming, and archival. Uses 
 ✅ **Safety Features** - Prevents accidental overwrite of input files, auto-cleans incomplete files on cancel  
 ✅ **Video Analysis** - Inspect video codec, resolution, fps, audio specs  
 ✅ **Professional Codecs** - ProRes Proxy/LT/HQ, H.264, H.265  
+✅ **Speed Presets** - `--preset fast|normal|slow` for quality vs encode time tradeoff  
+✅ **Config Support** - Save default profiles and output folders  
 ✅ **CI/CD Ready** - GitHub Actions workflows for testing and releases  
 
 ## Installation
@@ -52,8 +54,9 @@ Will prompt you for:
 1. Input video file
 2. Transcoding profile (shows descriptions)
 3. Output location (defaults to `input__processed__profile.mp4`)
-4. Shows real-time progress bar during transcode
-5. Auto-cleans up if you press Ctrl+C
+4. Speed preset if needed (fast/normal/slow)
+5. Shows real-time progress bar during transcode
+6. Auto-cleans up if you press Ctrl+C
 
 ### CLI Usage
 
@@ -66,11 +69,27 @@ bulletproof transcode --list-profiles
 # Transcode single file with profile
 bulletproof transcode input.mov --profile live-qlab --output output.mov
 
-# Analyze video specs
+# Transcode with speed preset (for live playback deadlines)
+bulletproof transcode input.mov --profile live-qlab --preset fast
+
+# Analyze video specs before transcoding
 bulletproof analyze input.mov
 
 # Batch process directory
 bulletproof batch ./videos --profile standard-playback --output-dir ./output
+```
+
+### Config Management
+
+```bash
+# Set your default profile (saved to ~/.bulletproof/config.json)
+bulletproof config set-default-profile live-qlab
+
+# Set your default output folder
+bulletproof config set-output-dir ~/Videos/processed
+
+# View current config
+bulletproof config show
 ```
 
 ### Python API
@@ -88,7 +107,8 @@ profile = list_profiles()["live-qlab"]
 job = TranscodeJob(
     input_file=Path("input.mov"),
     output_file=Path("output.mov"),
-    profile=profile
+    profile=profile,
+    speed_preset="normal"  # fast, normal, or slow
 )
 
 if job.execute():
@@ -100,15 +120,33 @@ else:
 
 ## Profiles
 
-| Name | Codec | Extension | Quality | Use Case | File Size |
-|------|-------|-----------|---------|----------|----------|
-| **live-qlab** | ProRes Proxy | .mov | Good | QLab on Mac (QLab recommended) | Medium |
-| live-prores-lt | ProRes LT | .mov | High | Live playback (smaller files) | Large |
-| live-h264 | H.264 | .mp4 | High | Cross-platform live playback | Medium |
-| standard-playback | H.264 | .mp4 | Good | Miccia Player, VLC, preview | Small |
-| stream-hd | H.265 | .mp4 | Good | 1080p streaming | Tiny |
-| stream-4k | H.265 | .mp4 | Good | 4K streaming | Tiny |
-| archival | ProRes HQ | .mov | Max | Long-term storage | Very Large |
+| Name | Codec | Extension | Quality | Use Case | Speed |
+|------|-------|-----------|---------|----------|-------|
+| **live-qlab** | ProRes Proxy | .mov | Good | QLab on Mac (recommended) | Medium |
+| live-prores-lt | ProRes LT | .mov | High | Live playback (smaller) | Medium |
+| live-h264 | H.264 | .mp4 | High | Cross-platform live | Slow |
+| standard-playback | H.264 | .mp4 | Good | Miccia Player, VLC | Medium |
+| stream-hd | H.265 | .mp4 | Good | 1080p streaming | Medium |
+| stream-4k | H.265 | .mp4 | Good | 4K streaming | Medium |
+| archival | ProRes HQ | .mov | Max | Long-term storage | Slow |
+
+## Speed Presets
+
+Control encode time vs quality:
+
+```bash
+# For time-sensitive live playback (encode faster, slight quality loss)
+bulletproof transcode input.mov --profile live-qlab --preset fast
+# ~3 hours for 2-hour video
+
+# Balanced (default)
+bulletproof transcode input.mov --profile live-qlab --preset normal
+# ~4-5 hours for 2-hour video
+
+# Maximum quality (encode slower)
+bulletproof transcode input.mov --profile live-qlab --preset slow
+# ~6-8 hours for 2-hour video
+```
 
 ## Output Naming
 
@@ -211,7 +249,9 @@ bulletproof/
 │   └── job.py         # Transcode execution with progress tracking
 ├── cli/               # Command-line interface
 │   ├── main.py        # CLI entry point
-│   └── commands/      # Subcommands (transcode, analyze, batch, tui)
+│   └── commands/      # Subcommands (transcode, analyze, batch, config, tui)
+├── config/            # Configuration management
+│   └── manager.py     # Config file handling
 ├── tui/               # Terminal UI with smart defaults
 └── utils/             # Utilities (validation, etc)
 
@@ -242,7 +282,7 @@ Beau Bremer ([@KnowOneActual](https://github.com/KnowOneActual))
 > "What does this system need?" → Use that codec
 
 Instead of debating codecs, bulletproof asks the question:
-- Are you QLab on Mac? → Use ProRes Proxy
+- Are you QLab on macOS for live playback? → Use ProRes Proxy
 - Are you streaming? → Use H.265
 - Are you long-term storage? → Use ProRes HQ
 
