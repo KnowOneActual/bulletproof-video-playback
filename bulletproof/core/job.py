@@ -132,9 +132,7 @@ class TranscodeJob:
 
         return cmd
 
-    def _print_progress_bar(
-        self, current: int, total: int, prefix: str = "", decimals: int = 1
-    ):
+    def _print_progress_bar(self, current: int, total: int, prefix: str = "", decimals: int = 1):
         """Print a simple progress bar to terminal."""
         if total <= 0:
             return

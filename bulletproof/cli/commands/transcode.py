@@ -94,8 +94,7 @@ def transcode(
     if output is None:
         prof = get_profile(profile)
         output = str(
-            input_path.parent
-            / f"{input_path.stem}__processed__{profile}.{prof.extension}"
+            input_path.parent / f"{input_path.stem}__processed__{profile}.{prof.extension}"
         )
 
     output_path = Path(output)
