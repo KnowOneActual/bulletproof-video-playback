@@ -52,7 +52,7 @@ def transcode(input_file: str, profile: str, output: str, list_profiles_flag: bo
     if list_profiles_flag:
         profiles = list_profiles()
         click.echo("\nAvailable profiles:")
-        click.echo("="*60)
+        click.echo("=" * 60)
         for name, prof in profiles.items():
             click.echo(f"  {name:20} {prof.description}")
             click.echo(f"  {'':20} Codec: {prof.codec}, Extension: .{prof.extension}")
@@ -67,8 +67,7 @@ def transcode(input_file: str, profile: str, output: str, list_profiles_flag: bo
     if output is None:
         prof = get_profile(profile)
         output = str(
-            input_path.parent
-            / f"{input_path.stem}__processed__{profile}.{prof.extension}"
+            input_path.parent / f"{input_path.stem}__processed__{profile}.{prof.extension}"
         )
 
     output_path = Path(output)

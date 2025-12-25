@@ -43,9 +43,7 @@ class TUIApp:
         """Analyze a video file."""
         while True:
             input_path = input("\nEnter video file path: ").strip()
-            input_path = input_path.replace("\\ ", " ").replace(
-                "\\(", "("
-            ).replace("\\)", ")")
+            input_path = input_path.replace("\\ ", " ").replace("\\(", "(").replace("\\)", ")")
             input_path = os.path.expanduser(input_path)
             if Path(input_path).exists() and Path(input_path).is_file():
                 break
@@ -73,9 +71,7 @@ class TUIApp:
         """Batch process all videos in a folder."""
         while True:
             folder_path = input("\nEnter folder path: ").strip()
-            folder_path = folder_path.replace("\\ ", " ").replace(
-                "\\(", "("
-            ).replace("\\)", ")")
+            folder_path = folder_path.replace("\\ ", " ").replace("\\(", "(").replace("\\)", ")")
             folder_path = os.path.expanduser(folder_path)
             if Path(folder_path).exists() and Path(folder_path).is_dir():
                 break
@@ -99,14 +95,8 @@ class TUIApp:
 
         self._get_profile()
 
-        output_dir = input(
-            f"\nOutput folder [{folder_path}]: "
-        ).strip()
-        output_dir = (
-            Path(os.path.expanduser(output_dir))
-            if output_dir
-            else Path(folder_path)
-        )
+        output_dir = input(f"\nOutput folder [{folder_path}]: ").strip()
+        output_dir = Path(os.path.expanduser(output_dir)) if output_dir else Path(folder_path)
         output_dir.mkdir(parents=True, exist_ok=True)
 
         if input(f"\nProcess {len(video_files)} file(s)? (y/n): ").lower() == "y":
@@ -129,9 +119,7 @@ class TUIApp:
         """Get input file path from user."""
         while True:
             input_path = input("\nEnter input file path: ").strip()
-            input_path = input_path.replace("\\ ", " ").replace(
-                "\\(", "("
-            ).replace("\\)", ")")
+            input_path = input_path.replace("\\ ", " ").replace("\\(", "(").replace("\\)", ")")
             input_path = os.path.expanduser(input_path)
             if Path(input_path).exists() and Path(input_path).is_file():
                 self.input_file = Path(input_path)
@@ -163,30 +151,24 @@ class TUIApp:
         )
 
         while True:
-            output_input = input(
-                f"\nOutput file path [{default_output}]: "
-            ).strip()
+            output_input = input(f"\nOutput file path [{default_output}]: ").strip()
 
             if not output_input:
                 self.output_file = default_output
             else:
-                output_path_raw = output_input.replace("\\ ", " ").replace(
-                    "\\(", "("
-                ).replace("\\)", ")")
+                output_path_raw = (
+                    output_input.replace("\\ ", " ").replace("\\(", "(").replace("\\)", ")")
+                )
                 self.output_file = Path(os.path.expanduser(output_path_raw))
 
             if self.output_file == self.input_file:
-                print(
-                    "\n⚠️  ERROR: Output would overwrite input file!"
-                )
+                print("\n⚠️  ERROR: Output would overwrite input file!")
                 print(f"   Refusing to overwrite: {self.input_file}")
                 print("   Please choose a different output filename.\n")
                 continue
 
             if self.output_file.exists():
-                overwrite = input(
-                    f"⚠️  Output file already exists. Overwrite? (y/n): "
-                )
+                overwrite = input(f"⚠️  Output file already exists. Overwrite? (y/n): ")
                 if overwrite.lower() != "y":
                     print("   Cancelled. Choose a different filename.\n")
                     continue
