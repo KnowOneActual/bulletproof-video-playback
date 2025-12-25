@@ -1,19 +1,11 @@
-"""Terminal User Interface using Textual."""
+"""Terminal User Interface - Interactive transcode wizard."""
 
-from textual.app import ComposeResult
-from textual.containers import Container, Horizontal, Vertical
-from textual.widgets import Button, Static, Input, Select, Label
 from pathlib import Path
 from bulletproof.core import TranscodeJob, list_profiles
 
 
 class TUIApp:
-    """Simple TUI for bulletproof transcode.
-
-    Note: Full Textual implementation would be more complex.
-    This is a simplified version. For production, install textual:
-    pip install textual
-    """
+    """Interactive CLI-based TUI for bulletproof transcode."""
 
     def __init__(self):
         """Initialize TUI."""
@@ -22,7 +14,7 @@ class TUIApp:
         self.selected_profile = "standard-playback"
 
     def run(self):
-        """Run the TUI."""
+        """Run the interactive TUI."""
         print("\n" + "=" * 60)
         print("  bulletproof-video-playback Interactive Transcode")
         print("=" * 60)
@@ -49,7 +41,9 @@ class TUIApp:
                 print("Invalid selection. Try again.")
 
         # Output file
-        default_output = self.input_file.parent / f"{self.input_file.stem}_output.mov"
+        default_output = (
+            self.input_file.parent / f"{self.input_file.stem}_output.mov"
+        )
         output_input = input(f"\nOutput file path [{default_output}]: ").strip()
         output_file = Path(output_input) if output_input else default_output
 
