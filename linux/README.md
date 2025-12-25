@@ -9,7 +9,7 @@
 This is a **Linux-native** implementation of bulletproof video playback, designed for users who:
 - Can't install Python on machines they don't own
 - Need a lightweight transcoding workflow without dependencies
-- Want battle-tested ffmpeg profiles optimized for theater playback and streaming
+- Want battle-tested ffmpeg profiles optimized for live playback and streaming
 - Prefer simple shell scripts they can audit and modify
 
 **Key differences from the macOS/Python version:**
@@ -228,7 +228,7 @@ Configuration is stored in `~/.bulletproof-linux/config.json`.
 
 ### Live Playback
 
-**`live-h264-linux`** (Recommended for theater/QLab replacement)
+**`live-h264-linux`** (Recommended for live event playback/QLab replacement)
 - Codec: H.264 (High profile)
 - Bitrate: 15 Mbps
 - Extension: `.mp4`
@@ -305,7 +305,7 @@ Each profile can be encoded at different speeds:
 
 | Preset | ffmpeg Setting | Quality Loss | When to Use |
 |--------|----------------|--------------|-------------|
-| **fast** | veryfast | -5% to -10% | Live playback deadline is tight, minimal quality loss acceptable |
+| **fast** | veryfast | -5% to -10% | Live event deadline is tight, minimal quality loss acceptable |
 | **normal** | medium | baseline | Most use cases, default, good quality-to-time tradeoff |
 | **slow** | slow | +5% (better) | Archival, maximum quality, encode time is not critical |
 
@@ -326,7 +326,7 @@ Each profile can be encoded at different speeds:
 
 ## Workflow Examples
 
-### Scenario 1: Theater Playback (QLab Replacement)
+### Scenario 1: Live Event Playback (QLab Replacement)
 
 ```bash
 # 1. Analyze the incoming video
