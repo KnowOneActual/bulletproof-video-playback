@@ -3,6 +3,7 @@
 import os
 from pathlib import Path
 from bulletproof.core import TranscodeJob, list_profiles
+from bulletproof.core.profile import get_extension_for_codec
 
 
 class TUIApp:
@@ -45,10 +46,16 @@ class TUIApp:
             except (ValueError, IndexError):
                 print("Invalid selection. Try again.")
 
-        # Output file
+        # Get profile to determine output extension
+        profile = self.profiles[self.selected_profile]
+        extension = profile.extension
+
+        # Generate smart default output filename
         default_output = (
-            self.input_file.parent / f"{self.input_file.stem}_output.mov"
+            self.input_file.parent
+            / f"{self.input_file.stem}__{self.selected_profile}.{extension}"
         )
+
         output_input = input(f"\nOutput file path [{default_output}]: ").strip()
         output_file = (
             Path(os.path.expanduser(output_input))
@@ -63,7 +70,6 @@ class TUIApp:
         print(f"  Output:  {output_file}")
 
         if input("\nProceed? (y/n): ").lower() == "y":
-            profile = self.profiles[self.selected_profile]
             job = TranscodeJob(self.input_file, output_file, profile)
             print("\nStarting transcode...")
             if job.execute():
