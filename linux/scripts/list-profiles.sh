@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# list-profiles.sh - Display available transcoding profiles from profiles.json
+# Usage: ./list-profiles.sh [--verbose]
+
+set -euo pipefail
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROFILES_FILE="${SCRIPT_DIR}/../profiles.json"
+
+if [[ ! -f "$PROFILES_FILE" ]]; then
+    echo "Error: profiles.json not found at $PROFILES_FILE"
+    exit 1
+fi
+
+# Check if jq is available
+if ! command -v jq &> /dev/null; then
+    echo "Error: jq is required but not installed."
+    echo "Install with: apt install jq (Debian/Ubuntu) or dnf install jq (Fedora)"
+    exit 1
+fi
+
+VERBOSE=false
+if [[ "${1:-}" == "--verbose" ]] || [[ "${1:-}" == "-v" ]]; then
+    VERBOSE=true
+fi
+
+echo "Available Transcoding Profiles for Linux"
+echo "========================================="
+echo ""
+
+if [[ "$VERBOSE" == true ]]; then
+    # Verbose output with full details
+    jq -r '.profiles | to_entries[] | 
+        "Profile: \(.value.name)\n" +
+        "  Codec: \(.value.codec) (\(.value.codec_profile))\n" +
+        "  Bitrate: \(.value.bitrate)\n" +
+        "  Extension: \(.value.extension)\n" +
+        "  Quality: \(.value.quality)/100\n" +
+        "  Description: \(.value.description)\n" +
+        "  Use Case: \(.value.use_case)\n" +
+        "  Speed Estimate: \(.value.speed_estimate)\n" +
+        "  Notes: \(.value.notes)\n"' "$PROFILES_FILE"
+else
+    # Concise table output
+    printf "%-25s %-10s %-6s %-45s\n" "Name" "Codec" "Ext" "Description"
+    printf "%-25s %-10s %-6s %-45s\n" "---" "---" "---" "---"
+    jq -r '.profiles | to_entries[] | 
+        "\(.value.name | "%-25s") \(.value.codec | "%-10s") \(.value.extension | "%-6s") \(.value.description[0:45] | "%-45s")"' "$PROFILES_FILE" | \
+        column -t
+fi
+
+echo ""
+echo "Speed Presets: fast | normal (default) | slow"
+echo "Use ./transcode.sh --help for transcoding examples."
+echo ""
