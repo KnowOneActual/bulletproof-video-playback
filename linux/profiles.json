@@ -17,7 +17,7 @@
       "extension": "mp4",
       "quality": 85,
       "description": "H.264 for cross-platform live playback on Linux (QLab-like, Miccia Player, VLC)",
-      "use_case": "Live theater playback, streaming to networked clients",
+      "use_case": "Live event playback, streaming to networked clients",
       "speed_estimate": "Medium (4-6 hrs for 2hr video)",
       "notes": "Universal codec, good quality, widely supported on Linux desktop and ARM devices"
     },
