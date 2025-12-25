@@ -19,7 +19,7 @@ This branch contains a **complete Linux-native implementation** of bulletproof v
 ### Profile Catalog
 
 ✅ **`profiles.json`** - 7 prebuilt transcoding profiles:  
-  - `live-h264-linux` - Theater playback (QLab replacement)
+  - `live-h264-linux` - Live event playback (QLab replacement)
   - `standard-playback` - General-purpose archival playback
   - `stream-hd` - 1080p streaming (H.265)
   - `stream-4k` - 4K streaming
@@ -87,7 +87,7 @@ bash install.sh
 ## Key Design Decisions
 
 ### 1. **No Python Requirement**
-Use case: Users on machines they don't own (servers, borrowed systems, theater tech boxes) often can't install Python.  
+Use case: Users on machines they don't own (servers, borrowed systems, video playback boxes) often can't install Python.  
 **Solution:** Pure Bash + FFmpeg achieves 95% of use cases without dependency hell.
 
 ### 2. **No ProRes by Default**
@@ -157,7 +157,7 @@ Total: ~70 KB code + documentation
 
 ## Use Cases
 
-### ✅ Theater Playback (QLab Replacement)
+### ✅ Live Event Playback (QLab Replacement)
 ```bash
 ./scripts/transcode.sh incoming.mov --profile live-h264-linux --preset fast
 # Output: incoming__processed__live-h264-linux.mp4 (ready for playback)
