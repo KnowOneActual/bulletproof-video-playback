@@ -97,6 +97,33 @@ for script in scripts/*.sh; do
 done
 echo ""
 
+# Create symlinks for universal tools in linux/scripts/
+echo "Setting up universal tool symlinks..."
+ROOT_DIR="$(cd .. && pwd)"
+UNIVERSAL_TOOLS=("analyze.sh" "list-profiles.sh")
+
+for tool in "${UNIVERSAL_TOOLS[@]}"; do
+    if [[ -f "${ROOT_DIR}/scripts/${tool}" ]]; then
+        # Remove existing symlink if it exists
+        if [[ -L "scripts/${tool}" ]]; then
+            rm "scripts/${tool}"
+        fi
+        # Create symlink to root scripts/
+        ln -s "${ROOT_DIR}/scripts/${tool}" "scripts/${tool}"
+        echo "  + Symlinked ${tool} from root scripts/"
+    fi
+done
+
+# Symlink profiles.json from root scripts/
+if [[ -f "${ROOT_DIR}/scripts/profiles.json" ]]; then
+    if [[ -L "profiles.json" ]] || [[ -f "profiles.json" ]]; then
+        rm "profiles.json"
+    fi
+    ln -s "${ROOT_DIR}/scripts/profiles.json" "profiles.json"
+    echo "  + Symlinked profiles.json from root scripts/"
+fi
+echo ""
+
 # Create config directory
 CONFIG_DIR="${HOME}/.bulletproof-linux"
 echo "Setting up configuration..."
@@ -152,4 +179,7 @@ echo -e "${GREEN}Setup complete!${NC}"
 echo ""
 echo "Configuration saved to: $CONFIG_DIR"
 echo "Config file: ${CONFIG_DIR}/config.json"
+echo ""
+echo "Note: Universal tools (analyze.sh, list-profiles.sh) are symlinked from root scripts/"
+echo "      This allows cross-platform access and single-source maintenance."
 echo ""
