@@ -89,17 +89,26 @@ else
     echo ""
 fi
 
-# Make scripts executable
+# Make scripts executable (both root and linux)
 echo "Making scripts executable..."
+echo "  Local scripts (linux/scripts/):"
 for script in scripts/*.sh; do
     chmod +x "$script"
-    echo "  + $(basename "$script")"
+    echo "    + $(basename "$script")"
+done
+
+echo "  Universal scripts (root scripts/) via symlink:"
+ROOT_DIR="$(cd .. && pwd)"
+for script in "${ROOT_DIR}"/scripts/*.sh; do
+    if [[ -f "$script" ]]; then
+        chmod +x "$script"
+        echo "    + $(basename "$script")"
+    fi
 done
 echo ""
 
 # Create symlinks for universal tools in linux/scripts/
 echo "Setting up universal tool symlinks..."
-ROOT_DIR="$(cd .. && pwd)"
 UNIVERSAL_TOOLS=("analyze.sh" "list-profiles.sh")
 
 for tool in "${UNIVERSAL_TOOLS[@]}"; do
@@ -111,7 +120,7 @@ for tool in "${UNIVERSAL_TOOLS[@]}"; do
         if [[ -e "$TARGET_FILE" ]]; then
             rm -f "$TARGET_FILE"
         fi
-        # Create relative symlink to root scripts/
+        # Create symlink to root scripts/
         ln -s "$SOURCE_FILE" "$TARGET_FILE"
         echo "  + Symlinked $tool from ../scripts/"
     else
