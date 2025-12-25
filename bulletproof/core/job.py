@@ -4,11 +4,14 @@ import subprocess
 import json
 import re
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Literal
 from dataclasses import dataclass, asdict
 from datetime import datetime
 
 from bulletproof.core.profile import TranscodeProfile
+
+
+SPEED_PRESET_TYPE = Literal["fast", "normal", "slow"]
 
 
 @dataclass
@@ -18,6 +21,7 @@ class TranscodeJob:
     input_file: Path
     output_file: Path
     profile: TranscodeProfile
+    speed_preset: SPEED_PRESET_TYPE = "normal"  # fast, normal, slow
     status: str = "pending"  # pending, running, complete, error
     started_at: Optional[str] = None
     completed_at: Optional[str] = None
@@ -33,6 +37,9 @@ class TranscodeJob:
 
         if not self.input_file.exists():
             raise FileNotFoundError(f"Input file not found: {self.input_file}")
+
+        if self.speed_preset not in ["fast", "normal", "slow"]:
+            raise ValueError(f"Invalid speed_preset: {self.speed_preset}")
 
     def _get_duration(self) -> Optional[float]:
         """Get video duration in seconds using ffprobe."""
@@ -54,8 +61,25 @@ class TranscodeJob:
             pass
         return None
 
+    def _adjust_preset_for_speed(self, codec_preset: str) -> str:
+        """Adjust codec preset based on speed_preset setting."""
+        if self.profile.codec == "prores":
+            # ProRes presets are fixed, no speed adjustment
+            return codec_preset
+
+        # For H.264 and H.265, adjust the preset
+        preset_map = {
+            "fast": {"fast": "fast", "medium": "fast", "slow": "medium"},
+            "normal": {"fast": "fast", "medium": "medium", "slow": "slow"},
+            "slow": {"fast": "medium", "medium": "slow", "slow": "slower"},
+        }
+
+        if codec_preset in preset_map[self.speed_preset]:
+            return preset_map[self.speed_preset][codec_preset]
+        return codec_preset
+
     def _build_ffmpeg_command(self) -> list:
-        """Build ffmpeg command from profile."""
+        """Build ffmpeg command from profile with speed adjustments."""
         cmd = [
             "ffmpeg",
             "-i",
@@ -74,11 +98,15 @@ class TranscodeJob:
             elif self.profile.preset == "proxy":
                 cmd.extend(["-profile:v", "0"])  # ProRes Proxy
         elif self.profile.codec == "h264":
-            cmd.extend(["-c:v", "libx264", "-preset", self.profile.preset])
+            cmd.extend(["-c:v", "libx264"])
+            adjusted_preset = self._adjust_preset_for_speed(self.profile.preset)
+            cmd.extend(["-preset", adjusted_preset])
             if self.profile.max_bitrate:
                 cmd.extend(["-b:v", self.profile.max_bitrate])
         elif self.profile.codec == "h265":
-            cmd.extend(["-c:v", "libx265", "-preset", self.profile.preset])
+            cmd.extend(["-c:v", "libx265"])
+            adjusted_preset = self._adjust_preset_for_speed(self.profile.preset)
+            cmd.extend(["-preset", adjusted_preset])
             if self.profile.max_bitrate:
                 cmd.extend(["-b:v", self.profile.max_bitrate])
 
@@ -104,7 +132,9 @@ class TranscodeJob:
 
         return cmd
 
-    def _print_progress_bar(self, current: int, total: int, prefix: str = "", decimals: int = 1):
+    def _print_progress_bar(
+        self, current: int, total: int, prefix: str = "", decimals: int = 1
+    ):
         """Print a simple progress bar to terminal."""
         if total <= 0:
             return
@@ -139,7 +169,8 @@ class TranscodeJob:
 
             if show_progress and duration_seconds:
                 print(f"\nTranscoding: {self.input_file.name}")
-                print(f"Duration: {duration_seconds / 60:.1f} minutes\n")
+                print(f"Duration: {duration_seconds / 60:.1f} minutes")
+                print(f"Speed Preset: {self.speed_preset}\n")
 
             # Run ffmpeg with live progress parsing
             process = subprocess.Popen(
