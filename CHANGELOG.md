@@ -4,6 +4,79 @@ All notable changes to bulletproof-video-playback are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.0] - 2025-12-25
+
+### 🎉 Added
+
+#### Linux Bash Port 🐧
+- **Pure Bash Implementation** - No Python required for Linux systems
+  - 5 core scripts: `transcode.sh`, `batch.sh`, `analyze.sh`, `config.sh`, `list-profiles.sh`
+  - Works on Debian, Ubuntu, Fedora, RHEL, CentOS, Alpine
+  - Minimal dependencies: bash, ffmpeg, jq only
+- **Universal Cross-Platform Tools** - Root `scripts/` folder
+  - `analyze.sh` - Video analysis (works on macOS, Linux, WSL2)
+  - `list-profiles.sh` - Profile browser (works on macOS, Linux, WSL2)
+  - `profiles.json` - Shared profile catalog
+- **Symlink Architecture** - Single-source maintenance
+  - Linux scripts symlink to universal tools
+  - Profile updates propagate automatically
+  - No file duplication
+- **Linux-Specific Profiles**:
+  - `live-h264-linux` - H.264 for cross-platform live playback
+  - `standard-playback` - H.264 for general playback
+  - `stream-hd` - H.265 for 1080p streaming
+  - `stream-4k` - H.265 for 4K streaming
+  - `archival-lossless` - FFv1 lossless for long-term preservation
+  - `archival-prores-alt` - ProRes HQ if available
+  - `web-compat` - H.264 Baseline for maximum web compatibility
+- **Production-Ready Installation**
+  - `linux/install.sh` - Automated setup with dependency checking
+  - Detects missing ffmpeg, ffprobe, jq
+  - Provides OS-specific install instructions (apt, dnf, apk)
+  - Creates symlinks automatically
+  - Sets up config directory
+- **Comprehensive Documentation**
+  - `linux/QUICK_START.md` - User-facing guide with workflow examples
+  - `linux/IMPLEMENTATION_GUIDE.md` - Technical details for developers
+  - `SCRIPTS_STRUCTURE.md` - Architecture and symlink explanation
+  - Updated main README with platform selection
+
+#### Features
+- Batch transcoding with `batch.sh`
+- Video analysis with `analyze.sh`
+- Configuration management with `config.sh`
+- Speed presets (fast/normal/slow) on all platforms
+- Cross-platform profile compatibility
+- Smart output naming with `__processed__` marker
+
+### 📝 Changed
+
+- Updated main README.md to include Linux section
+  - Added "Choose Your Platform" section
+  - Explained Python vs Bash versions
+  - Linked to Linux documentation
+- Reorganized documentation structure for clarity
+
+### 🔧 Technical
+
+- New folder structure:
+  - `linux/` - Linux Bash implementation
+  - `scripts/` - Universal cross-platform tools
+- Symlink strategy for zero duplication
+- TSV-based output parsing for reliable formatting
+- Compatible with existing Python implementation
+
+### 🚀 Use Cases Enabled
+
+- Transcoding on machines without Python installed
+- Restricted environments where you can't install packages
+- CI/CD pipelines that need lightweight transcoding
+- Docker containers without Python
+- WSL2 environments
+- Systems where you can't modify installed software
+
+---
+
 ## [0.1.0] - 2024-12-25
 
 ### 🎉 Added
@@ -78,7 +151,7 @@ All notable changes to bulletproof-video-playback are documented in this file.
   - Home directory expansion (`~`) support
   - Atomic file operations with cleanup on failure
 
-### 🇑 Documentation
+### 📚 Documentation
 
 - Comprehensive README with quick start guides
 - QUICK_REFERENCE.md for common tasks
@@ -96,6 +169,14 @@ All notable changes to bulletproof-video-playback are documented in this file.
 ---
 
 ## Version History
+
+### v0.2.0 - Linux Bash Port + Universal Tools
+- Complete Linux implementation with pure Bash
+- Cross-platform universal tools (analyze, list-profiles)
+- 7 Linux-optimized profiles
+- Symlink-based architecture for single-source maintenance
+- Comprehensive Linux documentation
+- Production-ready on Fedora, Ubuntu, Debian
 
 ### v0.1.0 - Initial Release
 - Complete video transcoding suite with 7 profiles

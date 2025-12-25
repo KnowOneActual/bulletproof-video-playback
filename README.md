@@ -6,6 +6,30 @@
 
 Professional video transcoding for live playback, streaming, and archival. Uses ffmpeg under the hood with seven prebuilt profiles optimized for different use cases.
 
+## Choose Your Platform
+
+### 🍎 **macOS / Python Version** (Recommended for interactive use)
+
+- **TUI (Terminal UI)** with smart defaults
+- **ProRes support** (native to macOS)
+- **Real-time progress tracking**
+- **Python API** for integration
+- Requires: Python 3.9+
+
+👉 See **Installation** section below
+
+### 🐧 **Linux / Pure Bash Version** (No Python required)
+
+- **Zero dependencies** beyond ffmpeg (no Python needed)
+- **Works on machines you don't own** (restricted environments)
+- **Cross-platform profiles** (H.264, H.265, FFv1, ProRes if available)
+- **Simple JSON-based configuration**
+- Requires: bash, ffmpeg, jq (lightweight)
+
+👉 See [`linux/QUICK_START.md`](./linux/QUICK_START.md) for Linux setup
+
+---
+
 ## Features
 
 ✅ **Real-Time Progress Tracking** - See live progress bar during transcoding (no more wondering if it's stuck!)  
@@ -14,15 +38,17 @@ Professional video transcoding for live playback, streaming, and archival. Uses 
 ✅ **Smart Output Naming** - Auto-correct file extensions based on profile, includes `__processed__` marker  
 ✅ **Safety Features** - Prevents accidental overwrite of input files, auto-cleans incomplete files on cancel  
 ✅ **Video Analysis** - Inspect video codec, resolution, fps, audio specs  
-✅ **Professional Codecs** - ProRes Proxy/LT/HQ, H.264, H.265  
+✅ **Professional Codecs** - ProRes Proxy/LT/HQ, H.264, H.265, FFv1  
 ✅ **Speed Presets** - `--preset fast|normal|slow` for quality vs encode time tradeoff  
 ✅ **Config Support** - Save default profiles and output folders  
 ✅ **CI/CD Ready** - GitHub Actions workflows for testing and releases  
 
+---
+
 ## Installation
 
 ### Requirements
-- Python 3.9+
+- Python 3.9+ (macOS/Python version)
 - ffmpeg (`brew install ffmpeg` on macOS, `apt install ffmpeg` on Linux)
 - ffprobe (usually included with ffmpeg)
 
@@ -39,6 +65,20 @@ git clone https://github.com/KnowOneActual/bulletproof-video-playback
 cd bulletproof-video-playback
 pip install -e ".[dev]"
 ```
+
+### Linux (Pure Bash, No Python)
+
+If you don't have Python or can't install it:
+
+```bash
+git clone https://github.com/KnowOneActual/bulletproof-video-playback
+cd bulletproof-video-playback/linux
+bash install.sh
+```
+
+See [`linux/QUICK_START.md`](./linux/QUICK_START.md) for full Linux instructions.
+
+---
 
 ## Quick Start
 
@@ -92,6 +132,26 @@ bulletproof config set-output-dir ~/Videos/processed
 bulletproof config show
 ```
 
+### Linux Bash Version
+
+If you installed the Linux version:
+
+```bash
+cd linux/scripts
+
+# List profiles
+./list-profiles.sh
+
+# Analyze a video
+./analyze.sh video.mov
+
+# Transcode with a profile
+./transcode.sh video.mov --profile live-h264-linux --preset fast
+
+# Batch process
+./batch.sh ./videos --profile standard-playback
+```
+
 ### Python API
 
 For integration into other projects:
@@ -118,6 +178,8 @@ else:
     print(f"Failed: {job.error_message}")
 ```
 
+---
+
 ## Profiles
 
 | Name | Codec | Extension | Quality | Use Case | Speed |
@@ -129,6 +191,15 @@ else:
 | stream-hd | H.265 | .mp4 | Good | 1080p streaming | Medium |
 | stream-4k | H.265 | .mp4 | Good | 4K streaming | Medium |
 | archival | ProRes HQ | .mov | Max | Long-term storage | Slow |
+
+**Linux-specific profiles** (see `linux/QUICK_START.md`):
+- `live-h264-linux` — H.264 for cross-platform playback
+- `standard-playback` — General-purpose H.264
+- `stream-hd` / `stream-4k` — H.265/HEVC streaming
+- `archival-lossless` — FFv1 lossless for preservation
+- `web-compat` — H.264 Baseline for maximum compatibility
+
+---
 
 ## Speed Presets
 
@@ -255,6 +326,16 @@ bulletproof/
 ├── tui/               # Terminal UI with smart defaults
 └── utils/             # Utilities (validation, etc)
 
+linux/                # Pure Bash implementation (no Python)
+├── scripts/           # Bash scripts (transcode, batch, analyze, config, list-profiles)
+├── profiles.json      # Profile catalog (shared with root scripts/)
+└── install.sh         # Setup script
+
+scripts/              # Universal tools (work on any OS with ffmpeg + jq)
+├── analyze.sh         # Video analysis
+├── list-profiles.sh   # Profile browser
+└── profiles.json      # Profile catalog
+
 tests/                # Test suite
 .github/workflows/    # CI/CD (test.yml, release.yml)
 ```
@@ -263,11 +344,12 @@ tests/                # Test suite
 
 | Issue | Solution |
 |-------|----------|
-| "ffmpeg not found" | Install ffmpeg: `brew install ffmpeg` |
+| "ffmpeg not found" | Install ffmpeg: `brew install ffmpeg` or `apt install ffmpeg` |
 | No progress bar | Video lacks duration metadata. Transcode is still running. Use Ctrl+C to cancel. |
 | Transcode takes 20+ minutes | This is normal for large files or complex codecs. Progress bar shows speed. |
 | Want to cancel? | Press Ctrl+C - incomplete file is auto-deleted |
 | Import errors | Ensure venv is active and you ran `pip install -e ".[dev]"` |
+| Linux issues | See [`linux/QUICK_START.md`](./linux/QUICK_START.md) for troubleshooting |
 
 ## License
 
@@ -285,6 +367,7 @@ Instead of debating codecs, bulletproof asks the question:
 - Are you QLab on macOS for live playback? → Use ProRes Proxy
 - Are you streaming? → Use H.265
 - Are you long-term storage? → Use ProRes HQ
+- On Linux without Python? → Use H.264/H.265 with pure Bash
 
 Each profile is a prepackaged answer to that question.
 
@@ -296,3 +379,8 @@ Contributions welcome! Please:
 3. Add tests for new functionality
 4. Ensure tests pass and code is formatted with `black`
 5. Submit a pull request
+
+---
+
+**Latest Update:** December 2025 — Added Linux Bash port for systems without Python  
+**Current Version:** 0.1.0+linux
