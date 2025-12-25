@@ -2,13 +2,13 @@
 
 import click
 from bulletproof import __version__
-from bulletproof.cli.commands import transcode, analyze, batch, tui
+from bulletproof.cli.commands import transcode, analyze, batch, tui, config
 
 
 @click.group()
 @click.version_option(version=__version__)
 def cli():
-    """bulletproof-video-playback: Professional video transcoding for theater & streaming."""
+    """bulletproof-video-playback: Professional video transcoding for live playback & streaming."""
     pass
 
 
@@ -17,6 +17,7 @@ cli.add_command(transcode)
 cli.add_command(analyze)
 cli.add_command(batch)
 cli.add_command(tui)
+cli.add_command(config)
 
 
 if __name__ == "__main__":
