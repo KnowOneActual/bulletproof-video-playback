@@ -2,7 +2,7 @@
 
 import click
 from bulletproof import __version__
-from bulletproof.cli.commands import transcode, analyze, batch
+from bulletproof.cli.commands import transcode, analyze, batch, tui
 
 
 @click.group()
@@ -16,6 +16,7 @@ def cli():
 cli.add_command(transcode)
 cli.add_command(analyze)
 cli.add_command(batch)
+cli.add_command(tui)
 
 
 if __name__ == "__main__":
