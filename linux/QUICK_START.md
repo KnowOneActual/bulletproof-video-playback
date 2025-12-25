@@ -29,7 +29,7 @@ bash install.sh
 ./scripts/analyze.sh video.mov
 ```
 
-### Transcode for theater playback (QLab replacement)
+### Transcode for live event playback (QLab replacement)
 ```bash
 ./scripts/transcode.sh video.mov --profile live-h264-linux
 ```
@@ -78,7 +78,7 @@ bash install.sh
 
 | Profile | Codec | Use Case | Speed |
 |---------|-------|----------|-------|
-| **live-h264-linux** | H.264 | Theater playback (QLab-like) | Medium |
+| **live-h264-linux** | H.264 | Live event playback (QLab-like) | Medium |
 | **standard-playback** | H.264 | General playback, archive | Medium |
 | **stream-hd** | H.265 | 1080p streaming (smaller files) | Medium |
 | **stream-4k** | H.265 | 4K streaming | Slow |
