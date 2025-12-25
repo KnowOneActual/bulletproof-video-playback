@@ -300,7 +300,7 @@ black bulletproof tests
 
 ---
 
-## 🆘 Troubleshooting
+## 🛟 Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
