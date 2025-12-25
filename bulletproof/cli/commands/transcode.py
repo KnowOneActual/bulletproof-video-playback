@@ -3,14 +3,15 @@
 import click
 from pathlib import Path
 from bulletproof.core import TranscodeJob, get_profile, list_profiles
+from bulletproof.config import ConfigManager
 
 
 @click.command()
 @click.argument("input_file", type=click.Path(exists=True))
 @click.option(
     "--profile",
-    default="standard-playback",
-    help="Profile to use for transcode",
+    default=None,
+    help="Profile to use for transcode (defaults to saved preference)",
     type=click.Choice(list(list_profiles().keys())),
 )
 @click.option(
@@ -20,11 +21,24 @@ from bulletproof.core import TranscodeJob, get_profile, list_profiles
     help="Output file path (default: input_base_name__processed__profile.ext)",
 )
 @click.option(
+    "--preset",
+    "-p",
+    type=click.Choice(["fast", "normal", "slow"]),
+    default=None,
+    help="Speed preset: fast (quick, slight quality loss), normal (default), slow (best quality)",
+)
+@click.option(
     "--list-profiles",
     is_flag=True,
     help="Show available profiles and exit",
 )
-def transcode(input_file: str, profile: str, output: str, list_profiles_flag: bool):
+def transcode(
+    input_file: str,
+    profile: str,
+    output: str,
+    preset: str,
+    list_profiles_flag: bool,
+):
     """Transcode a video file using a preset profile.
 
     EXAMPLES:
@@ -38,12 +52,16 @@ def transcode(input_file: str, profile: str, output: str, list_profiles_flag: bo
     bulletproof transcode video.mov --profile stream-hd --output stream_version.mp4
 
     \b
+    # Fast encode for time-sensitive live playback:
+    bulletproof transcode video.mov --profile live-qlab --preset fast
+
+    \b
     # Prepare video for general playback (H.264, works everywhere):
     bulletproof transcode video.mov --profile standard-playback
 
     \b
-    # Archive with maximum quality (ProRes HQ, lossless):
-    bulletproof transcode video.mov --profile archival --output archived.mov
+    # Archive with maximum quality (ProRes HQ, lossless, slow):
+    bulletproof transcode video.mov --profile archival --preset slow
 
     \b
     # List all available profiles:
@@ -59,6 +77,15 @@ def transcode(input_file: str, profile: str, output: str, list_profiles_flag: bo
             click.echo()
         return
 
+    # Use saved default profile if not specified
+    if profile is None:
+        profile = ConfigManager.get_default_profile()
+        click.echo(f"Using saved default profile: {profile}")
+
+    # Use saved speed preset if not specified
+    if preset is None:
+        preset = ConfigManager.get_speed_preset()
+
     input_path = Path(input_file)
     if not input_path.exists():
         click.echo(f"Error: Input file not found: {input_file}", err=True)
@@ -67,7 +94,8 @@ def transcode(input_file: str, profile: str, output: str, list_profiles_flag: bo
     if output is None:
         prof = get_profile(profile)
         output = str(
-            input_path.parent / f"{input_path.stem}__processed__{profile}.{prof.extension}"
+            input_path.parent
+            / f"{input_path.stem}__processed__{profile}.{prof.extension}"
         )
 
     output_path = Path(output)
@@ -76,11 +104,12 @@ def transcode(input_file: str, profile: str, output: str, list_profiles_flag: bo
         prof = get_profile(profile)
         click.echo(f"\nProfile: {prof.name}")
         click.echo(f"Description: {prof.description}")
+        click.echo(f"Speed Preset: {preset}")
         click.echo(f"Input: {input_path}")
         click.echo(f"Output: {output_path}")
         click.echo("\nStarting transcode...")
 
-        job = TranscodeJob(input_path, output_path, prof)
+        job = TranscodeJob(input_path, output_path, prof, speed_preset=preset)
         success = job.execute()
 
         if success:
