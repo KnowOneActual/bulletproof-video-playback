@@ -1,5 +1,6 @@
 """Terminal User Interface - Interactive transcode wizard."""
 
+import os
 from pathlib import Path
 from bulletproof.core import TranscodeJob, list_profiles
 
@@ -22,10 +23,14 @@ class TUIApp:
         # Input file selection
         while True:
             input_path = input("\nEnter input file path: ").strip()
-            if Path(input_path).exists():
+            # Handle shell escape sequences
+            input_path = input_path.replace("\\ ", " ").replace("\\(", "(").replace("\\)", ")")
+            # Expand ~ if present
+            input_path = os.path.expanduser(input_path)
+            if Path(input_path).exists() and Path(input_path).is_file():
                 self.input_file = Path(input_path)
                 break
-            print("File not found. Try again.")
+            print("File not found or is not a file. Try again.")
 
         # Profile selection
         print("\nAvailable profiles:")
@@ -45,7 +50,11 @@ class TUIApp:
             self.input_file.parent / f"{self.input_file.stem}_output.mov"
         )
         output_input = input(f"\nOutput file path [{default_output}]: ").strip()
-        output_file = Path(output_input) if output_input else default_output
+        output_file = (
+            Path(os.path.expanduser(output_input))
+            if output_input
+            else default_output
+        )
 
         # Confirm and execute
         print(f"\nPrepared transcode:")
