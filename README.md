@@ -1,6 +1,3 @@
-
-# **!!This is still in the early stages of development, with many promising ideas in the pipeline. Currently, it may not function as intended!!**
-
 # bulletproof-video-playback
 
 [![Tests](https://github.com/KnowOneActual/bulletproof-video-playback/actions/workflows/test.yml/badge.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/actions/workflows/test.yml)
@@ -11,12 +8,14 @@ Professional video transcoding for live playback, streaming, and archival. Uses 
 
 ## Features
 
-- **7 Transcoding Profiles**: Prebuilt profiles for live playback (ProRes/H.264), streaming (H.265), and archival
-- **Three Interfaces**: CLI, TUI (interactive), and Python API
-- **Batch Processing**: Transcode entire directories of videos
-- **Video Analysis**: Inspect video codec, resolution, fps, audio specs
-- **Professional Codecs**: ProRes HQ, ProRes LT, H.264, H.265
-- **CI/CD Ready**: Includes GitHub Actions workflows for testing and releases
+✅ **Real-Time Progress Tracking** - See live progress bar during transcoding (no more wondering if it's stuck!)  
+✅ **7 Transcoding Profiles** - Prebuilt profiles for live playback (ProRes/H.264), streaming (H.265), and archival  
+✅ **Three Interfaces** - CLI, TUI (interactive with smart defaults), and Python API  
+✅ **Smart Output Naming** - Auto-correct file extensions based on profile, includes `__processed__` marker  
+✅ **Safety Features** - Prevents accidental overwrite of input files, auto-cleans incomplete files on cancel  
+✅ **Video Analysis** - Inspect video codec, resolution, fps, audio specs  
+✅ **Professional Codecs** - ProRes Proxy/LT/HQ, H.264, H.265  
+✅ **CI/CD Ready** - GitHub Actions workflows for testing and releases  
 
 ## Installation
 
@@ -41,7 +40,24 @@ pip install -e ".[dev]"
 
 ## Quick Start
 
+### TUI (Interactive Mode - Recommended)
+
+Best for beginners and one-off transcodes:
+
+```bash
+bulletproof tui
+```
+
+Will prompt you for:
+1. Input video file
+2. Transcoding profile (shows descriptions)
+3. Output location (defaults to `input__processed__profile.mp4`)
+4. Shows real-time progress bar during transcode
+5. Auto-cleans up if you press Ctrl+C
+
 ### CLI Usage
+
+For scripting and automation:
 
 ```bash
 # List available profiles
@@ -57,21 +73,16 @@ bulletproof analyze input.mov
 bulletproof batch ./videos --profile standard-playback --output-dir ./output
 ```
 
-### TUI (Interactive Mode)
-
-```bash
-bulletproof tui
-# Navigate with prompts to select file, profile, and output location
-```
-
 ### Python API
 
+For integration into other projects:
+
 ```python
-from bulletproof.core import TranscodeJob, get_profile
+from bulletproof.core import TranscodeJob, list_profiles
 from pathlib import Path
 
 # Get a profile
-profile = get_profile("live-qlab")
+profile = list_profiles()["live-qlab"]
 
 # Create and execute a job
 job = TranscodeJob(
@@ -82,21 +93,47 @@ job = TranscodeJob(
 
 if job.execute():
     print(f"Success! Output: {job.output_file}")
+    print(f"Progress was: {job.progress}%")
 else:
     print(f"Failed: {job.error_message}")
 ```
 
 ## Profiles
 
-| Name | Codec | Use Case | File Size |
-|------|-------|----------|----------|
-| live-qlab | ProRes HQ | QLab on Mac (best quality) | Very Large |
-| live-prores-lt | ProRes LT | Live playback (smaller) | Large |
-| live-h264 | H.264 | Cross-platform live playback | Medium |
-| standard-playback | H.264 | Miccia, VLC, preview | Small |
-| stream-hd | H.265 | 1080p streaming | Tiny |
-| stream-4k | H.265 | 4K streaming | Tiny |
-| archival | ProRes HQ | Long-term storage | Very Large |
+| Name | Codec | Extension | Quality | Use Case | File Size |
+|------|-------|-----------|---------|----------|----------|
+| **live-qlab** | ProRes Proxy | .mov | Good | QLab on Mac (QLab recommended) | Medium |
+| live-prores-lt | ProRes LT | .mov | High | Live playback (smaller files) | Large |
+| live-h264 | H.264 | .mp4 | High | Cross-platform live playback | Medium |
+| standard-playback | H.264 | .mp4 | Good | Miccia Player, VLC, preview | Small |
+| stream-hd | H.265 | .mp4 | Good | 1080p streaming | Tiny |
+| stream-4k | H.265 | .mp4 | Good | 4K streaming | Tiny |
+| archival | ProRes HQ | .mov | Max | Long-term storage | Very Large |
+
+## Output Naming
+
+The TUI automatically generates helpful output filenames:
+
+```
+Input:   spider_reveal_v1.mov
+Profile: live-qlab
+Output:  spider_reveal_v1__processed__live-qlab.mov
+```
+
+The `__processed__` marker makes it easy to distinguish original vs transcoded files in your folder.
+
+## Progress Tracking
+
+During transcoding, you'll see a real-time progress bar:
+
+```
+Transcoding: SF90_Spider_Reveal(1).mov
+Duration: 2.2 minutes
+
+Progress: |████████████░░░░░░░░░░░░░░░░░░░░| 35.2% (42/120s)
+```
+
+**Pro Tip:** If no progress bar appears, the video might lack duration metadata. The transcode is still running! This is common with some MOV files.
 
 ## Testing
 
@@ -127,7 +164,8 @@ BUILT_IN_PROFILES["my-profile"] = TranscodeProfile(
     preset="medium",
     quality=85,
     max_bitrate="10M",
-    # ... other settings
+    description="Description for TUI",
+    extension="mp4"
 )
 ```
 
@@ -146,11 +184,7 @@ def my_command(input_file):
     pass
 ```
 
-Then register in `bulletproof/cli/main.py`:
-
-```python
-cli.add_command(my_command)
-```
+Then register in `bulletproof/cli/main.py` and `bulletproof/cli/commands/__init__.py`.
 
 ## Releases
 
@@ -173,17 +207,27 @@ git push origin v0.2.0
 ```
 bulletproof/
 ├── core/              # Transcode logic
-│   ├── profile.py     # Profile definitions
-│   └── job.py         # Transcode execution
+│   ├── profile.py     # Profile definitions & codec mapping
+│   └── job.py         # Transcode execution with progress tracking
 ├── cli/               # Command-line interface
 │   ├── main.py        # CLI entry point
-│   └── commands/      # Subcommands
-├── tui/               # Terminal UI
+│   └── commands/      # Subcommands (transcode, analyze, batch, tui)
+├── tui/               # Terminal UI with smart defaults
 └── utils/             # Utilities (validation, etc)
 
 tests/                # Test suite
-.github/workflows/    # CI/CD
+.github/workflows/    # CI/CD (test.yml, release.yml)
 ```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| "ffmpeg not found" | Install ffmpeg: `brew install ffmpeg` |
+| No progress bar | Video lacks duration metadata. Transcode is still running. Use Ctrl+C to cancel. |
+| Transcode takes 20+ minutes | This is normal for large files or complex codecs. Progress bar shows speed. |
+| Want to cancel? | Press Ctrl+C - incomplete file is auto-deleted |
+| Import errors | Ensure venv is active and you ran `pip install -e ".[dev]"` |
 
 ## License
 
@@ -193,11 +237,22 @@ MIT License - see LICENSE file
 
 Beau Bremer ([@KnowOneActual](https://github.com/KnowOneActual))
 
+## Philosophy
+
+> "What does this system need?" → Use that codec
+
+Instead of debating codecs, bulletproof asks the question:
+- Are you QLab on Mac? → Use ProRes Proxy
+- Are you streaming? → Use H.265
+- Are you long-term storage? → Use ProRes HQ
+
+Each profile is a prepackaged answer to that question.
+
 ## Contributing
 
 Contributions welcome! Please:
 1. Fork the repo
 2. Create a feature branch
 3. Add tests for new functionality
-4. Ensure tests pass and code is formatted
+4. Ensure tests pass and code is formatted with `black`
 5. Submit a pull request
