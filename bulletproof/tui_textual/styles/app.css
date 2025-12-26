@@ -1,0 +1,187 @@
+/* Bulletproof Video Playback - Textual TUI Styles */
+
+Screen {
+    background: $surface;
+    color: $text;
+}
+
+/* Header styling */
+Header {
+    dock: top;
+    background: $accent;
+    color: $text 70%;
+}
+
+/* Footer styling */
+Footer {
+    dock: bottom;
+    background: $panel;
+}
+
+/* Main containers */
+#home-screen {
+    width: 1fr;
+    height: 1fr;
+}
+
+#title {
+    width: 1fr;
+    height: auto;
+    dock: top;
+    margin: 1 2;
+    text-align: center;
+}
+
+/* Panel layouts */
+#left-panel {
+    width: 1fr;
+    height: 1fr;
+    border: solid $accent;
+    padding: 1 2;
+    margin-right: 1;
+}
+
+#right-panel {
+    width: 1fr;
+    height: 1fr;
+    border: solid $accent;
+    padding: 1 2;
+}
+
+#main-content {
+    width: 1fr;
+    height: auto;
+    margin-bottom: 2;
+}
+
+#bottom-panel {
+    width: 1fr;
+    height: auto;
+    border: solid $accent;
+    padding: 1 2;
+}
+
+/* Profile table */
+#profile-table {
+    width: 1fr;
+    height: auto;
+}
+
+#profile-help {
+    width: 1fr;
+    margin-top: 1;
+    text-align: center;
+    color: $text 50%;
+}
+
+/* File picker styling */
+#input-file-input,
+#output-file-input {
+    width: 2fr;
+    border: solid $primary;
+}
+
+#input-file-label,
+#output-file-label {
+    width: 1fr;
+    margin: 1 0;
+}
+
+/* Button styling */
+Button {
+    margin: 1 1;
+}
+
+Button#start-btn {
+    background: $success;
+    color: $text;
+}
+
+Button#batch-btn {
+    background: $info;
+    color: $text;
+}
+
+Button#settings-btn {
+    background: $warning;
+    color: $text;
+}
+
+Button#quit-btn {
+    background: $error;
+    color: $text;
+}
+
+/* Data table styling */
+DataTable {
+    height: 10;
+    border: solid $accent;
+}
+
+DataTable:focus {
+    border: solid $primary;
+}
+
+/* Input styling */
+Input {
+    margin: 1 0;
+}
+
+Input:focus {
+    border: solid $primary;
+}
+
+/* Label styling */
+Label {
+    margin: 0 0;
+    width: 1fr;
+}
+
+Label.dim {
+    color: $text 50%;
+}
+
+/* Progress bar */
+#progress-bar {
+    width: 1fr;
+    margin: 2 0;
+}
+
+/* Select styling */
+Select {
+    margin: 1 0;
+}
+
+/* Success colors */
+Label.success {
+    color: $success;
+}
+
+/* Error colors */
+Label.error {
+    color: $error;
+}
+
+/* Warning colors */
+Label.warning {
+    color: $warning;
+}
+
+/* Scrollable container */
+ScrollableContainer {
+    width: 1fr;
+    height: 1fr;
+}
+
+/* Horizontal spacing */
+Horizontal {
+    width: 1fr;
+    height: auto;
+    margin: 1 0;
+}
+
+/* Vertical spacing */
+Vertical {
+    width: 1fr;
+    height: auto;
+}
