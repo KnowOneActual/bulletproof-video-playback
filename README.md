@@ -6,6 +6,52 @@
 
 Professional video transcoding for live playback, streaming, and archival. Uses ffmpeg under the hood with seven prebuilt profiles optimized for different use cases.
 
+**NEW:** **Folder Monitoring** - Automatically transcode videos based on filename patterns. Drop videos in a folder, watch them auto-process. Perfect for live events, streaming, broadcast, and batch workflows.
+
+## 🚀 What You Get
+
+### Three Ways to Use
+
+1. **TUI (Interactive)** - Beginner-friendly terminal UI with smart defaults
+2. **CLI (Scripting)** - Command-line for automation and CI/CD
+3. **Folder Monitor** - Watch a folder, auto-transcode based on rules
+
+### Platforms
+
+- **macOS** (Python) - Native ProRes support, recommended for interactive use
+- **Linux** (Pure Bash) - Zero dependencies beyond ffmpeg, no Python required
+- **Any OS** - CLI and Monitor work everywhere
+
+---
+
+## Quick Start: Folder Monitor (NEW!)
+
+Watch a folder for videos and automatically transcode them:
+
+```bash
+# Generate config
+bulletproof monitor generate-config --output monitor.yaml --watch /incoming
+
+# Start monitoring
+bulletproof monitor start --config monitor.yaml
+
+# Drop videos in /incoming
+# They auto-transcode to /output based on your rules!
+```
+
+**Use cases:**
+- 📺 Live broadcasting prep
+- 🎬 Streaming services
+- 📦 Archive preparation
+- 🎞️ Post-production dailies
+- 📢 Content distribution
+- ✅ Quality control
+- 🔄 Batch processing
+
+👉 **Full guide:** [docs/MONITOR_GUIDE.md](./docs/MONITOR_GUIDE.md)
+
+---
+
 ## Choose Your Platform
 
 ### 🍎 **macOS / Python Version** (Recommended for interactive use)
@@ -14,6 +60,7 @@ Professional video transcoding for live playback, streaming, and archival. Uses 
 - **ProRes support** (native to macOS)
 - **Real-time progress tracking**
 - **Python API** for integration
+- **Folder Monitor** with async processing
 - Requires: Python 3.9+
 
 👉 See **Installation** section below
@@ -32,16 +79,18 @@ Professional video transcoding for live playback, streaming, and archival. Uses 
 
 ## Features
 
-✅ **Real-Time Progress Tracking** - See live progress bar during transcoding (no more wondering if it's stuck!)  
-✅ **7 Transcoding Profiles** - Prebuilt profiles for live playback (ProRes/H.264), streaming (H.265), and archival  
-✅ **Three Interfaces** - CLI, TUI (interactive with smart defaults), and Python API  
-✅ **Smart Output Naming** - Auto-correct file extensions based on profile, includes `__processed__` marker  
-✅ **Safety Features** - Prevents accidental overwrite of input files, auto-cleans incomplete files on cancel  
-✅ **Video Analysis** - Inspect video codec, resolution, fps, audio specs  
+✅ **Folder Monitoring** - Watch directories, auto-transcode based on patterns (NEW!)  
+✅ **Crash Recovery** - Queue persists to JSON, survives restarts  
+✅ **Real-Time Progress Tracking** - See live progress bar during transcoding  
+✅ **7 Transcoding Profiles** - Prebuilt profiles for live playback, streaming, archival  
+✅ **Three Interfaces** - CLI, TUI (interactive), and Folder Monitor  
+✅ **Smart Output Naming** - Auto-correct extensions, includes processing marker  
+✅ **Safety Features** - Prevents overwrites, auto-cleans incomplete files  
+✅ **Video Analysis** - Inspect codec, resolution, fps, audio specs  
 ✅ **Professional Codecs** - ProRes Proxy/LT/HQ, H.264, H.265, FFv1  
-✅ **Speed Presets** - `--preset fast|normal|slow` for quality vs encode time tradeoff  
-✅ **Config Support** - Save default profiles and output folders  
-✅ **CI/CD Ready** - GitHub Actions workflows for testing and releases  
+✅ **Speed Presets** - `--preset fast|normal|slow` for quality/time tradeoff  
+✅ **Config Support** - Save defaults, YAML/JSON configuration  
+✅ **CI/CD Ready** - GitHub Actions workflows included  
 
 ---
 
@@ -82,6 +131,39 @@ See [`linux/QUICK_START.md`](./linux/QUICK_START.md) for full Linux instructions
 
 ## Quick Start
 
+### Folder Monitor (Automated Processing)
+
+Watch a folder and transcode automatically:
+
+```bash
+# Generate a sample config
+bulletproof monitor generate-config --output monitor.yaml --watch /incoming
+
+# Edit monitor.yaml (or use as-is)
+# Start monitoring
+bulletproof monitor start --config monitor.yaml
+
+# Drop videos in /incoming folder
+# They auto-transcode based on your rules!
+
+# Check status anytime
+bulletproof monitor status --queue queue.json
+```
+
+**Example config:**
+```yaml
+watch_directory: /incoming
+output_directory: /output
+poll_interval: 5
+delete_input: true
+
+rules:
+  - pattern: "*_live.mov"
+    profile: live-qlab
+    output_pattern: "{filename_no_ext}_qlab.mov"
+    priority: 100
+```
+
 ### TUI (Interactive Mode - Recommended)
 
 Best for beginners and one-off transcodes:
@@ -109,7 +191,7 @@ bulletproof transcode --list-profiles
 # Transcode single file with profile
 bulletproof transcode input.mov --profile live-qlab --output output.mov
 
-# Transcode with speed preset (for live playback deadlines)
+# Transcode with speed preset (for time-sensitive deadlines)
 bulletproof transcode input.mov --profile live-qlab --preset fast
 
 # Analyze video specs before transcoding
@@ -187,7 +269,7 @@ else:
 | **live-qlab** | ProRes Proxy | .mov | Good | QLab on Mac (recommended) | Medium |
 | live-prores-lt | ProRes LT | .mov | High | Live playback (smaller) | Medium |
 | live-h264 | H.264 | .mp4 | High | Cross-platform live | Slow |
-| standard-playback | H.264 | .mp4 | Good | Miccia Player, VLC | Medium |
+| standard-playback | H.264 | .mp4 | Good | General playback | Medium |
 | stream-hd | H.265 | .mp4 | Good | 1080p streaming | Medium |
 | stream-4k | H.265 | .mp4 | Good | 4K streaming | Medium |
 | archival | ProRes HQ | .mov | Max | Long-term storage | Slow |
@@ -317,10 +399,15 @@ git push origin v0.2.0
 bulletproof/
 ├── core/              # Transcode logic
 │   ├── profile.py     # Profile definitions & codec mapping
+│   ├── monitor.py     # Folder watching and file detection
+│   ├── rules.py       # Pattern matching rules
+│   ├── queue.py       # Job queue with persistence
 │   └── job.py         # Transcode execution with progress tracking
+├── services/          # High-level services
+│   └── monitor_service.py  # Orchestration for folder monitoring
 ├── cli/               # Command-line interface
 │   ├── main.py        # CLI entry point
-│   └── commands/      # Subcommands (transcode, analyze, batch, config, tui)
+│   └── commands/      # Subcommands (transcode, monitor, analyze, batch, config, tui)
 ├── config/            # Configuration management
 │   └── manager.py     # Config file handling
 ├── tui/               # Terminal UI with smart defaults
@@ -350,6 +437,13 @@ tests/                # Test suite
 | Want to cancel? | Press Ctrl+C - incomplete file is auto-deleted |
 | Import errors | Ensure venv is active and you ran `pip install -e ".[dev]"` |
 | Linux issues | See [`linux/QUICK_START.md`](./linux/QUICK_START.md) for troubleshooting |
+| Monitor not detecting files | Enable DEBUG logging or check permissions. See [MONITOR_GUIDE.md](./docs/MONITOR_GUIDE.md) |
+
+## Documentation
+
+- **[MONITOR_GUIDE.md](./docs/MONITOR_GUIDE.md)** - Complete folder monitoring documentation
+- **[ROADMAP.md](./ROADMAP.md)** - Project phases and future plans
+- **[PHASE_2_4_COMPLETE.md](./PHASE_2_4_COMPLETE.md)** - What's in this release
 
 ## License
 
@@ -364,12 +458,13 @@ Beau Bremer ([@KnowOneActual](https://github.com/KnowOneActual))
 > "What does this system need?" → Use that codec
 
 Instead of debating codecs, bulletproof asks the question:
-- Are you QLab on macOS for live playback? → Use ProRes Proxy
+- Are you doing live playback? → Use ProRes/H.264
 - Are you streaming? → Use H.265
 - Are you long-term storage? → Use ProRes HQ
 - On Linux without Python? → Use H.264/H.265 with pure Bash
+- Do you need to automate? → Use Folder Monitor with pattern rules
 
-Each profile is a prepackaged answer to that question.
+Each profile and tool is a prepackaged answer to that question.
 
 ## Contributing
 
@@ -382,5 +477,5 @@ Contributions welcome! Please:
 
 ---
 
-**Latest Update:** December 2025 — Added Linux Bash port for systems without Python  
-**Current Version:** 0.1.0+linux
+**Latest Update:** December 26, 2025 — Added Folder Monitor for automated batch processing  
+**Current Version:** 0.2.0 (Phase 2.4 Complete)
