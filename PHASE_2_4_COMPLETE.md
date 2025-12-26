@@ -78,7 +78,7 @@ service.stop()
 
 **Usage:**
 ```bash
-bulletproof monitor start --config theater.yaml
+bulletproof monitor start --config monitor.yaml
 bulletproof monitor status --queue queue.json
 bulletproof monitor clear-queue --queue queue.json
 bulletproof monitor generate-config --output config.yaml --watch /input
@@ -109,7 +109,7 @@ docs/
 └┠ MONITOR_GUIDE.md            ✅ Full user documentation
 
 examples/
-└┠ monitor-theater.yaml       ✅ Example configuration
+└┠ monitor-live.yaml          ✅ Example configuration
 ```
 
 ### Tests
@@ -128,19 +128,20 @@ examples/
 
 ### Documentation
 
-**MONITOR_GUIDE.md (9.6KB)**
+**MONITOR_GUIDE.md (10.6KB)**
 - Quick start guide
 - Configuration reference
 - CLI command documentation
-- Example workflows (theater, archive, mixed)
+- Example workflows (live broadcasting, archival, streaming, batch)
 - Troubleshooting guide
 - Best practices
 - Systemd integration
 - Performance tuning
+- Use cases for all scenarios
 
-**monitor-theater.yaml (5.1KB)**
+**monitor-live.yaml (5.1KB)**
 - Fully commented example config
-- Theater playout workflow
+- Live event workflow
 - Pattern matching examples
 - Output path templating
 - Usage examples for common scenarios
@@ -151,13 +152,13 @@ examples/
 
 ### 1. Generate Config
 ```bash
-bulletproof monitor generate-config --output theater.yaml --watch /incoming
+bulletproof monitor generate-config --output monitor.yaml --watch /incoming
 ```
 
 ### 2. Edit Config (or use example)
 ```yaml
 watch_directory: /incoming
-output_directory: /ready
+output_directory: /output
 poll_interval: 5
 delete_input: true
 
@@ -169,13 +170,13 @@ rules:
 
 ### 3. Start Monitoring
 ```bash
-bulletproof monitor start --config theater.yaml
+bulletproof monitor start --config monitor.yaml
 ```
 
 ### 4. Drop Videos
 ```bash
 cp my_video.mov /incoming/my_video_live.mov
-# Monitor detects → matches *_live.mov → queues → transcodes → outputs to /ready
+# Monitor detects → matches *_live.mov → queues → transcodes → outputs to /output
 ```
 
 ### 5. Check Status
@@ -275,8 +276,8 @@ f49d744 - feat(cli): Register monitor command in main CLI
 038529a - feat(cli): Export monitor command
 fdcf2eb - feat(services): Add services module with MonitorService
 c2df0ec - test(services): Add comprehensive tests for MonitorService
-ee7a2c1 - docs: Add comprehensive monitor usage guide
-8da206d - docs: Add example theater workflow configuration
+8ca7f27 - docs: Update MONITOR_GUIDE with live event language and broader use cases
+7976faf - docs: Rename theater example to live event workflow
 ```
 
 ---
@@ -326,7 +327,7 @@ pytest tests/test_monitor_service.py --cov=bulletproof/services --cov=bulletproo
 - 🚮 Drop videos in a folder
 - ✅ Automatic transcoding!
 
-**This is production-grade software.** Theater teams, archive departments, and post-houses can use this today to automate video processing. 🎉
+**This is production-grade software.** Live event teams, streaming operations, archival departments, and post-production facilities can use this today to automate video processing. 🎉
 
 ---
 
@@ -340,5 +341,15 @@ pytest tests/test_monitor_service.py --cov=bulletproof/services --cov=bulletproo
 - ✅ Example configurations
 - ✅ Comprehensive tests
 - ✅ Ready-to-deploy software
+
+**Works for:**
+- 💼 Live broadcasting
+- 🎈 Streaming services
+- ⚡ Archive preparation
+- 🚗 Post-production
+- 🎂 Content distribution
+- 🔍 Quality control
+- ⚛️ Batch processing
+- 🔄 Hybrid workflows
 
 **Ready for Phase 3.1 (Web Dashboard)? 🚀**
