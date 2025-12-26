@@ -14,8 +14,6 @@ from textual.widgets import (
 )
 from textual.binding import Binding
 from textual.message import Message
-from textual.worker import work
-import asyncio
 
 from bulletproof.core import list_profiles, TranscodeJob, get_profile
 from bulletproof.tui_textual.widgets.profile_selector import ProfileSelector
