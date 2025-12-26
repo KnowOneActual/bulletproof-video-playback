@@ -6,7 +6,7 @@ from textual.containers import Vertical, Horizontal
 from textual.widgets import Header, Label, ProgressBar, Static, Button
 from textual.binding import Binding
 from textual.reactive import reactive
-from textual.worker import work
+from textual.work import work
 import asyncio
 
 from bulletproof.core import TranscodeJob, ProgressData
@@ -38,7 +38,7 @@ class TranscodeScreen(Screen):
         """Compose the transcode screen."""
         yield Vertical(
             Header(),
-            Label(f"\ud83d� Transcoding: {self.job.input_file.name}"),
+            Label(f"🎬 Transcoding: {self.job.input_file.name}"),
             Label(f"Profile: {self.job.profile.name} | Speed: {self.job.speed_preset}"),
             Label(""),
             # Progress bar
@@ -94,7 +94,7 @@ class TranscodeScreen(Screen):
                 self.status_text = "[green]✓ Transcode complete![/green]"
                 self.progress = 100.0
         except Exception as e:
-            self.status_text = f"[red]❌ Error: {str(e)[:50]}[/red]"
+            self.status_text = f"[red]✗ Error: {str(e)[:50]}[/red]"
             self.job.status = "error"
             self.job.error_message = str(e)
 
