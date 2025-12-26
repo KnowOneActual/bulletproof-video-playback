@@ -3,15 +3,48 @@
 import subprocess
 import json
 import re
+import asyncio
 from pathlib import Path
-from typing import Optional, Dict, Any, Literal
-from dataclasses import dataclass, asdict
-from datetime import datetime
+from typing import Optional, Dict, Any, Literal, AsyncGenerator
+from dataclasses import dataclass, asdict, field
+from datetime import datetime, timedelta
 
 from bulletproof.core.profile import TranscodeProfile
 
 
 SPEED_PRESET_TYPE = Literal["fast", "normal", "slow"]
+
+
+@dataclass
+class ProgressData:
+    """Real-time progress data from transcode."""
+    percent: float = 0.0  # 0-100
+    elapsed_seconds: float = 0.0
+    total_seconds: Optional[float] = None
+    fps: float = 0.0
+    bitrate: str = "0.0x"
+    speed: str = "0.0x"
+    time_remaining: Optional[float] = None
+
+    @property
+    def eta_string(self) -> str:
+        """Format time remaining as HH:MM:SS."""
+        if self.time_remaining is None:
+            return "--:--:--"
+        td = timedelta(seconds=int(self.time_remaining))
+        hours = td.seconds // 3600
+        minutes = (td.seconds % 3600) // 60
+        seconds = td.seconds % 60
+        return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+
+    @property
+    def elapsed_string(self) -> str:
+        """Format elapsed time as HH:MM:SS."""
+        td = timedelta(seconds=int(self.elapsed_seconds))
+        hours = td.seconds // 3600
+        minutes = (td.seconds % 3600) // 60
+        seconds = td.seconds % 60
+        return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
 
 @dataclass
@@ -146,6 +179,105 @@ class TranscodeJob:
             end="",
             flush=True,
         )
+
+    async def execute_async(self) -> AsyncGenerator[ProgressData, None]:
+        """Execute transcode asynchronously with real-time progress updates.
+
+        Yields:
+            ProgressData objects with current progress information
+        """
+        try:
+            self.status = "running"
+            self.started_at = datetime.now().isoformat()
+
+            # Get duration for progress calculation
+            duration_seconds = self._get_duration()
+            cmd = self._build_ffmpeg_command()
+
+            # Start ffmpeg process
+            process = await asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+
+            # Parse progress from ffmpeg output
+            time_pattern = re.compile(r"out_time_ms=(\d+)")
+            fps_pattern = re.compile(r"fps=([\d.]+)")
+            bitrate_pattern = re.compile(r"bitrate=([\d.]+)kbits")
+            speed_pattern = re.compile(r"speed=([\d.]+)x")
+
+            if process.stdout:
+                async for line_bytes in process.stdout:
+                    line = line_bytes.decode('utf-8', errors='ignore')
+                    progress_data = ProgressData(total_seconds=duration_seconds)
+
+                    # Extract time progress
+                    time_match = time_pattern.search(line)
+                    if time_match and duration_seconds:
+                        time_ms = int(time_match.group(1))
+                        elapsed_seconds = time_ms / 1_000_000
+                        progress = min(100, (elapsed_seconds / duration_seconds) * 100)
+                        progress_data.percent = progress
+                        progress_data.elapsed_seconds = elapsed_seconds
+                        progress_data.time_remaining = duration_seconds - elapsed_seconds
+
+                    # Extract FPS
+                    fps_match = fps_pattern.search(line)
+                    if fps_match:
+                        progress_data.fps = float(fps_match.group(1))
+
+                    # Extract bitrate
+                    bitrate_match = bitrate_pattern.search(line)
+                    if bitrate_match:
+                        progress_data.bitrate = f"{float(bitrate_match.group(1)):.1f}kbps"
+
+                    # Extract speed
+                    speed_match = speed_pattern.search(line)
+                    if speed_match:
+                        progress_data.speed = f"{float(speed_match.group(1)):.2f}x"
+
+                    # Yield if we have meaningful progress
+                    if progress_data.percent > 0:
+                        self.progress = progress_data.percent
+                        yield progress_data
+
+            # Wait for process to complete
+            await process.wait()
+
+            if process.returncode != 0:
+                stderr = await process.stderr.read() if process.stderr else b""
+                raise subprocess.CalledProcessError(
+                    process.returncode, cmd, stderr=stderr.decode('utf-8', errors='ignore')
+                )
+
+            # Final progress
+            self.status = "complete"
+            self.progress = 100.0
+            self.completed_at = datetime.now().isoformat()
+            final_progress = ProgressData(
+                percent=100.0,
+                elapsed_seconds=duration_seconds or 0,
+                total_seconds=duration_seconds,
+            )
+            yield final_progress
+
+        except subprocess.CalledProcessError as e:
+            self.status = "error"
+            stderr_msg = e.stderr if isinstance(e.stderr, str) else str(e.stderr)
+            self.error_message = stderr_msg[:200] if stderr_msg else "FFmpeg error"
+        except asyncio.CancelledError:
+            self.status = "cancelled"
+            self.error_message = "Transcode cancelled"
+            # Cleanup incomplete output file
+            if self.output_file.exists():
+                try:
+                    self.output_file.unlink()
+                except Exception:
+                    pass
+        except Exception as e:
+            self.status = "error"
+            self.error_message = str(e)[:200]
 
     def execute(self, show_progress: bool = True) -> bool:
         """Execute the transcode job with real-time progress.
