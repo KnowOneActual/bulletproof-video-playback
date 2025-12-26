@@ -6,7 +6,7 @@ from textual.containers import Vertical, Horizontal
 from textual.widgets import Header, Label, ProgressBar, Static, Button
 from textual.binding import Binding
 from textual.reactive import reactive
-from textual.work import work
+from textual.worker import Worker
 import asyncio
 
 from bulletproof.core import TranscodeJob, ProgressData
@@ -33,6 +33,7 @@ class TranscodeScreen(Screen):
         super().__init__()
         self.job = job
         self._cancel_requested = False
+        self._transcode_worker = None
 
     def compose(self):
         """Compose the transcode screen."""
@@ -65,15 +66,14 @@ class TranscodeScreen(Screen):
         self.progress = 0.0
         self.status_text = "Starting transcode..."
         # Launch transcode in background worker
-        self.run_transcode()
+        self._transcode_worker = self.run_worker(self.run_transcode_task())
 
     def on_button_pressed(self, event) -> None:
         """Handle cancel button."""
         if event.button.id == "cancel-btn":
             self.action_cancel_transcode()
 
-    @work(exclusive=True)
-    async def run_transcode(self) -> None:
+    async def run_transcode_task(self) -> None:
         """Run the transcode job with progress updates."""
         try:
             async for progress in self.job.execute_async():
@@ -88,6 +88,8 @@ class TranscodeScreen(Screen):
                 self.speed_text = f"Speed: {progress.speed}"
                 self.elapsed_text = f"Elapsed: {progress.elapsed_string}"
                 self.eta_text = f"ETA: {progress.eta_string}"
+                # Yield to let UI update
+                await asyncio.sleep(0.1)
 
             # Transcode complete
             if not self._cancel_requested:
@@ -100,38 +102,59 @@ class TranscodeScreen(Screen):
 
     def watch_progress(self, new_progress: float) -> None:
         """Update progress bar."""
-        bar = self.query_one("#progress-bar", ProgressBar)
-        bar.progress = new_progress
+        try:
+            bar = self.query_one("#progress-bar", ProgressBar)
+            bar.progress = new_progress
+        except Exception:
+            pass
 
     def watch_status_text(self, new_status: str) -> None:
         """Update status label."""
-        label = self.query_one("#status-label", Label)
-        label.update(new_status)
+        try:
+            label = self.query_one("#status-label", Label)
+            label.update(new_status)
+        except Exception:
+            pass
 
     def watch_fps_text(self, new_text: str) -> None:
         """Update FPS label."""
-        label = self.query_one("#fps-label", Label)
-        label.update(new_text)
+        try:
+            label = self.query_one("#fps-label", Label)
+            label.update(new_text)
+        except Exception:
+            pass
 
     def watch_bitrate_text(self, new_text: str) -> None:
         """Update bitrate label."""
-        label = self.query_one("#bitrate-label", Label)
-        label.update(new_text)
+        try:
+            label = self.query_one("#bitrate-label", Label)
+            label.update(new_text)
+        except Exception:
+            pass
 
     def watch_speed_text(self, new_text: str) -> None:
         """Update speed label."""
-        label = self.query_one("#speed-label", Label)
-        label.update(new_text)
+        try:
+            label = self.query_one("#speed-label", Label)
+            label.update(new_text)
+        except Exception:
+            pass
 
     def watch_elapsed_text(self, new_text: str) -> None:
         """Update elapsed time label."""
-        label = self.query_one("#elapsed-label", Label)
-        label.update(new_text)
+        try:
+            label = self.query_one("#elapsed-label", Label)
+            label.update(new_text)
+        except Exception:
+            pass
 
     def watch_eta_text(self, new_text: str) -> None:
         """Update ETA label."""
-        label = self.query_one("#eta-label", Label)
-        label.update(new_text)
+        try:
+            label = self.query_one("#eta-label", Label)
+            label.update(new_text)
+        except Exception:
+            pass
 
     def action_cancel_transcode(self) -> None:
         """Cancel the transcode."""
