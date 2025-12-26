@@ -2,7 +2,7 @@
 
 from pathlib import Path
 from textual.screen import Screen
-from textual.containers import Container, Vertical, Horizontal, ScrollableContainer
+from textual.containers import Container, Vertical, Horizontal
 from textual.widgets import (
     Header,
     Static,
