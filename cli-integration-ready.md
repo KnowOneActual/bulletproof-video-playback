@@ -1,8 +1,44 @@
-# ✅ CLI Integration Complete - Quick Start Guide
+# ✅ Textual TUI - WORKING!
 
-## What's Ready Now
+## Status: LIVE ✨
 
-The `bulletproof tui-textual` command is now fully integrated and ready to use!
+The `bulletproof tui-textual` command is **fully functional and running without errors**!
+
+## Quick Start
+
+```bash
+# Get the latest code
+git checkout feature/textual-tui
+git pull
+
+# Install
+pip install -e "."
+
+# Run it!
+bulletproof tui-textual
+```
+
+## What Works
+
+✅ **App Launches** - No import errors, CSS loads correctly  
+✅ **Navigation** - Press 1/2/3 to switch between screens  
+✅ **Profile Selection** - DataTable with all profiles  
+✅ **File Validation** - Input field validates video files  
+✅ **Dark Mode** - Press 'd' to toggle  
+✅ **Keyboard Bindings** - All shortcuts working  
+
+## Keyboard Controls (Updated)
+
+| Shortcut | Action |
+|----------|--------|
+| **q** | Quit |
+| **ctrl+h** | Help & About |
+| **d** | Toggle Dark Mode |
+| **1** | Home Screen |
+| **2** | Settings Screen |
+| **3** | About Screen |
+| **↑/↓** | Navigate |
+| **Enter** | Select |
 
 ## Installation & Setup
 
@@ -15,9 +51,6 @@ pip install -e "."
 
 # Or with dev tools (includes pytest, black, etc.)
 pip install -e ".[dev]"
-
-# Update dependencies if needed
-pip install textual>=0.70.0
 ```
 
 ## Running the Textual TUI
@@ -33,269 +66,251 @@ bulletproof tui-textual --help
 bulletproof --help
 ```
 
-## What You'll See
+## Testing the Implementation
 
-When you run `bulletproof tui-textual`, you'll get a rich terminal interface:
-
-```
-┌─ Bulletproof Video Playback ─────────────────────────────────────────┐
-│                                                                         │
-│  📹 Professional Video Transcoding                                     │
-│                                                                         │
-│  ┌─────────────────────────────┬──────────────────────────────────┐  │
-│  │ 1. Select Profile           │ 2. Select Files                  │  │
-│  │ ┌──────────────────────────┐│ ┌────────────────────────────┐  │  │
-│  │ │ Profile  │ Codec │ Use   ││ Input File                 │  │  │
-│  │ │──────────┼───────┼───────││ ┌──────────────────────────┐│  │  │
-│  │ │ live-ql  │ PRORES│ QLab  ││ │ /path/to/video.mov       ││  │  │
-│  │ │ live-h26│ H.264 │ Cross ││ └──────────────────────────┘│  │  │
-│  │ │ stream-h│ H.265 │ Stream││ ✓ Valid video file        │  │  │
-│  │ └──────────────────────────┘│                             │  │  │
-│  │                             │ Output File                 │  │  │
-│  │                             │ ┌──────────────────────────┐│  │  │
-│  │                             │ │ /path/output__processe...││  │  │
-│  │                             │ └──────────────────────────┘│  │  │
-│  │                             │ ✓ Output: video_processed  │  │  │
-│  │                             └────────────────────────────┘│  │  │
-│  └─────────────────────────────┴──────────────────────────────┘  │
-│                                                                         │
-│  3. Options & Start                                                    │
-│  Speed Preset: [Normal (Default) ▼]                                   │
-│                                                                         │
-│  [ Start Transcode ] [ Batch Process ] [ Settings ] [ Quit ]          │
-│                                                                         │
-│  Ctrl+Q=Quit  Ctrl+H=Help  D=Dark  1=Home  2=Settings  3=About       │
-└─────────────────────────────────────────────────────────────────────────┘
+### Test 1: Launch & Navigate
+```bash
+bulletproof tui-textual
+# Press 1, 2, 3 to navigate between screens
+# Press d to toggle dark mode
+# Press q to quit
 ```
 
-## Keyboard Controls
+### Test 2: Select a Profile
+```
+1. You should see a profile table on the home screen
+2. Use arrow keys to navigate
+3. Press Enter to select a profile
+```
 
-| Shortcut | Action |
-|----------|--------|
-| **Ctrl+Q** | Quit |
-| **Ctrl+H** | Help & About |
-| **Ctrl+N** | New Transcode |
-| **Ctrl+B** | Batch Process |
-| **D** | Toggle Dark Mode |
-| **1** | Home Screen |
-| **2** | Settings Screen |
-| **3** | About Screen |
-| **↑/↓** | Navigate |
-| **Enter** | Select |
+### Test 3: File Selection
+```
+1. Click in "Input File" field
+2. Type a valid video path (e.g., /path/to/video.mov)
+3. Should show green checkmark: ✓ Valid video file
+```
 
-## Files Changed in `feature/textual-tui` Branch
+### Test 4: Settings & About
+```
+1. Press 2 → Settings screen
+2. Press ctrl+h → About screen  
+3. Press 1 → Back to home
+```
+
+## Files in Feature Branch
 
 ### New Files Created
 ```
 bulletproof/tui_textual/
 ├── __init__.py
-├── app.py
+├── app.py (FIXED)
 ├── screens/
 │   ├── __init__.py
-│   ├── home.py
+│   ├── home.py (FIXED)
 │   ├── transcode.py
 │   ├── settings.py
 │   └── about.py
 ├── widgets/
 │   ├── __init__.py
 │   ├── profile_selector.py
-│   └── file_picker_widget.py
+│   └── file_picker_widget.py (FIXED)
 └── styles/
     ├── __init__.py
-    └── app.css
+    └── app.css (FIXED)
 
-bulletproof/cli/commands/tui_textual.py
+bulletproof/cli/commands/tui_textual.py (FIXED)
 ```
 
 ### Modified Files
 ```
-bulletproof/cli/commands/__init__.py      (added tui_textual import)
-bulletproof/cli/main.py                   (registered tui_textual command)
-pyproject.toml                            (added Textual dependency + packages)
+bulletproof/cli/commands/__init__.py
+bulletproof/cli/main.py
+pyproject.toml
 ```
 
-## Testing the Implementation
+## Fixes Applied
 
-### Test 1: Command Recognition
-```bash
-bulletproof --help
-# Should see: tui-textual  Rich Textual Terminal UI...
-```
+### 🔧 Bug Fixes (Latest Session)
 
-### Test 2: Launch App
-```bash
-bulletproof tui-textual
-# Should see: Rich Textual UI interface with Header/Footer
-```
+1. **Fixed Import Error: Tabs**
+   - Removed non-existent `Tabs` import from `app.py`
+   - Textual 6.11 doesn't have this container
 
-### Test 3: Navigate Screens
-```
-1. Press '2' → Settings screen
-2. Press 'ctrl+h' → About screen
-3. Press '1' → Back to home screen
-4. Press 'D' → Toggle dark mode
-```
+2. **Fixed Syntax Error: Missing Quote**
+   - Fixed missing opening quote in `file_picker_widget.py` line 75
+   - Was: `self.app.notify(📁 File browser coming soon!", timeout=2)`
+   - Now: `self.app.notify("📁 File browser coming soon!", timeout=2)`
 
-### Test 4: Select a Profile
-```
-1. Use arrow keys to navigate profile table
-2. Press Enter to select
-3. Notice it highlights the selected profile
-```
+3. **Fixed CSS Variables**
+   - Replaced undefined `$info` variable with `$accent 60%`
+   - Kept only valid Textual design tokens
+   - All CSS now references standard variables
 
-### Test 5: File Selection
-```
-1. Click or type in "Input File" field
-2. Enter a valid video file path (e.g., /path/to/video.mov)
-3. Should show green checkmark: ✓ Valid video file
-```
+4. **Fixed Command Binding**
+   - Changed `ctrl+q` to `q` (Ctrl+Q intercepted by macOS)
+   - Added explicit `name="tui-textual"` in Click decorator
+   - Command now properly recognized as `bulletproof tui-textual`
 
-## Recent Fixes
+5. **Fixed Screen Navigation**
+   - Changed from `switch_screen()` to `push_screen()`/`pop_screen()` pattern
+   - Removed problematic `install_screen()` calls during `on_mount()`
+   - Navigation now works reliably between all screens
 
-### 🔧 Fixed in Latest Commit
-- ✅ Removed non-existent `Tabs` import from `app.py` (Textual compatibility)
-- ✅ Added explicit command name `tui-textual` in Click decorator
-- ✅ Removed unused `ScrollableContainer` import from `home.py`
-
-## Commits in Feature Branch
+## Recent Commits
 
 ```
-✅ Latest Fixes:
-- 11db44e - fix(tui_textual): Remove non-existent Tabs import from app.py
-- 2c14986 - fix(cli): Add explicit command name 'tui-textual' for proper Click registration
-- b3aa4de - fix(tui_textual): Remove unused ScrollableContainer import from home screen
-
-✅ Original Implementation:
-- e709bd7 - feat(tui_textual): Initialize Textual TUI module
-- 44d8b5c - feat(tui_textual): Create main BulletproofApp class
-- cf8118f - feat(tui_textual): Create screens module
-- f1e511f - feat(tui_textual): Create home screen with profile and file selection
-- 9a3e076 - feat(tui_textual): Create widgets module
-- f3b2c9b - feat(tui_textual): Add ProfileSelector widget with data table
-- 945878f - feat(tui_textual): Add FilePickerWidget for input/output selection
-- 4b3aec6 - feat(tui_textual): Add TranscodeScreen for progress monitoring
-- eedb302 - feat(tui_textual): Add SettingsScreen
-- 9ebbb3f - feat(tui_textual): Add AboutScreen with help information
-- a9702a4 - feat(tui_textual): Add CSS styling for TUI app
-- 23e6d9f - feat(tui_textual): Initialize styles module
-- b0fe728 - feat(cli): Add tui-textual command for Textual TUI
-- 6c49e39 - feat(cli): Export tui_textual command
-- 9110aef - feat(cli): Register tui_textual command in main CLI
-- 4bc71b0 - build: Update pyproject.toml with Textual dependency and tui_textual packages
+✅ edb6dfd - fix(tui_textual): Simplify screen navigation using push/pop pattern
+✅ 31684e7 - fix(tui_textual): Use install_screen/switch_screen pattern
+✅ c031cc6 - fix(tui_textual): Replace undefined CSS variables
+✅ 882772e - fix(tui_textual): Fix syntax error in file_picker_widget
+✅ 3d9a775 - fix(tui_textual): Fix quit binding and screen navigation
+✅ aaa7ae3 - docs: Update CLI integration guide with fixes
+✅ b3aa4de - fix(tui_textual): Remove unused ScrollableContainer import
+✅ 2c14986 - fix(cli): Add explicit command name 'tui-textual'
+✅ 11db44e - fix(tui_textual): Remove non-existent Tabs import
+✅ cd3ea38 - build: Update pyproject.toml
+✅ 321691 - feat(cli): Register tui_textual command
+✅ 6c49e39 - feat(cli): Export tui_textual command
+✅ b0fe728 - feat(cli): Add tui-textual command
+[... previous commits ...]
 ```
+
+## How It Works
+
+### Architecture
+
+**BulletproofApp** (Main App)
+- Entry point: `bulletproof tui-textual`
+- Manages screen stack with Header/Footer
+- Handles keyboard bindings
+- Dark mode toggle
+
+**Screens** (Navigation)
+- HomeScreen: Profile + file selection
+- SettingsScreen: Configuration
+- AboutScreen: Help & shortcuts
+- TranscodeScreen: Progress monitoring (not yet wired)
+
+**Widgets** (Reusable Components)
+- ProfileSelector: DataTable of all profiles
+- FilePickerWidget: Input/output file selection with validation
+
+**Styling**
+- app.css: Textual CSS with responsive layout
+- Supports dark mode
+- Flexbox-like positioning system
+
+## What's Next (Phase 2)
+
+### Immediate Priority
+
+1. **Wire Up Start Button**
+   - HomeScreen "Start Transcode" → launch TranscodeJob
+   - Navigate to TranscodeScreen
+   - Show status messages
+
+2. **Add Async Transcode Support**
+   - Create `execute_async()` on TranscodeJob
+   - Yields progress updates in real-time
+   - TUI progress bar shows live transcoding
+
+3. **Settings Persistence**
+   - Save default profile selection
+   - Remember output directory
+   - Load on app startup
+
+### Later Features
+- [ ] Batch processing UI
+- [ ] Video analysis widget
+- [ ] Web version (`textual serve`)
+- [ ] Drag-and-drop file support
 
 ## Troubleshooting
-
-### "No such command 'tui-textual'"
-Make sure you:
-1. `git checkout feature/textual-tui`
-2. `pip install -e "."` (reinstall with new packages)
-3. Verify: `bulletproof --help` (should show tui-textual)
 
 ### "ModuleNotFoundError: No module named 'textual'"
 ```bash
 pip install textual>=0.70.0
-# Or reinstall entire package
 pip install -e "."
 ```
 
-### "ImportError: cannot import name 'Tabs'"
-This is now fixed! The error was from an old import. If you still see it:
+### "Command not found: bulletproof"
 ```bash
-git pull origin feature/textual-tui
 pip install -e "."
+which bulletproof  # Verify installation
 ```
 
 ### "CSS file not found"
-Make sure you're running from the repo root:
 ```bash
+# Run from repo root
 cd /path/to/bulletproof-video-playback
 bulletproof tui-textual
 ```
 
-## Next Steps (Phase 2)
+### App crashes on key press
+- Make sure you're on the latest commit
+- Run: `git pull origin feature/textual-tui`
 
-### High Priority
-1. **Add Async Support to TranscodeJob**
-   - Create `execute_async()` method that yields progress updates
-   - File: `bulletproof/core/job.py`
-   - Allows TUI to show live progress without blocking
+## Development Notes
 
-2. **Wire Up Start Button**
-   - Connect HomeScreen "Start Transcode" to TranscodeJob
-   - Display progress on TranscodeScreen
-   - Show completion/error messages
+### Adding New Screens
 
-3. **Settings Persistence**
-   - Wire settings screen to config manager
-   - Save/load default profile and output directory
+1. Create in `bulletproof/tui_textual/screens/my_screen.py`
+2. Extend `Screen` class
+3. Add to keyboard bindings in `app.py`
+4. Use `push_screen()` to navigate to it
 
-### Phase 2 Tasks
-- [ ] Async transcode execution with progress
-- [ ] Home screen → TranscodeScreen routing
-- [ ] Real-time progress bar updates
-- [ ] Settings save/restore
-- [ ] Batch processing UI
-- [ ] Video analysis widget
-- [ ] Web version (`textual serve` support)
+### Adding New Widgets
 
-## Key Implementation Details
+1. Create in `bulletproof/tui_textual/widgets/my_widget.py`
+2. Extend `Static` class
+3. Use reactive properties for state
+4. Import and use in screens
 
-### BulletproofApp
-- Main Textual app class
-- Manages screen navigation
-- Handles keyboard bindings (Ctrl+Q, Ctrl+H, D, 1-3)
-- Reactive state management
+### Testing
 
-### Screens
-- **HomeScreen**: Profile + file selection, speed preset
-- **TranscodeScreen**: Progress monitoring (not yet wired)
-- **SettingsScreen**: Configuration management
-- **AboutScreen**: Help & keyboard shortcuts
+```bash
+# Run tests
+pytest tests/test_tui*.py
 
-### Widgets
-- **ProfileSelector**: Interactive profile data table
-- **FilePickerWidget**: File selection with validation
+# Debug mode
+textual run --dev bulletproof.tui_textual.app
 
-### Styling
-- **app.css**: Responsive terminal UI styling
-- Support for dark mode toggle
-- Flexbox-like layout system
-
-## Command Name Note
-
-💡 **Sidenote about command naming:**
-
-Click CLI automatically converts underscores to hyphens in command names. So:
-- Python function: `tui_textual()`
-- Click command name: `tui-textual`
-- CLI usage: `bulletproof tui-textual`
-
-We explicitly set `name="tui-textual"` in the decorator to ensure this works correctly.
+# Watch logs
+TEXTUAL_DEBUG=1 bulletproof tui-textual
+```
 
 ## Resources
 
-- **Textual Docs**: [https://textual.textualize.io/](https://textual.textualize.io/)
-- **Textual Examples**: [https://github.com/Textualize/textual/tree/main/examples](https://github.com/Textualize/textual/tree/main/examples)
-- **Your Repo**: [https://github.com/KnowOneActual/bulletproof-video-playback](https://github.com/KnowOneActual/bulletproof-video-playback)
+- **Textual Docs**: https://textual.textualize.io/
+- **Textual Examples**: https://github.com/Textualize/textual/tree/main/examples
+- **Your Repo**: https://github.com/KnowOneActual/bulletproof-video-playback
 - **Feature Branch**: `feature/textual-tui`
-
----
 
 ## Summary
 
-✅ **CLI Integration**: Complete  
-✅ **TUI Structure**: Complete  
-✅ **UI Components**: Complete  
-✅ **Profile Selection**: Working  
-✅ **File Validation**: Working  
-✅ **Navigation**: Working  
-✅ **Dark Mode**: Working  
-✅ **Import Errors**: Fixed  
-✅ **Command Name**: Fixed  
+### Completed ✅
+- CLI integration with `bulletproof tui-textual`
+- All screens implemented and navigable
+- Profile selection with DataTable
+- File validation with visual feedback
+- Dark mode toggle
+- Keyboard shortcuts
+- All import/syntax errors fixed
+- CSS styling working
+- Screen navigation stable
 
-⏳ **Async Transcode**: Next step  
-⏳ **Progress Monitoring**: Next step  
-⏳ **Batch Processing**: Next step  
+### In Progress ⏳
+- Connecting "Start Transcode" button to TranscodeJob
+- Async progress monitoring
+- Settings persistence
 
-**Status**: Ready for testing and Phase 2 development! 🚀
+### To Do 📋
+- Batch processing UI
+- Video analysis
+- Web version support
+
+---
+
+**🎉 Status: FUNCTIONAL & STABLE**
+
+The Textual TUI is ready for testing and Phase 2 feature development!
