@@ -8,8 +8,8 @@ Screen {
 /* Header styling */
 Header {
     dock: top;
-    background: $accent;
-    color: $text 70%;
+    background: $primary;
+    color: $text;
 }
 
 /* Footer styling */
@@ -36,7 +36,7 @@ Footer {
 #left-panel {
     width: 1fr;
     height: 1fr;
-    border: solid $accent;
+    border: solid $primary;
     padding: 1 2;
     margin-right: 1;
 }
@@ -44,7 +44,7 @@ Footer {
 #right-panel {
     width: 1fr;
     height: 1fr;
-    border: solid $accent;
+    border: solid $primary;
     padding: 1 2;
 }
 
@@ -57,7 +57,7 @@ Footer {
 #bottom-panel {
     width: 1fr;
     height: auto;
-    border: solid $accent;
+    border: solid $primary;
     padding: 1 2;
 }
 
@@ -93,17 +93,17 @@ Button {
 }
 
 Button#start-btn {
-    background: $success;
+    background: $accent 80%;
     color: $text;
 }
 
 Button#batch-btn {
-    background: $info;
+    background: $accent 60%;
     color: $text;
 }
 
 Button#settings-btn {
-    background: $warning;
+    background: $accent 40%;
     color: $text;
 }
 
@@ -115,11 +115,11 @@ Button#quit-btn {
 /* Data table styling */
 DataTable {
     height: 10;
-    border: solid $accent;
+    border: solid $primary;
 }
 
 DataTable:focus {
-    border: solid $primary;
+    border: solid $accent;
 }
 
 /* Input styling */
