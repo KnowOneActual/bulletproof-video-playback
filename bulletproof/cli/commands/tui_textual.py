@@ -4,7 +4,7 @@ import click
 from bulletproof.tui_textual.app import BulletproofApp
 
 
-@click.command()
+@click.command(name="tui-textual")
 def tui_textual():
     """Rich Textual Terminal UI for professional transcoding.
 
