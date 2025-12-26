@@ -14,10 +14,13 @@ from textual.widgets import (
 )
 from textual.binding import Binding
 from textual.message import Message
+from textual.worker import work
+import asyncio
 
-from bulletproof.core import list_profiles
+from bulletproof.core import list_profiles, TranscodeJob, get_profile
 from bulletproof.tui_textual.widgets.profile_selector import ProfileSelector
 from bulletproof.tui_textual.widgets.file_picker_widget import FilePickerWidget
+from bulletproof.tui_textual.screens.transcode import TranscodeScreen
 
 
 class TranscodeStarted(Message):
@@ -102,12 +105,12 @@ class HomeScreen(Screen):
         file_picker = self.query_one("#file-picker", FilePickerWidget)
         speed_select = self.query_one("#speed-preset", Select)
 
-        profile = profile_selector.selected_profile
+        profile_name = profile_selector.selected_profile
         input_file = file_picker.input_file
         output_file = file_picker.output_file
         preset = speed_select.value if speed_select.value else "normal"
 
-        if not profile:
+        if not profile_name:
             self.notify("⚠️ Please select a profile", severity="warning")
             return
 
@@ -119,15 +122,24 @@ class HomeScreen(Screen):
             self.notify("⚠️ Please specify an output file", severity="warning")
             return
 
-        # Emit event to app to start transcode
-        self.post_message(
-            TranscodeStarted(
-                input_file=Path(input_file),
-                profile=profile,
-                output_file=Path(output_file),
-                preset=preset,
-            )
+        # Get the profile object
+        try:
+            profile = get_profile(profile_name)
+        except KeyError:
+            self.notify(f"❌ Profile '{profile_name}' not found", severity="error")
+            return
+
+        # Create TranscodeJob
+        job = TranscodeJob(
+            input_file=Path(input_file),
+            output_file=Path(output_file),
+            profile=profile,
+            speed_preset=preset,
         )
+
+        # Navigate to transcode screen with job
+        transcode_screen = TranscodeScreen(job=job)
+        self.app.push_screen(transcode_screen)
 
     def action_batch_process(self) -> None:
         """Open batch processing dialog."""
