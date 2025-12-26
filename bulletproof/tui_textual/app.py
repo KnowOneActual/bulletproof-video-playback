@@ -23,7 +23,7 @@ class BulletproofApp(App):
     CSS_PATH = "styles/app.css"
 
     BINDINGS = [
-        Binding("ctrl+q", "quit", "Quit", show=True),
+        Binding("q", "quit", "Quit", show=True),
         Binding("ctrl+h", "show_help", "Help", show=True),
         Binding("d", "toggle_dark", "Dark mode", show=True),
         Binding("1", "screen_home", "Home", show=True),
@@ -53,7 +53,7 @@ class BulletproofApp(App):
 
     def action_show_help(self) -> None:
         """Show help information."""
-        self.push_screen(AboutScreen())
+        self.switch_screen(AboutScreen())
 
     def action_toggle_dark(self) -> None:
         """Toggle dark mode."""
@@ -61,18 +61,15 @@ class BulletproofApp(App):
 
     def action_screen_home(self) -> None:
         """Switch to home screen."""
-        self.pop_screen()
-        self.push_screen(HomeScreen())
+        self.switch_screen(HomeScreen())
 
     def action_screen_settings(self) -> None:
         """Switch to settings screen."""
-        self.pop_screen()
-        self.push_screen(SettingsScreen())
+        self.switch_screen(SettingsScreen())
 
     def action_screen_about(self) -> None:
         """Switch to about screen."""
-        self.pop_screen()
-        self.push_screen(AboutScreen())
+        self.switch_screen(AboutScreen())
 
 
 def run_tui() -> None:
