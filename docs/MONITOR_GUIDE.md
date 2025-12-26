@@ -2,6 +2,10 @@
 
 **Monitor a folder for video files and automatically transcode them based on rules.**
 
+Perfect for: live events, streaming, broadcast, archive prep, batch processing, automated workflows.
+
+---
+
 ## Quick Start
 
 ### 1. Generate a Configuration File
@@ -17,7 +21,7 @@ bulletproof monitor generate-config \
 
 ```yaml
 watch_directory: /incoming
-output_directory: /ready
+output_directory: /output
 poll_interval: 5
 delete_input: true
 log_level: INFO
@@ -40,7 +44,7 @@ rules:
 bulletproof monitor start --config monitor.yaml
 ```
 
-Drop videos in `/incoming` and they'll automatically transcode to `/ready`!
+Drop videos in `/incoming` and they'll automatically transcode to `/output`!
 
 ---
 
@@ -186,17 +190,17 @@ bulletproof monitor generate-config \
 
 ## Example Configurations
 
-### Theater Workflow
+### Live Event Broadcasting
 
 ```yaml
-watch_directory: /theater/incoming
-output_directory: /theater/ready
+watch_directory: /incoming
+output_directory: /output
 poll_interval: 2
 delete_input: true
-log_file: /theater/logs/monitor.log
+log_file: /var/log/monitor.log
 
 rules:
-  # Live playout files (highest priority)
+  # Live broadcast files (highest priority)
   - pattern: "*_live.mov"
     profile: live-qlab
     output_pattern: "{filename_no_ext}_qlab.mov"
@@ -215,24 +219,24 @@ rules:
     priority: 1
 ```
 
-### Archive Prep
+### Archive Preparation
 
 ```yaml
-watch_directory: /archive/incoming
-output_directory: /archive/masters
+watch_directory: /incoming
+output_directory: /masters
 poll_interval: 5
 delete_input: false  # Keep originals
-log_file: /archive/logs/monitor.log
+log_file: /var/log/monitor.log
 
 rules:
-  # All archive files → ProRes master
+  # All files → ProRes master
   - pattern: "*"
     profile: archive-prores
     output_pattern: "{filename}"
     priority: 100
 ```
 
-### Mixed Formats
+### Mixed Format Processing
 
 ```yaml
 watch_directory: /incoming
@@ -256,6 +260,22 @@ rules:
   - pattern: "*.mxf"
     profile: dnxhd-qlab
     output_pattern: "{filename_no_ext}_qlab.mov"
+    priority: 100
+```
+
+### Streaming Pipeline
+
+```yaml
+watch_directory: /stream/incoming
+output_directory: /stream/ready
+poll_interval: 3
+delete_input: true
+
+rules:
+  # Livestream prep
+  - pattern: "stream_*.mov"
+    profile: h264-streaming
+    output_pattern: "hls/{filename_no_ext}.mp4"
     priority: 100
 ```
 
@@ -327,7 +347,7 @@ If `persist_path` is set:
 
 3. Check logs:
    ```bash
-   tail -f /theater/logs/monitor.log
+   tail -f /var/log/monitor.log
    ```
 
 4. Check disk space:
@@ -356,7 +376,7 @@ If `persist_path` is set:
 
 ## Best Practices
 
-### 1. Use Relative Patterns
+### 1. Use Specific Patterns
 
 Good:
 ```yaml
@@ -371,9 +391,9 @@ pattern: "specific_video_20250101_001.mov"  # Too specific
 
 ### 2. Set Appropriate Poll Intervals
 
-- **2-5 seconds**: High-throughput (theater, live events)
-- **10-15 seconds**: Normal (archive, batch processing)
-- **30+ seconds**: Low-resource (overnight batch)
+- **2-5 seconds**: High-throughput (live events, streaming)
+- **10-15 seconds**: Normal (batch processing, standard workflows)
+- **30+ seconds**: Low-resource (overnight batch, archival)
 
 ### 3. Use Priority Ordering
 
@@ -409,7 +429,7 @@ bulletproof monitor start --config web.yaml &
 
 Set up cron job to check status:
 ```bash
-0 8 * * * bulletproof monitor status --queue /theater/queue.json
+0 8 * * * bulletproof monitor status --queue /var/lib/bulletproof/queue.json
 ```
 
 ---
@@ -451,8 +471,8 @@ After=network.target
 [Service]
 Type=simple
 User=video
-WorkingDirectory=/theater
-ExecStart=/usr/local/bin/bulletproof monitor start --config monitor.yaml
+WorkingDirectory=/var/lib/bulletproof
+ExecStart=/usr/local/bin/bulletproof monitor start --config /etc/bulletproof/monitor.yaml
 Restart=on-failure
 RestartSec=10
 
@@ -471,6 +491,19 @@ Check status:
 sudo systemctl status bulletproof-monitor
 sudo journalctl -u bulletproof-monitor -f
 ```
+
+---
+
+## Use Cases
+
+- **Live Broadcasting** - Transcode incoming feeds in real-time
+- **Streaming Services** - Batch prepare content for distribution
+- **Archive Preparation** - Convert submissions to preservation formats
+- **Post-Production** - Automate dailies transcoding
+- **Content Distribution** - Multi-format output for different platforms
+- **Quality Control** - Standardize incoming file formats
+- **Batch Processing** - Handle large volumes efficiently
+- **Hybrid Workflows** - Mix of live and archival processing
 
 ---
 
