@@ -1,0 +1,153 @@
+# Bulletproof Monitor Configuration - Theater Workflow
+# 
+# This configuration demonstrates a typical theater/playout workflow:
+# 1. Operators upload videos to /incoming
+# 2. Monitor detects and matches them to rules
+# 3. Videos are transcoded based on filename patterns
+# 4. Ready videos appear in /ready
+# 5. Original files are deleted after successful transcode
+
+# Directory Settings
+watch_directory: /incoming
+  # Directory to monitor for new video files
+  # Will recursively watch subdirectories
+
+output_directory: /ready
+  # Where to save transcoded files
+  # Created automatically if it doesn't exist
+
+# Monitoring Settings
+poll_interval: 5
+  # Check for new files every 5 seconds
+  # Use 2-3 seconds for high-throughput live events
+  # Use 10-15 seconds for normal batch processing
+
+delete_input: true
+  # Delete input file after successful transcode
+  # Set to false if you want to keep originals for archival
+
+log_level: INFO
+  # Logging verbosity: DEBUG, INFO, WARNING, ERROR
+  # Use DEBUG to troubleshoot issues
+
+log_file: /var/log/bulletproof-monitor.log
+  # Optional: log to file (in addition to console)
+  # Comment out to disable file logging
+
+persist_path: /var/lib/bulletproof/queue.json
+  # Optional: persist queue state to survive crashes
+  # Comment out to disable persistence
+  # If enabled, queue will resume from where it left off
+
+# Transcode Rules
+# Rules are checked in priority order (highest first)
+# First matching rule determines the profile and output path
+
+rules:
+  # LIVE PLAYOUT - Highest Priority
+  # Filenames ending in _live.mov → live-qlab profile
+  - pattern: "*_live.mov"
+    profile: live-qlab
+    output_pattern: "{filename_no_ext}_qlab.mov"
+    priority: 100
+    # Optional per-rule settings (overrides global):
+    # delete_input: false
+
+  # ARCHIVE MASTERS - Medium Priority
+  # Filenames starting with archive_ → archive-prores profile
+  # Output to subdirectory: masters/
+  - pattern: "archive_*.mov"
+    profile: archive-prores
+    output_pattern: "masters/{filename}"
+    priority: 90
+    delete_input: false  # Keep originals for archive
+
+  # WEB STREAMING - Lower Priority
+  # Filenames starting with web_ → H.264 streaming profile
+  # Output to web/ subdirectory with .mp4 extension
+  - pattern: "web_*.mov"
+    profile: h264-streaming
+    output_pattern: "web/{filename_no_ext}_h264.mp4"
+    priority: 80
+
+  # FALLBACK - Lowest Priority
+  # Any remaining MOV files → default profile
+  # This is a catch-all for files that don't match above patterns
+  - pattern: "*.mov"
+    profile: live-qlab
+    output_pattern: "misc/{filename}"
+    priority: 1
+
+# PATTERN TYPES
+# The examples above use "glob" patterns (case-insensitive wildcards)
+# You can also use regex patterns:
+#
+# - pattern: ".*_live_\d{4}\.mov"
+#   pattern_type: regex  # Match: anything_live_2025.mov
+#   profile: live-qlab
+#   output_pattern: "{filename}"
+#
+# Or exact match:
+#
+# - pattern: "opening_sequence.mov"
+#   pattern_type: exact
+#   profile: live-qlab
+#   output_pattern: "opening/opening_sequence_qlab.mov"
+
+# OUTPUT PATH TEMPLATES
+# Available variables:
+#   {filename}           - Original filename (e.g., "myvideo.mov")
+#   {filename_no_ext}    - Filename without extension (e.g., "myvideo")
+#   {profile}            - Profile name (e.g., "live-qlab")
+#
+# Examples:
+#   output_pattern: "{filename}"                          → myvideo.mov
+#   output_pattern: "{filename_no_ext}_qlab.mov"         → myvideo_qlab.mov
+#   output_pattern: "masters/{filename}"                 → masters/myvideo.mov
+#   output_pattern: "{profile}/{filename_no_ext}.mp4"    → live-qlab/myvideo.mp4
+
+# WORKFLOW EXAMPLES
+#
+# Example 1: Upload for live playout
+#   1. Upload: my_promo_live.mov → /incoming
+#   2. Monitor detects (2-3 seconds)
+#   3. Matches rule: *_live.mov → live-qlab
+#   4. Transcodes to: /ready/my_promo_qlab.mov
+#   5. Original deleted: /incoming/my_promo_live.mov (deleted)
+#   6. Ready for playout! ✓
+#
+# Example 2: Archive master
+#   1. Upload: archive_2025_productions.mov → /incoming
+#   2. Monitor detects
+#   3. Matches rule: archive_*.mov → archive-prores
+#   4. Transcodes to: /ready/masters/archive_2025_productions.mov
+#   5. Original kept: /incoming/archive_2025_productions.mov (NOT deleted)
+#   6. Master ready! ✓
+#
+# Example 3: Web distribution
+#   1. Upload: web_trailer.mov → /incoming
+#   2. Monitor detects
+#   3. Matches rule: web_*.mov → h264-streaming
+#   4. Transcodes to: /ready/web/web_trailer_h264.mp4
+#   5. Original deleted
+#   6. Ready for website! ✓
+
+# USAGE
+#
+# Generate this config:
+#   bulletproof monitor generate-config --output theater.yaml --watch /incoming
+#
+# Start monitoring:
+#   bulletproof monitor start --config theater.yaml
+#
+# Override settings from command line:
+#   bulletproof monitor start --config theater.yaml --watch /different/incoming
+#
+# Check queue status:
+#   bulletproof monitor status --queue /var/lib/bulletproof/queue.json
+#
+# Clear queue (if needed):
+#   bulletproof monitor clear-queue --queue /var/lib/bulletproof/queue.json
+
+# See full documentation:
+#   docs/MONITOR_GUIDE.md
