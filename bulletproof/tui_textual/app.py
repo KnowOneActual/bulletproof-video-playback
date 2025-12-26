@@ -35,6 +35,7 @@ class BulletproofApp(App):
     input_file: reactive[Path | None] = reactive(None)
     output_file: reactive[Path | None] = reactive(None)
     speed_preset: reactive[str] = reactive("normal")
+    _current_screen: str = "home"
 
     def on_mount(self) -> None:
         """Called when app is mounted."""
@@ -44,16 +45,19 @@ class BulletproofApp(App):
             self.current_profile = "live-qlab"
         elif profiles:
             self.current_profile = list(profiles.keys())[0]
+        # Install home screen after app mounts
+        self.install_screen(HomeScreen(), "home")
+        self.switch_screen("home")
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
         yield Header(show_clock=True)
-        yield HomeScreen()
         yield Footer()
 
     def action_show_help(self) -> None:
         """Show help information."""
-        self.switch_screen(AboutScreen())
+        self.install_screen(AboutScreen(), "about")
+        self.switch_screen("about")
 
     def action_toggle_dark(self) -> None:
         """Toggle dark mode."""
@@ -61,15 +65,24 @@ class BulletproofApp(App):
 
     def action_screen_home(self) -> None:
         """Switch to home screen."""
-        self.switch_screen(HomeScreen())
+        if self._current_screen != "home":
+            self.install_screen(HomeScreen(), "home")
+            self.switch_screen("home")
+            self._current_screen = "home"
 
     def action_screen_settings(self) -> None:
         """Switch to settings screen."""
-        self.switch_screen(SettingsScreen())
+        if self._current_screen != "settings":
+            self.install_screen(SettingsScreen(), "settings")
+            self.switch_screen("settings")
+            self._current_screen = "settings"
 
     def action_screen_about(self) -> None:
         """Switch to about screen."""
-        self.switch_screen(AboutScreen())
+        if self._current_screen != "about":
+            self.install_screen(AboutScreen(), "about")
+            self.switch_screen("about")
+            self._current_screen = "about"
 
 
 def run_tui() -> None:
