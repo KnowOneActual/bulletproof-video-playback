@@ -36,6 +36,7 @@ classifiers = [
 
 dependencies = [
     "click>=8.0",
+    "textual>=0.70.0",
 ]
 
 [project.optional-dependencies]
@@ -48,10 +49,6 @@ dev = [
     "flake8>=6.0",
 ]
 
-tui = [
-    "textual>=0.20.0",
-]
-
 [project.urls]
 Repository = "https://github.com/KnowOneActual/bulletproof-video-playback"
 "Bug Tracker" = "https://github.com/KnowOneActual/bulletproof-video-playback/issues"
@@ -60,7 +57,7 @@ Repository = "https://github.com/KnowOneActual/bulletproof-video-playback"
 bulletproof = "bulletproof.cli:cli"
 
 [tool.setuptools]
-packages = ["bulletproof", "bulletproof.core", "bulletproof.cli", "bulletproof.cli.commands", "bulletproof.tui", "bulletproof.utils", "tests"]
+packages = ["bulletproof", "bulletproof.core", "bulletproof.cli", "bulletproof.cli.commands", "bulletproof.tui", "bulletproof.tui_textual", "bulletproof.tui_textual.screens", "bulletproof.tui_textual.widgets", "bulletproof.tui_textual.styles", "bulletproof.utils", "tests"]
 
 [tool.black]
 line-length = 100
