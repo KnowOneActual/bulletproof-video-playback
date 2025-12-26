@@ -72,4 +72,4 @@ class FilePickerWidget(Static):
         if event.button.id == "input-browse-btn":
             self.app.notify("📁 File browser coming soon!", timeout=2)
         elif event.button.id == "output-browse-btn":
-            self.app.notify(📁 File browser coming soon!", timeout=2)
+            self.app.notify("📁 File browser coming soon!", timeout=2)
