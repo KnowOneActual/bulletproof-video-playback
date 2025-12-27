@@ -1,5 +1,5 @@
-"""Services for monitoring and automation."""
+"""High-level services for bulletproof."""
 
-from bulletproof.services.monitor_service import MonitorService, MonitorLogger
+from bulletproof.services.monitor_service import MonitorService
 
-__all__ = ["MonitorService", "MonitorLogger"]
+__all__ = ["MonitorService"]
