@@ -1,0 +1,6 @@
+watch_directory: ./test_videos/incoming
+output_directory: ./test_videos/output
+poll_interval: 5
+rules:
+  - pattern: "*.mov"
+    profile: "live-qlab"
