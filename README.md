@@ -4,7 +4,9 @@
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Professional video transcoding for live playback, streaming, and archival. Uses ffmpeg under the hood with seven prebuilt profiles optimized for different use cases.
+# **Under Development** 
+
+Video transcoding for live playback, streaming, and archival. Uses ffmpeg under the hood with seven prebuilt profiles optimized for different use cases.
 
 **NEW:** **Folder Monitoring** - Automatically transcode videos based on filename patterns. Drop videos in a folder, watch them auto-process. Perfect for live events, streaming, broadcast, and batch workflows.
 
