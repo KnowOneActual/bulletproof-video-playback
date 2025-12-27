@@ -13,6 +13,7 @@ from bulletproof.core.profile import TranscodeProfile
 
 class JobStatus(str, Enum):
     """Job processing status."""
+
     PENDING = "pending"
     PROCESSING = "processing"
     COMPLETE = "complete"
@@ -23,6 +24,7 @@ class JobStatus(str, Enum):
 @dataclass
 class QueuedJob:
     """A job in the transcode queue."""
+
     input_file: Path
     output_file: Path
     profile_name: str
@@ -73,7 +75,7 @@ class TranscodeQueue:
 
     def __init__(self, persist_path: Optional[Path] = None):
         """Initialize queue.
-        
+
         Args:
             persist_path: Optional path to persist queue state to JSON
         """
@@ -87,7 +89,7 @@ class TranscodeQueue:
 
     def add(self, job: QueuedJob) -> None:
         """Add job to queue.
-        
+
         Args:
             job: QueuedJob to add
         """
@@ -96,12 +98,12 @@ class TranscodeQueue:
 
     def add_from_file(self, file_info: FileInfo, output_file: Path, profile_name: str) -> QueuedJob:
         """Create and add job from FileInfo.
-        
+
         Args:
             file_info: FileInfo from FolderMonitor
             output_file: Output file path
             profile_name: Name of profile to use
-            
+
         Returns:
             The created QueuedJob
         """
@@ -115,7 +117,7 @@ class TranscodeQueue:
 
     def get_pending(self) -> Optional[QueuedJob]:
         """Get next pending job without removing it.
-        
+
         Returns:
             First pending QueuedJob or None
         """
@@ -126,7 +128,7 @@ class TranscodeQueue:
 
     def get_next(self) -> Optional[QueuedJob]:
         """Get and remove next pending job.
-        
+
         Returns:
             First pending QueuedJob or None
         """
@@ -139,7 +141,7 @@ class TranscodeQueue:
 
     def mark_complete(self, job: QueuedJob) -> None:
         """Mark job as complete.
-        
+
         Args:
             job: QueuedJob to mark complete
         """
@@ -151,7 +153,7 @@ class TranscodeQueue:
 
     def mark_error(self, job: QueuedJob, error_message: str) -> None:
         """Mark job as errored.
-        
+
         Args:
             job: QueuedJob with error
             error_message: Error message
@@ -165,7 +167,7 @@ class TranscodeQueue:
 
     def remove(self, job: QueuedJob) -> None:
         """Remove job from queue.
-        
+
         Args:
             job: QueuedJob to remove
         """
@@ -175,7 +177,7 @@ class TranscodeQueue:
 
     def get_status(self) -> dict:
         """Get queue status.
-        
+
         Returns:
             Dict with queue statistics
         """
@@ -190,7 +192,7 @@ class TranscodeQueue:
 
     def get_all(self) -> list[QueuedJob]:
         """Get all jobs in queue.
-        
+
         Returns:
             List of all QueuedJob objects
         """
@@ -198,10 +200,10 @@ class TranscodeQueue:
 
     def get_history(self, limit: Optional[int] = None) -> list[QueuedJob]:
         """Get processing history.
-        
+
         Args:
             limit: Maximum number of history items to return
-            
+
         Returns:
             List of processed QueuedJob objects
         """

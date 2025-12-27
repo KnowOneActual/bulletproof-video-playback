@@ -10,15 +10,31 @@ import hashlib
 
 # Common video file extensions
 VIDEO_EXTENSIONS = {
-    '.mov', '.mp4', '.mxf', '.avi', '.mkv', '.flv', '.wmv',
-    '.webm', '.m2ts', '.mts', '.ts', '.m4v', '.3gp', '.3g2',
-    '.qt', '.dv', '.dvr', '.asf'
+    ".mov",
+    ".mp4",
+    ".mxf",
+    ".avi",
+    ".mkv",
+    ".flv",
+    ".wmv",
+    ".webm",
+    ".m2ts",
+    ".mts",
+    ".ts",
+    ".m4v",
+    ".3gp",
+    ".3g2",
+    ".qt",
+    ".dv",
+    ".dvr",
+    ".asf",
 }
 
 
 @dataclass
 class FileInfo:
     """Information about a monitored file."""
+
     path: Path
     size: int
     mtime: float  # modification time
@@ -35,7 +51,7 @@ class FileInfo:
 
 class FolderMonitor:
     """Monitor a folder for new video files.
-    
+
     Watches a directory, detects video files, and tracks their state.
     Useful for automated transcode workflows.
     """
@@ -47,7 +63,7 @@ class FolderMonitor:
         on_file_detected: Optional[Callable[[FileInfo], None]] = None,
     ):
         """Initialize folder monitor.
-        
+
         Args:
             watch_path: Directory to monitor
             extensions: Video file extensions to detect (defaults to VIDEO_EXTENSIONS)
@@ -68,7 +84,7 @@ class FolderMonitor:
 
     def scan(self) -> list[FileInfo]:
         """Scan directory for video files.
-        
+
         Returns:
             List of newly detected FileInfo objects
         """
@@ -123,7 +139,7 @@ class FolderMonitor:
 
     def get_stable_files(self) -> list[FileInfo]:
         """Get list of stable (not changing) files ready for processing.
-        
+
         Returns:
             List of FileInfo objects for stable files
         """
@@ -135,7 +151,7 @@ class FolderMonitor:
 
     def mark_processing(self, file_info: FileInfo) -> None:
         """Mark a file as being processed.
-        
+
         Args:
             file_info: FileInfo to mark
         """
@@ -144,7 +160,7 @@ class FolderMonitor:
 
     def mark_processed(self, file_info: FileInfo) -> None:
         """Mark a file as successfully processed.
-        
+
         Args:
             file_info: FileInfo to mark
         """
@@ -154,7 +170,7 @@ class FolderMonitor:
 
     def mark_error(self, file_info: FileInfo) -> None:
         """Mark a file as having processing error.
-        
+
         Args:
             file_info: FileInfo to mark
         """
@@ -164,9 +180,7 @@ class FolderMonitor:
     def clear_processed(self) -> None:
         """Clear processed files from tracking (optional cleanup)."""
         self._known_files = {
-            hash_val: info
-            for hash_val, info in self._known_files.items()
-            if not info.processed
+            hash_val: info for hash_val, info in self._known_files.items() if not info.processed
         }
         self._stable_files = {
             hash_val for hash_val in self._stable_files if hash_val in self._known_files
@@ -174,7 +188,7 @@ class FolderMonitor:
 
     def get_status(self) -> dict:
         """Get current monitoring status.
-        
+
         Returns:
             Dict with status information
         """
@@ -192,11 +206,11 @@ class FolderMonitor:
                 hash_val: {
                     "path": str(info.path.name),
                     "size": info.size,
-                    "status": "processed"
-                    if info.processed
-                    else "processing"
-                    if info.processing
-                    else "pending",
+                    "status": (
+                        "processed"
+                        if info.processed
+                        else "processing" if info.processing else "pending"
+                    ),
                     "detected_at": info.detected_at.isoformat(),
                 }
                 for hash_val, info in self._known_files.items()

@@ -15,6 +15,7 @@ from bulletproof.core.job import TranscodeJob
 
 class MonitorServiceError(Exception):
     """Base exception for MonitorService errors."""
+
     pass
 
 
@@ -33,7 +34,7 @@ class MonitorServiceConfig:
         log_file: Optional[Path] = None,
     ):
         """Initialize service configuration.
-        
+
         Args:
             watch_directory: Directory to monitor for videos
             output_directory: Directory for transcoded output
@@ -65,7 +66,7 @@ class MonitorServiceConfig:
 
 class MonitorService:
     """Orchestrates folder monitoring and video transcoding.
-    
+
     Main workflow:
     1. Scan watch directory for video files
     2. Match detected files to rules
@@ -77,7 +78,7 @@ class MonitorService:
 
     def __init__(self, config: MonitorServiceConfig):
         """Initialize monitor service.
-        
+
         Args:
             config: MonitorServiceConfig with service settings
         """
@@ -121,7 +122,7 @@ class MonitorService:
 
     async def run(self) -> None:
         """Main service loop - runs until stop() is called.
-        
+
         Continuously:
         1. Scans for new files
         2. Matches files to rules
@@ -176,7 +177,7 @@ class MonitorService:
 
     async def _create_job_for_file(self, file_info: FileInfo) -> None:
         """Create transcode job for a detected file.
-        
+
         Args:
             file_info: FileInfo from monitor
         """
@@ -201,9 +202,7 @@ class MonitorService:
             job = self.queue.add_from_file(file_info, output_file, profile_name)
             self.monitor.mark_processing(file_info)
 
-            self.logger.info(
-                f"Queued: {file_info.path.name} → {profile_name} → {output_file.name}"
-            )
+            self.logger.info(f"Queued: {file_info.path.name} → {profile_name} → {output_file.name}")
 
         except Exception as e:
             self.logger.error(f"Error creating job for {file_info.path.name}: {e}", exc_info=True)
@@ -256,12 +255,12 @@ class MonitorService:
 
     def _generate_output_path(self, input_file: Path, pattern: str, profile_name: str) -> Path:
         """Generate output file path from template.
-        
+
         Args:
             input_file: Input file path
             pattern: Output pattern template
             profile_name: Profile name
-            
+
         Returns:
             Generated output Path
         """
@@ -284,7 +283,7 @@ class MonitorService:
 
     def get_status(self) -> Dict[str, Any]:
         """Get current service status.
-        
+
         Returns:
             Dict with monitoring status information
         """
@@ -300,10 +299,10 @@ class MonitorService:
 
     def get_history(self, limit: int = 10) -> list[Dict[str, Any]]:
         """Get recent processing history.
-        
+
         Args:
             limit: Number of recent jobs to return
-            
+
         Returns:
             List of job dicts
         """

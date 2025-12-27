@@ -46,7 +46,7 @@ def config():
     """Manage bulletproof configuration.
 
     Configuration is stored in ~/.bulletproof/config.json
-    
+
     NOTE: For folder monitoring, use YAML config files:
       bulletproof monitor generate-config -o monitor.yaml -w ./incoming
     """

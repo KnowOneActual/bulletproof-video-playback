@@ -61,21 +61,21 @@ def start(
     log_level: Optional[str],
 ):
     """Start monitoring a folder for new video files.
-    
+
     The monitor watches a directory for video files and automatically
     transcodes them based on rules defined in the config file.
-    
+
     Examples:
-    
+
         # Start with config file
         bulletproof monitor start --config monitor.yaml
-        
+
         # Override watch directory
         bulletproof monitor start --config monitor.yaml --watch /videos/incoming
-        
+
         # Override multiple settings
         bulletproof monitor start -c monitor.yaml -w /input -o /output -p 10
-        
+
         # Run with debug logging
         bulletproof monitor start -c monitor.yaml -l DEBUG
     """
@@ -158,12 +158,12 @@ def start(
 )
 def status(queue: str, verbose: bool):
     """Show status of the transcode queue.
-    
+
     Examples:
-    
+
         # Quick status
         bulletproof monitor status --queue queue.json
-        
+
         # Detailed status with job list
         bulletproof monitor status --queue queue.json --verbose
     """
@@ -246,10 +246,10 @@ def status(queue: str, verbose: bool):
 @click.confirmation_option(prompt="Are you sure you want to clear the queue?")
 def clear_queue(queue: str):
     """Clear the transcode queue.
-    
+
     This removes all pending jobs and clears history.
     Processing jobs will complete before the queue is cleared.
-    
+
     Example:
         bulletproof monitor clear-queue --queue queue.json
     """
@@ -300,17 +300,17 @@ def clear_queue(queue: str):
 )
 def generate_config(output: str, watch: str, profile: str, format: str):
     """Generate a sample configuration file.
-    
+
     Creates a starter config with common rules and settings.
-    
+
     Examples:
-    
+
         # Generate YAML config
         bulletproof monitor generate-config -o monitor.yaml -w /incoming
-        
+
         # Generate JSON config
         bulletproof monitor generate-config -o monitor.json -w /videos -f json
-        
+
         # Use specific profile
         bulletproof monitor generate-config -o config.yaml -w /input -p stream-hd
     """

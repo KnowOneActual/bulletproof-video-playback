@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 
 try:
     import yaml
+
     HAS_YAML = True
 except ImportError:
     HAS_YAML = False
@@ -17,6 +18,7 @@ from bulletproof.core.rules import Rule, PatternType
 @dataclass
 class MonitorConfig:
     """Configuration for folder monitoring."""
+
     watch_directory: Path
     output_directory: Path
     rules: List[Rule] = field(default_factory=list)
@@ -72,19 +74,21 @@ class MonitorConfig:
     @classmethod
     def from_yaml(cls, path: Path) -> "MonitorConfig":
         """Load configuration from YAML file.
-        
+
         Args:
             path: Path to YAML config file
-            
+
         Returns:
             MonitorConfig instance
-            
+
         Raises:
             ImportError: If PyYAML not installed
             FileNotFoundError: If config file not found
         """
         if not HAS_YAML:
-            raise ImportError("PyYAML is required for YAML config. Install with: pip install pyyaml")
+            raise ImportError(
+                "PyYAML is required for YAML config. Install with: pip install pyyaml"
+            )
 
         path = Path(path)
         if not path.exists():
@@ -98,10 +102,10 @@ class MonitorConfig:
     @classmethod
     def from_json(cls, path: Path) -> "MonitorConfig":
         """Load configuration from JSON file.
-        
+
         Args:
             path: Path to JSON config file
-            
+
         Returns:
             MonitorConfig instance
         """
@@ -117,14 +121,15 @@ class MonitorConfig:
     @classmethod
     def _from_dict(cls, data: Dict[str, Any], config_dir: Path = Path(".")) -> "MonitorConfig":
         """Create from dictionary (handles both YAML and JSON).
-        
+
         Args:
             data: Configuration dictionary
             config_dir: Directory for relative path resolution
-            
+
         Returns:
             MonitorConfig instance
         """
+
         # Resolve relative paths from config directory
         def resolve_path(p: Optional[str]) -> Optional[Path]:
             if not p:
@@ -169,7 +174,7 @@ class MonitorConfig:
 
     def save_yaml(self, path: Path) -> None:
         """Save configuration to YAML file.
-        
+
         Args:
             path: Path where to save YAML file
         """
@@ -184,7 +189,7 @@ class MonitorConfig:
 
     def save_json(self, path: Path) -> None:
         """Save configuration to JSON file.
-        
+
         Args:
             path: Path where to save JSON file
         """
