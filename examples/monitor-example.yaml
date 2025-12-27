@@ -1,0 +1,88 @@
+# Example configuration for bulletproof folder monitor
+# Usage: bulletproof monitor start --config examples/monitor-example.yaml
+
+# Required: Directory to watch for video files
+watch_directory: ./incoming
+
+# Required: Directory where to save transcoded files
+output_directory: ./output
+
+# Optional: How often to scan for files (seconds)
+# Default: 5
+poll_interval: 5
+
+# Optional: Delete input files after successful transcode
+# Default: true
+delete_input: true
+
+# Optional: Log level (DEBUG, INFO, WARNING, ERROR)
+# Default: INFO
+log_level: INFO
+
+# Optional: File to write logs to (in addition to console)
+# log_file: ./logs/monitor.log
+
+# Optional: Where to persist queue state (survives crashes)
+# log_file: ./queue.json
+
+# Rules: How to match files to transcoding profiles
+# Rules are checked in priority order (highest first)
+rules:
+  # High priority: Live broadcast files
+  - pattern: "*_live.mov"
+    profile: live-qlab
+    output_pattern: "{filename_no_ext}_qlab.mov"
+    priority: 100
+    delete_input: true
+
+  # Archive preparation
+  - pattern: "archive_*.mov"
+    profile: archival
+    output_pattern: "masters/{filename}"
+    priority: 90
+    delete_input: false  # Keep originals for archive
+
+  # Streaming files
+  - pattern: "*_stream.mov"
+    profile: stream-hd
+    output_pattern: "streams/{filename_no_ext}_hd.mp4"
+    priority: 85
+    delete_input: true
+
+  # Fallback: everything else
+  - pattern: "*.mov"
+    profile: standard-playback
+    output_pattern: "{filename_no_ext}_converted.mp4"
+    priority: 1
+    delete_input: true
+
+# --- Pattern Types ---
+# Default is glob patterns:
+#   *        matches any characters
+#   ?        matches single character
+#   *.mov    matches any .mov file
+#   foo_*    matches foo_anything
+#
+# For regex patterns, add pattern_type: regex
+# For exact match, add pattern_type: exact
+
+# --- Output Pattern Variables ---
+# Available substitutions in output_pattern:
+#   {filename}           original filename (e.g., video.mov)
+#   {filename_no_ext}    filename without extension (e.g., video)
+#   {profile}            profile name (e.g., live-qlab)
+#
+# Example patterns:
+#   {filename}                    -> same as input
+#   {filename_no_ext}_qlab.mov    -> video_qlab.mov
+#   {filename_no_ext}_{profile}.mp4  -> video_live-qlab.mp4
+#   masters/{filename}            -> masters/video.mov
+
+# --- Available Profiles ---
+# live-qlab         ProRes Proxy (good for QLab on Mac)
+# live-prores-lt    ProRes LT (high quality, smaller)
+# live-h264         H.264 (cross-platform live playback)
+# standard-playback H.264 (general purpose)
+# stream-hd         H.265 (1080p streaming)
+# stream-4k         H.265 (4K streaming)
+# archival          ProRes HQ (maximum quality, long-term storage)
