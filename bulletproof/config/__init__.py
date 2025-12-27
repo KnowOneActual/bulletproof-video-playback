@@ -1,5 +1,5 @@
-"""Configuration management for bulletproof."""
+"""Configuration system for bulletproof."""
 
-from bulletproof.config.manager import ConfigManager
+from bulletproof.config.loader import ConfigLoader, ConfigError
 
-__all__ = ["ConfigManager"]
+__all__ = ["ConfigLoader", "ConfigError"]

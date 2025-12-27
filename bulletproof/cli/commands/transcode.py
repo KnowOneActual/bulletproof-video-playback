@@ -3,15 +3,17 @@
 import click
 from pathlib import Path
 from bulletproof.core import TranscodeJob, get_profile, list_profiles
-from bulletproof.config import ConfigManager
+
+# Note: ConfigManager is legacy - removed in favor of YAML config files
+# This command uses in-memory defaults for simplicity
 
 
 @click.command()
 @click.argument("input_file", type=click.Path(exists=True))
 @click.option(
     "--profile",
-    default=None,
-    help="Profile to use for transcode (defaults to saved preference)",
+    default="live-qlab",  # Default profile
+    help="Profile to use for transcode",
     type=click.Choice(list(list_profiles().keys())),
 )
 @click.option(
@@ -24,7 +26,7 @@ from bulletproof.config import ConfigManager
     "--preset",
     "-p",
     type=click.Choice(["fast", "normal", "slow"]),
-    default=None,
+    default="normal",
     help="Speed preset: fast (quick, slight quality loss), normal (default), slow (best quality)",
 )
 @click.option(
@@ -76,15 +78,6 @@ def transcode(
             click.echo(f"  {'':20} Codec: {prof.codec}, Extension: .{prof.extension}")
             click.echo()
         return
-
-    # Use saved default profile if not specified
-    if profile is None:
-        profile = ConfigManager.get_default_profile()
-        click.echo(f"Using saved default profile: {profile}")
-
-    # Use saved speed preset if not specified
-    if preset is None:
-        preset = ConfigManager.get_speed_preset()
 
     input_path = Path(input_file)
     if not input_path.exists():
