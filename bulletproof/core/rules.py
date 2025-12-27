@@ -2,7 +2,7 @@
 
 import re
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional, List, Union, Dict, Any
 from dataclasses import dataclass
 from enum import Enum
 
@@ -96,13 +96,34 @@ class Rule:
 class RuleEngine:
     """Rule-based file matching and profile assignment."""
 
-    def __init__(self, rules: Optional[List[Rule]] = None):
+    def __init__(self, rules: Optional[List[Union[Rule, Dict[str, Any]]]] = None):
         """Initialize rule engine.
         
         Args:
-            rules: List of Rule objects
+            rules: List of Rule objects or rule dictionaries
         """
-        self.rules = sorted(rules or [], key=lambda r: r.priority, reverse=True)
+        # Convert dicts to Rule objects if needed
+        converted_rules = []
+        for rule in (rules or []):
+            if isinstance(rule, dict):
+                # Convert dict to Rule object
+                pattern_type_str = rule.get("pattern_type", "glob")
+                pattern_type = PatternType(pattern_type_str) if isinstance(pattern_type_str, str) else pattern_type_str
+                converted_rules.append(
+                    Rule(
+                        pattern=rule["pattern"],
+                        profile=rule["profile"],
+                        output_pattern=rule.get("output_pattern", "{filename}"),
+                        pattern_type=pattern_type,
+                        delete_input=rule.get("delete_input", True),
+                        priority=rule.get("priority", 100),
+                    )
+                )
+            else:
+                # Already a Rule object
+                converted_rules.append(rule)
+        
+        self.rules = sorted(converted_rules, key=lambda r: r.priority, reverse=True)
 
     def add_rule(self, rule: Rule) -> None:
         """Add a rule and re-sort by priority.
@@ -138,6 +159,27 @@ class RuleEngine:
         """
         rule = self.find_matching_rule(filename)
         return rule.profile if rule else None
+
+    def match(self, filename: str) -> Optional[Dict[str, Any]]:
+        """Match filename against rules and return matching rule as dict.
+        
+        Args:
+            filename: Filename to match
+            
+        Returns:
+            Rule dict or None if no match
+        """
+        rule = self.find_matching_rule(filename)
+        if not rule:
+            return None
+        return {
+            "pattern": rule.pattern,
+            "profile": rule.profile,
+            "output_pattern": rule.output_pattern,
+            "pattern_type": rule.pattern_type.value,
+            "delete_input": rule.delete_input,
+            "priority": rule.priority,
+        }
 
     def get_output_path(self, input_path: Path, output_dir: Path) -> Optional[Path]:
         """Get output path for input file.
