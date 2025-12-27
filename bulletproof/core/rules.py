@@ -9,6 +9,7 @@ from enum import Enum
 
 class PatternType(str, Enum):
     """Pattern matching type."""
+
     GLOB = "glob"  # *.mov style
     REGEX = "regex"  # regex pattern
     EXACT = "exact"  # exact filename match
@@ -17,6 +18,7 @@ class PatternType(str, Enum):
 @dataclass
 class Rule:
     """A rule mapping file patterns to profiles."""
+
     pattern: str
     profile: str
     output_pattern: str = "{filename}"  # {filename}, {filename_no_ext}, {stem}
@@ -26,10 +28,10 @@ class Rule:
 
     def matches(self, filename: str) -> bool:
         """Check if filename matches this rule.
-        
+
         Args:
             filename: Filename to check (basename only)
-            
+
         Returns:
             True if pattern matches
         """
@@ -50,11 +52,11 @@ class Rule:
 
     def get_output_path(self, input_path: Path, output_dir: Path) -> Path:
         """Get output path based on input and pattern.
-        
+
         Args:
             input_path: Input file path
             output_dir: Output directory
-            
+
         Returns:
             Output file path
         """
@@ -77,10 +79,10 @@ class Rule:
     @staticmethod
     def _glob_to_regex(glob_pattern: str) -> str:
         """Convert glob pattern to regex.
-        
+
         Args:
             glob_pattern: Glob pattern like *.mov
-            
+
         Returns:
             Regex pattern string
         """
@@ -89,7 +91,7 @@ class Rule:
         pattern = re.escape(pattern)
         # Unescape * and ? for glob matching
         pattern = pattern.replace(r"\*", ".*")  # * matches anything
-        pattern = pattern.replace(r"\?", ".")   # ? matches single char
+        pattern = pattern.replace(r"\?", ".")  # ? matches single char
         return f"^{pattern}$"
 
 
@@ -98,17 +100,21 @@ class RuleEngine:
 
     def __init__(self, rules: Optional[List[Union[Rule, Dict[str, Any]]]] = None):
         """Initialize rule engine.
-        
+
         Args:
             rules: List of Rule objects or rule dictionaries
         """
         # Convert dicts to Rule objects if needed
         converted_rules = []
-        for rule in (rules or []):
+        for rule in rules or []:
             if isinstance(rule, dict):
                 # Convert dict to Rule object
                 pattern_type_str = rule.get("pattern_type", "glob")
-                pattern_type = PatternType(pattern_type_str) if isinstance(pattern_type_str, str) else pattern_type_str
+                pattern_type = (
+                    PatternType(pattern_type_str)
+                    if isinstance(pattern_type_str, str)
+                    else pattern_type_str
+                )
                 converted_rules.append(
                     Rule(
                         pattern=rule["pattern"],
@@ -122,12 +128,12 @@ class RuleEngine:
             else:
                 # Already a Rule object
                 converted_rules.append(rule)
-        
+
         self.rules = sorted(converted_rules, key=lambda r: r.priority, reverse=True)
 
     def add_rule(self, rule: Rule) -> None:
         """Add a rule and re-sort by priority.
-        
+
         Args:
             rule: Rule to add
         """
@@ -136,10 +142,10 @@ class RuleEngine:
 
     def find_matching_rule(self, filename: str) -> Optional[Rule]:
         """Find first matching rule for filename.
-        
+
         Args:
             filename: Filename to match
-            
+
         Returns:
             Matching Rule or None
         """
@@ -150,10 +156,10 @@ class RuleEngine:
 
     def find_profile(self, filename: str) -> Optional[str]:
         """Find profile for filename.
-        
+
         Args:
             filename: Filename to match
-            
+
         Returns:
             Profile name or None
         """
@@ -162,10 +168,10 @@ class RuleEngine:
 
     def match(self, filename: str) -> Optional[Dict[str, Any]]:
         """Match filename against rules and return matching rule as dict.
-        
+
         Args:
             filename: Filename to match
-            
+
         Returns:
             Rule dict or None if no match
         """
@@ -183,11 +189,11 @@ class RuleEngine:
 
     def get_output_path(self, input_path: Path, output_dir: Path) -> Optional[Path]:
         """Get output path for input file.
-        
+
         Args:
             input_path: Input file path
             output_dir: Output directory
-            
+
         Returns:
             Output file path or None if no matching rule
         """
@@ -198,7 +204,7 @@ class RuleEngine:
 
     def get_status(self) -> dict:
         """Get rule engine status.
-        
+
         Returns:
             Dict with rule information
         """

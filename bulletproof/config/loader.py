@@ -9,6 +9,7 @@ from bulletproof.services.monitor_service import MonitorService, MonitorServiceC
 
 class ConfigError(Exception):
     """Configuration loading or validation error."""
+
     pass
 
 
@@ -18,13 +19,13 @@ class ConfigLoader:
     @staticmethod
     def load_from_file(config_path: Path) -> MonitorConfig:
         """Load config from YAML or JSON file.
-        
+
         Args:
             config_path: Path to config file (.yaml, .json, or .yml)
-            
+
         Returns:
             MonitorConfig instance
-            
+
         Raises:
             ConfigError: If file doesn't exist or is invalid
         """
@@ -41,9 +42,7 @@ class ConfigLoader:
             elif suffix in (".yaml", ".yml"):
                 return MonitorConfig.from_yaml(config_path)
             else:
-                raise ConfigError(
-                    f"Unsupported config format: {suffix}. Use .yaml, .yml, or .json"
-                )
+                raise ConfigError(f"Unsupported config format: {suffix}. Use .yaml, .yml, or .json")
         except ConfigError:
             raise
         except Exception as e:
@@ -52,10 +51,10 @@ class ConfigLoader:
     @staticmethod
     def validate(config: MonitorConfig) -> None:
         """Validate configuration.
-        
+
         Args:
             config: MonitorConfig to validate
-            
+
         Raises:
             ConfigError: If validation fails
         """
@@ -94,13 +93,13 @@ class ConfigLoader:
     @staticmethod
     def create_service(config: MonitorConfig) -> MonitorService:
         """Create MonitorService from config.
-        
+
         Args:
             config: MonitorConfig instance
-            
+
         Returns:
             MonitorService ready to run
-            
+
         Raises:
             ConfigError: If service creation fails
         """
@@ -144,14 +143,14 @@ class ConfigLoader:
         overrides: Optional[Dict[str, Any]] = None,
     ) -> MonitorService:
         """Load config file and create MonitorService in one step.
-        
+
         Args:
             config_path: Path to config file
             overrides: Optional dict of config overrides (e.g., {"poll_interval": 10})
-            
+
         Returns:
             MonitorService ready to run
-            
+
         Raises:
             ConfigError: If loading or validation fails
         """
@@ -177,7 +176,7 @@ class ConfigLoader:
     @staticmethod
     def generate_example(output_path: Path, format: str = "yaml") -> None:
         """Generate example configuration file.
-        
+
         Args:
             output_path: Where to save example config
             format: Format to use ("yaml" or "json")
@@ -219,14 +218,14 @@ class ConfigLoader:
                 # We'll write directly since we have the data
                 try:
                     import yaml
+
                     with open(output_path, "w") as f:
                         yaml.dump(example_data, f, default_flow_style=False, sort_keys=False)
                 except ImportError:
-                    raise ConfigError(
-                        "PyYAML not installed. Use format='json' or install PyYAML"
-                    )
+                    raise ConfigError("PyYAML not installed. Use format='json' or install PyYAML")
             elif format.lower() == "json":
                 import json
+
                 with open(output_path, "w") as f:
                     json.dump(example_data, f, indent=2)
             else:
