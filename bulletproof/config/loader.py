@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Optional, Dict, Any
 
 from bulletproof.core.config import MonitorConfig
+from bulletproof.core.rules import Rule, PatternType
 from bulletproof.services.monitor_service import MonitorService, MonitorServiceConfig
 
 
@@ -76,7 +77,7 @@ class ConfigLoader:
 
         # Check rules
         if not config.rules:
-            raise ConfigError("At least one rule is required")
+            raise ConfigError("at least one rule is required")
 
         for i, rule in enumerate(config.rules):
             if not rule.pattern:
@@ -105,7 +106,21 @@ class ConfigLoader:
             ConfigError: If service creation fails
         """
         try:
-            # Convert MonitorConfig to list of rule dicts for MonitorServiceConfig
+            # Convert MonitorConfig Rule objects to Rule objects for RuleEngine
+            rules = []
+            for rule in config.rules:
+                rules.append(
+                    Rule(
+                        pattern=rule.pattern,
+                        profile=rule.profile,
+                        output_pattern=rule.output_pattern,
+                        pattern_type=rule.pattern_type,
+                        delete_input=rule.delete_input,
+                        priority=rule.priority,
+                    )
+                )
+
+            # Convert to list of rule dicts for MonitorServiceConfig
             rules_dicts = [
                 {
                     "pattern": rule.pattern,
