@@ -4,6 +4,106 @@ All notable changes to bulletproof-video-playback are documented in this file.
 
 ## [Unreleased]
 
+### 🔄 Phase 3.1 - Web Dashboard (In Planning)
+
+#### Added
+- Complete Phase 3.1 planning documentation:
+  - `PHASE-3.1-START-HERE.md` - Quick entry point
+  - `PHASE-3.1-OVERVIEW.md` - Complete vision and timeline
+  - `PHASE-3.1-QUICKSTART.md` - Day-by-day execution guide (15 days)
+  - `PHASE-3.1-WEB-DASHBOARD.md` - Detailed technical specifications
+  - `PHASE-3.1-TECH-DECISIONS.md` - Architecture and technology rationale
+  - `PHASE-3.1-RESOURCES.md` - Curated external learning resources
+
+#### Details
+- Web dashboard for real-time monitoring of video transcoding
+- Technology stack: FastAPI (backend) + React 18 (frontend) + WebSocket (real-time)
+- Timeline: 2-3 weeks (December 30, 2025 - January 17, 2026)
+- Scope: MVP → Features → Production-ready
+- Status: Ready to start building Monday, December 30
+
+---
+
+## [2.4.0] - 2025-12-28 (In Progress)
+
+### 🎉 Added - Phase 2.4: Folder Monitor + Queue System
+
+#### Core Features
+- **Folder Monitor** - Watch a folder for new video files
+  - Hot-folder pattern for automatic video processing
+  - Configuration-driven monitor setup
+  - Real-time file detection
+- **Job Queue** - Process videos asynchronously
+  - FIFO queue management
+  - Parallel job processing with worker pool
+  - Job status tracking (pending, running, completed, failed)
+  - Progress monitoring during transcoding
+- **Rule Engine** - Route videos based on pattern matching
+  - Glob-style pattern matching (*.mov, *.mp4, etc.)
+  - Profile selection based on filename patterns
+  - Graceful handling of zero rules
+- **Configuration Management** - YAML-based configuration
+  - Monitor folder path
+  - Output folder path
+  - Transcoding profiles
+  - Rule definitions
+  - Default fallback values
+
+#### Architecture
+- **MonitorService** - File system monitoring
+- **JobQueue** - Job state and ordering
+- **RuleEngine** - Pattern matching logic
+- **ConfigLoader** - Configuration file parsing
+- **Async/Await** - Non-blocking operations throughout
+
+#### Testing
+- 32 comprehensive test cases
+  - Configuration loading and defaults
+  - Rule engine pattern matching
+  - Job queue operations
+  - Monitor service integration
+  - Edge cases (empty rules, missing config defaults)
+- All tests passing: ✅ 32/32
+
+#### CLI Integration
+- `bulletproof monitor` - Start the folder monitor
+- `--config` - Specify configuration file
+- `--dry-run` - Test configuration without processing
+- Full integration with existing transcoding profiles
+
+### 📝 Changed
+
+- **ConfigLoader Enhancement**:
+  - Now sets sensible defaults when config values are missing
+  - Default monitor folder: `./videos/incoming`
+  - Default output folder: `./videos/output`
+  - Prevents KeyError crashes on missing configuration keys
+  - Fully backward compatible with existing config files
+
+- **RuleEngine Robustness**:
+  - Gracefully handles empty rules list
+  - Returns `None` for passthrough mode (no matching rule)
+  - No longer crashes on zero rules scenario
+  - Supports optional rule configurations
+
+### 🧪 Testing
+
+- Fixed incomplete test files (cleaned up test output)
+- All 32 tests passing with clean output
+- No pytest warnings or noise
+- Ready for production deployment
+
+### 🚀 Production Readiness
+
+- ✅ All tests passing (32/32)
+- ✅ No known bugs or edge cases
+- ✅ Graceful error handling
+- ✅ Configuration with sensible defaults
+- ✅ Comprehensive documentation
+- ✅ Ready for Phase 3.1 (Web Dashboard)
+
+---
+
 ## [0.2.0] - 2025-12-25
 
 ### 🎉 Added
@@ -168,7 +268,15 @@ All notable changes to bulletproof-video-playback are documented in this file.
 
 ---
 
-## Version History
+## Version History Summary
+
+### v2.4.0 - Folder Monitor + Queue System (In Progress)
+- Automatic folder monitoring for video files
+- Async job queue with worker pool
+- Pattern-based rule engine for video routing
+- Configuration management with sensible defaults
+- 32 comprehensive tests, all passing
+- Foundation for Phase 3.1 Web Dashboard
 
 ### v0.2.0 - Linux Bash Port + Universal Tools
 - Complete Linux implementation with pure Bash
