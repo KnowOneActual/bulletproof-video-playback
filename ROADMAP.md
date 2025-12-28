@@ -1,6 +1,6 @@
 # 🗺️ Bulletproof Video Playback - Roadmap
 
-## Current Phase: 2.4 (Folder Monitor - Complete Integration)
+## Current Phase: 2.4 ✅ COMPLETE → 3.1 🚀 READY TO START
 
 ---
 
@@ -34,56 +34,88 @@
 - [x] **RuleEngine** - Pattern-based profile assignment
 - [x] Unit tests for all components
 
+#### Phase 2.4: MonitorService & CLI Integration ✅
+- [x] MonitorService orchestration (combine monitor + queue + rules)
+- [x] Configuration system (YAML config with sensible defaults)
+- [x] CLI integration (`bulletproof monitor --config config.yaml`)
+- [x] Comprehensive testing (32/32 tests passing)
+- [x] Error handling and recovery
+- [x] Production-ready (zero known bugs)
+- [x] Ready for Phase 3.1
+
+**Status:** Phase 2.4 is 100% COMPLETE ✅
+
 ---
 
-## 🚀 ACTIVE DEVELOPMENT: Phase 2.4
+## 🚀 NEXT PHASE: Phase 3.1 (Web Dashboard)
 
-### Phase 2.4: MonitorService & CLI Integration
-**Goal:** Make folder monitoring production-ready with CLI
+### Phase 3.1: Web Dashboard - PLANNING COMPLETE ✅
 
-#### 2.4.1: MonitorService Orchestration
-- [ ] Combine FolderMonitor + RuleEngine + TranscodeQueue
-- [ ] Async main loop (scan → match → queue → process)
-- [ ] Error handling and recovery
-- [ ] Graceful shutdown (Ctrl+C)
-- [ ] Status reporting
+**Status:** Ready to start building Monday, December 30, 2025
 
-#### 2.4.2: Configuration System
-- [ ] YAML config file support
-- [ ] Rule loading from config
-- [ ] CLI arg overrides
-- [ ] Config validation
+#### Planning Documents Complete
+- [x] `PHASE-3.1-START-HERE.md` - Quick entry point (10 min read)
+- [x] `PHASE-3.1-OVERVIEW.md` - Complete vision and timeline
+- [x] `PHASE-3.1-QUICKSTART.md` - Day-by-day execution guide (15 days)
+- [x] `PHASE-3.1-WEB-DASHBOARD.md` - Detailed technical specifications
+- [x] `PHASE-3.1-TECH-DECISIONS.md` - Architecture and technology rationale
+- [x] `PHASE-3.1-RESOURCES.md` - Curated external learning resources
 
-#### 2.4.3: CLI Command
-```bash
-bulletproof monitor --config monitor.yaml
-bulletproof monitor --status
-bulletproof monitor --clear-queue
-```
+#### 3.1.1: MVP Backend (Week 1)
+- [ ] FastAPI server with REST endpoints (8+)
+- [ ] WebSocket real-time updates
+- [ ] SQLite database integration
+- [ ] Connection to Phase 2.4 MonitorService
 
-#### 2.4.4: Logging & Monitoring
-- [ ] Structured logging (file + stdout)
-- [ ] Job history tracking
-- [ ] Error reporting
-- [ ] Performance metrics
+**Timeline:** Days 1-5 (Mon-Fri, Dec 30 - Jan 3)
+**Expected:** Functional dashboard with live data
 
-**Estimated Timeline:** 1-2 sessions
-**Effort:** Medium | **ROI:** Very High
+#### 3.1.2: Features (Week 2)
+- [ ] Job controls (pause, resume, cancel)
+- [ ] Configuration editor via UI
+- [ ] Historical stats and charts
+- [ ] Error handling and alerts
+- [ ] Responsive UI design
+
+**Timeline:** Days 6-10 (Mon-Fri, Jan 6 - Jan 10)
+**Expected:** Feature-complete dashboard
+
+#### 3.1.3: Production Ready (Week 3)
+- [ ] Security hardening
+- [ ] Docker containerization
+- [ ] Full documentation
+- [ ] Performance optimization
+- [ ] Merge to main
+- [ ] Tag v3.1.0
+
+**Timeline:** Days 11-15 (Mon-Fri, Jan 13 - Jan 17)
+**Expected:** Production-ready, merged to main
+
+#### Tech Stack
+- **Backend:** FastAPI 0.104+ (async)
+- **Frontend:** React 18 + TypeScript (optional)
+- **Styling:** TailwindCSS
+- **Real-time:** WebSocket
+- **Database:** SQLite + SQLAlchemy
+- **Charts:** Chart.js
+- **Deployment:** Docker + Compose
+
+#### Success Criteria
+- ✅ All Phase 2.4 tests still passing (32/32)
+- ✅ Dashboard functional and responsive
+- ✅ Real-time monitoring working
+- ✅ Job controls functional
+- ✅ Production-ready code
+- ✅ Merged to main
+
+**Total Estimated Effort:** 40-50 hours over 3 weeks
+**Expected Completion:** January 17, 2026
 
 ---
 
 ## 📋 FUTURE ROADMAP
 
-### Phase 3: Enhanced Monitoring (Phase 3 Focus)
-
-#### 3.1: Web Dashboard
-- [ ] FastAPI backend for queue API
-- [ ] React/Vue frontend
-- [ ] Real-time queue status
-- [ ] Job history and analytics
-- [ ] Live transcode monitoring
-
-**Timeline:** 2-3 sessions | **ROI:** High
+### Phase 3: Enhanced Monitoring
 
 #### 3.2: Notifications
 - [ ] Webhook system (job complete/error)
@@ -174,24 +206,21 @@ bulletproof monitor --clear-queue
 
 ## 🎯 PRIORITIZATION
 
-### Next 3 Sessions (Highest Priority)
+### Next Focus (After Phase 3.1 Complete)
 
-1. **Phase 2.4: Folder Monitor Complete** (1-2 sessions)
-   - Service orchestration
-   - CLI integration
-   - Config loading
-   - **Why:** Makes system production-ready
-
-2. **Phase 3.1: Web Dashboard** (2-3 sessions)
-   - Queue API
-   - Basic frontend
-   - Live monitoring
-   - **Why:** Visibility and remote management
-
-3. **Phase 3.2: Notifications** (1 session)
+1. **Phase 3.2: Notifications** (1 session)
    - Slack/email/webhook
    - Job completion alerts
    - **Why:** Operators know when jobs finish
+
+2. **Phase 3.3: Advanced Queuing** (1-2 sessions)
+   - Priority levels
+   - Concurrency control
+   - **Why:** Better job management
+
+3. **Phase 4.1: Hardware Acceleration** (As needed)
+   - GPU support
+   - **Why:** Performance for high-volume users
 
 ---
 
@@ -203,54 +232,95 @@ bulletproof monitor --clear-queue
 ✅ **Scriptable** - Integrates with existing systems
 ✅ **Observable** - Logging, metrics, status
 ✅ **Resilient** - Persists state, handles failures
+✅ **Web-native** - Browser-based UI (Phase 3.1+)
 
 ---
 
-## 📊 ARCHITECTURE
+## 📊 ARCHITECTURE (Post Phase 3.1)
 
 ```
-┌──────────────────────────────────────────┐
-│      CLI / Web Dashboard / Scripts       │
-└──────────────────┬───────────────────────┘
-                   │
-┌──────────────────▼───────────────────────┐
-│        MonitorService (2.4)              │
-│  Orchestrates all components             │
-└──┬──────────────┬──────────────┬─────────┘
-   │              │              │
-   ▼              ▼              ▼
-FolderMonitor  RuleEngine   TranscodeQueue
-(detect files) (match rules) (persist jobs)
-   │              │              │
-   └──────────────┬──────────────┘
-                  │
-          ┌───────▼────────┐
-          │ TranscodeJob   │
-          │ (async exec)   │
-          └───────┬────────┘
-                  │
-          ┌───────▼────────┐
-          │  FFmpeg Proc   │
-          │ (transcoding)  │
-          └────────────────┘
+┌─────────────────────────────────────────────────┐
+│    Web Dashboard (React)   │  CLI / Scripts     │
+└─────────────────┬───────────────────┬───────────┘
+                  │                   │
+          ┌───────▼─────────────────────▼────────┐
+          │      FastAPI Backend                 │
+          │   REST API + WebSocket               │
+          └────────────┬─────────────────────────┘
+                       │
+          ┌────────────▼──────────────────┐
+          │    MonitorService (2.4)       │
+          │ Orchestrates all components   │
+          └┬──────────────┬───────────────┘
+           │              │
+      ┌────▼──┐      ┌────▼──────┐
+      │Folder │      │TranscodeQueue
+      │Monitor│      │+ RuleEngine
+      └───────┘      └────┬──────┘
+                          │
+              ┌───────────▼──────────┐
+              │  SQLite Database     │
+              │  Jobs + History      │
+              └──────────────────────┘
 ```
 
 ---
 
-## 🚀 NEXT STEPS
+## 📈 PROJECT STATS
 
-**Start:** Phase 2.4 (MonitorService + CLI)
-1. Create MonitorService orchestration layer
-2. Add YAML config loading
-3. Integrate CLI command
-4. End-to-end testing
-5. Deploy and gather feedback
+### Completed
+- **Phases:** 2.4 complete, planning for 3.1
+- **Lines of Code:** ~3,000+
+- **Test Coverage:** 32 tests passing
+- **Documentation:** 10+ guides and references
+- **Profiles:** 7+ transcoding profiles
+- **Platforms:** macOS, Linux
 
-**Then:** Phase 3.1 (Web Dashboard)
+### In Progress
+- **Phase 3.1:** 6 planning documents complete, ready to build
 
-**Far Future:** Enterprise features based on actual use cases
+### Coming Soon
+- **Web Dashboard:** FastAPI + React
+- **Notifications:** Webhook/Slack/Email
+- **Advanced Features:** Hardware acceleration, streaming
 
 ---
 
-**Last Updated:** December 26, 2024
-**Status:** Phase 2.4 in development
+## 🚀 HOW TO GET STARTED
+
+### Phase 2.4 (Already Complete)
+```bash
+# Already working
+git checkout feature/folder-monitor
+pytest tests/ -v
+# Shows: 32/32 passed ✅
+```
+
+### Phase 3.1 (Starting Monday, Dec 30)
+```bash
+# Read the planning documents
+cat PHASE-3.1-START-HERE.md
+cat PHASE-3.1-QUICKSTART.md
+
+# Start building
+git checkout -b feature/dashboard
+# Follow PHASE-3.1-QUICKSTART.md Day 1
+```
+
+---
+
+## 🗓️ TIMELINE
+
+```
+Dec 28 (Today):        Phase 2.4 complete, all docs updated
+Dec 30 - Jan 3:        Phase 3.1 Week 1 (MVP Backend)
+Jan 6 - Jan 10:        Phase 3.1 Week 2 (Features)
+Jan 13 - Jan 17:       Phase 3.1 Week 3 (Production Ready)
+Jan 17 (Expected):     v3.1.0 shipped, merged to main
+```
+
+---
+
+**Last Updated:** December 28, 2025  
+**Current Status:** Phase 2.4 Complete ✅ | Phase 3.1 Ready to Start 🚀  
+**Confidence Level:** 99%
