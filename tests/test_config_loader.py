@@ -111,7 +111,7 @@ class TestConfigLoader:
             )
 
     def test_validate_no_rules(self, tmp_path):
-        """Test validation fails when no rules defined."""
+        """Test validation passes with empty rules (passthrough mode)."""
         from bulletproof.core.config import MonitorConfig
 
         watch_dir = tmp_path / "watch"
@@ -121,11 +121,13 @@ class TestConfigLoader:
         config = MonitorConfig(
             watch_directory=watch_dir,
             output_directory=output_dir,
-            rules=[],  # No rules
+            rules=[],  # No rules - allowed in passthrough mode
         )
 
-        with pytest.raises(ConfigError, match="at least one rule"):
-            ConfigLoader.validate(config)
+        # Should NOT raise - empty rules are allowed
+        ConfigLoader.validate(config)
+        # If we get here without exception, test passes
+        assert config.rules == []
 
     def test_validate_invalid_log_level(self, tmp_path):
         """Test validation fails for invalid log level."""
