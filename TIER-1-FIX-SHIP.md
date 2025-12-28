@@ -1,268 +1,83 @@
 # ⚡ TIER 1: FIX & SHIP - 30 Minutes to Production
 
-**Status:** Phase 2.4 (90% complete)  
-**Goal:** Apply 3 critical bug fixes + verify 32/32 tests pass  
-**Time:** 30 minutes total  
+**Status:** Phase 2.4 (Ready to apply 1 fix)
+**Goal:** Apply 1 critical bug fix + verify 32/32 tests pass  
+**Time:** 15 minutes total  
 **Outcome:** Production-ready folder monitor
 
 ---
 
-## 🎯 The 3 Fixes You Need
+## 🎯 The Fix You Need
 
-### **FIX #1: ConfigLoader - Add Default Monitor Folder (5 minutes)**
+### **FIX #1: ConfigLoader.validate() - Allow Empty Rules (1 minute)**
 
 **File:** `bulletproof/config/loader.py`  
-**Problem:** ConfigLoader doesn't set default value for `monitor` folder  
-**Impact:** CLI fails when user doesn't explicitly provide monitor folder  
-**Fix:** Add initialization in `load()` method
+**Problem:** ConfigLoader.validate() requires at least one rule, but we want to support passthrough mode with no rules  
+**Impact:** Monitor fails to start if user provides config with zero rules  
+**Fix:** Remove the "at least one rule" requirement from validation
 
-**Location:** Line ~185 in the `load()` method, after loading from file
+**Location:** Line 52-53 in the `validate()` method
 
-**Change:**
+**Current code (BROKEN):**
 ```python
-# BEFORE (broken):
-config = cls.load("monitor.yaml")
-# Returns config without monitor folder set
-# CLI crashes: KeyError on monitor_folder
-
-# AFTER (fixed):
-config = cls.load("monitor.yaml")
-# Automatically set default if missing
-if not config.monitor_folder:
-    config.monitor_folder = Path.cwd() / "videos" / "incoming"
+# Check rules
+if not config.rules:
+    raise ConfigError("at least one rule is required")
 ```
 
-**Code to add:**
-After line where config is loaded from file, add this:
-```python
-# Ensure monitor folder has a default
-if not hasattr(config, 'monitor_folder') or config.monitor_folder is None:
-    config.monitor_folder = Path.cwd() / "videos" / "incoming"
-```
-
-**Why it matters:**
-- Users can provide config without specifying monitor folder
-- System falls back to sensible default
-- CLI no longer crashes on missing folder path
-
----
-
-### **FIX #2: RuleEngine.match() - Handle Empty Rules (2 minutes)**
-
-**File:** `bulletproof/core/rules.py`  
-**Problem:** `match()` method crashes if rules list is empty  
-**Impact:** Monitor fails to start if config has zero rules  
-**Fix:** Add early return for empty rules
-
-**Location:** Line ~80 in the `match()` method
-
-**Change:**
-```python
-# BEFORE (broken):
-def match(self, filename: str) -> Optional[str]:
-    for rule in self.rules:  # Crashes if self.rules is empty
-        # ... matching logic
-
-# AFTER (fixed):
-def match(self, filename: str) -> Optional[str]:
-    if not self.rules:  # Handle empty rules
-        return None
-    for rule in self.rules:
-        # ... matching logic
-```
-
-**Code to add:**
-At the start of the `match()` method, add this guard clause:
-```python
-def match(self, filename: str) -> Optional[str]:
-    """Match filename against rules and return profile name."""
-    if not self.rules:
-        return None
-    # ... rest of method
-```
-
-**Why it matters:**
-- Users can have monitor running with no rules (passthrough mode)
-- System doesn't crash with IndexError
-- Graceful handling of "do nothing" scenario
-
----
-
-### **FIX #3: Clean Test Files (1 minute)**
-
-**File:** `tests/test_monitor.py` (delete test files causing pytest warnings)
-
-**Problem:** Some test files are incomplete or causing warnings  
-**Impact:** Test output is noisy, hard to see real failures  
-**Fix:** Remove or comment out incomplete tests
-
-**Command:**
-```bash
-# Find and remove problematic test files
-find tests -name "*.py" -type f | xargs grep -l "# TODO\|pass$" | head -5
-
-# Or just clean up test directory:
-# Remove any test files with only "pass" or incomplete implementations
-# Keep only: test_config.py, test_rules.py, test_monitor.py
-```
-
-**Why it matters:**
-- Pytest only shows 32 passing tests (clean output)
-- No warning spam in test results
-- Clear signal of what's working
+**What we're doing:**
+Removing these 2 lines entirely. The RuleEngine already handles empty rules gracefully by returning None from `find_matching_rule()` when there are no rules.
 
 ---
 
 ## 🚀 Step-by-Step Execution
 
-### **⏸️ CURRENT STEP: Step 1 - Open Your Repository (1 minute)**
+### **🔴 CURRENT STEP: Step 1 - Apply Fix #1 (1 minute)**
 
 **Status:** Ready to execute  
-**What to do:** Navigate to repo and checkout feature branch
+**What to do:** Remove lines 52-53 from `bulletproof/config/loader.py`
 
-```bash
-cd /path/to/bulletproof-video-playback
-git checkout feature/folder-monitor
+**Current lines 52-53 to DELETE:**
+```python
+        # Check rules
+        if not config.rules:
+            raise ConfigError("at least one rule is required")
 ```
 
-**After you run this:**
-1. You should see: `Switched to branch 'feature/folder-monitor'`
-2. Run `git status` to verify you're on the right branch
-3. Run `git log --oneline -1` to see the latest commit
-4. Reply with the output - we'll verify before moving to Step 2
+**Result after deletion:**
+The code will jump directly from "Check watch directory" section to the "for i, rule in enumerate(config.rules):" loop. The loop will simply not execute if rules is empty (which is fine).
 
----
-
-### **Step 2: Fix #1 - ConfigLoader (5 minutes)** ⏳ WAITING
-
-**Edit:** `bulletproof/config/loader.py`
-
+**Option 1: Using sed (1 command)**
 ```bash
-# Open the file
+sed -i '52,54d' bulletproof/config/loader.py
+```
+
+**Option 2: Manual edit**
+```bash
+# Open in your editor
 code bulletproof/config/loader.py
-# or
-nano bulletproof/config/loader.py
+
+# Find line 52-54 with the three lines above
+# Delete those exact 3 lines
+# Save the file
 ```
 
-**Find the `load()` method** (around line 100-150)
-
-**Look for:**
-```python
-def load(cls, config_file: str | Path) -> "Config":
-    """Load configuration from file."""
-    # ... load YAML/JSON
-    config = cls(**data)  # This line creates the config
-    return config
-```
-
-**Add these 3 lines after config is created:**
-```python
-# Ensure monitor folder has a default
-if not hasattr(config, 'monitor_folder') or config.monitor_folder is None:
-    config.monitor_folder = Path.cwd() / "videos" / "incoming"
-```
-
-**Full example context:**
-```python
-@classmethod
-def load(cls, config_file: str | Path) -> "Config":
-    """Load configuration from file."""
-    config_path = Path(config_file)
-    
-    if not config_path.exists():
-        raise FileNotFoundError(f"Config file not found: {config_path}")
-    
-    with open(config_path) as f:
-        data = yaml.safe_load(f) or {}
-    
-    config = cls(**data)
-    
-    # FIX #1: Set default monitor folder if missing
-    if not hasattr(config, 'monitor_folder') or config.monitor_folder is None:
-        config.monitor_folder = Path.cwd() / "videos" / "incoming"
-    
-    return config
-```
-
-✅ **Will do after Step 1 is verified**
-
----
-
-### **Step 3: Fix #2 - RuleEngine.match() (2 minutes)** ⏳ WAITING
-
-**Edit:** `bulletproof/core/rules.py`
-
+**How to verify it worked:**
 ```bash
-# Open the file
-code bulletproof/core/rules.py
-# or
-nano bulletproof/core/rules.py
+# Look at the lines around where you deleted
+grep -n "Check rules\|Check output" bulletproof/config/loader.py
+
+# You should see "Check output" immediately after, no "if not config.rules"
 ```
 
-**Find the `match()` method** (around line 50-100)
-
-**Look for:**
-```python
-def match(self, filename: str) -> Optional[str]:
-    """Match filename against rules and return profile name."""
-    for rule in self.rules:
-        # ... matching logic
-```
-
-**Add these 2 lines at the START of the method (after docstring):**
-```python
-if not self.rules:
-    return None
-```
-
-**Full example context:**
-```python
-def match(self, filename: str) -> Optional[str]:
-    """Match filename against rules and return profile name."""
-    
-    # FIX #2: Handle empty rules
-    if not self.rules:
-        return None
-    
-    for rule in self.rules:
-        if rule.matches(filename):
-            return rule.profile_name
-    
-    return None
-```
-
-✅ **Will do after Step 2 is verified**
+**After you make the change:**
+1. Run the verification command above
+2. Paste the output here
+3. Then we'll move to Step 2 (testing)
 
 ---
 
-### **Step 4: Fix #3 - Clean Test Files (1 minute)** ⏳ WAITING
-
-```bash
-# Go to tests directory
-cd tests
-
-# List all test files
-ls -la
-
-# Remove or rename any that are:
-# - Empty (0 bytes)
-# - Only contain "pass"
-# - Have # TODO comments
-# - Are not: test_config.py, test_rules.py, test_monitor.py, test_job.py, test_queue.py
-
-# Example cleanup:
-rm test_empty_file.py 2>/dev/null || true
-rm test_incomplete.py 2>/dev/null || true
-
-# Go back to root
-cd ..
-```
-
-✅ **Will do after Step 3 is verified**
-
----
-
-### **Step 5: Run Tests (3 minutes)** ⏳ WAITING
+### **Step 2: Run Tests (3 minutes)** ⏳ WAITING
 
 ```bash
 # Install dependencies if needed
@@ -277,81 +92,63 @@ pytest tests/ -v
 
 **What you're looking for:**
 - ✅ All 32 tests pass
-- ✅ No warnings about incomplete tests
-- ✅ No errors in ConfigLoader or RuleEngine
+- ✅ No errors in ConfigLoader validation
 
 **If tests fail:**
-- Check that you added the code in the right places
-- Make sure indentation is correct (Python!)
 - Run `pytest tests/ -v --tb=short` to see what failed
-- Fix and re-run
+- Most likely: indentation issue
+- Delete the lines completely and re-save
 
-✅ **Will do after Step 4 is verified**
+✅ **Will do after Step 1 is verified**
 
 ---
 
-### **Step 6: Test End-to-End (10 minutes)** ⏳ WAITING
+### **Step 3: Test End-to-End (5 minutes)** ⏳ WAITING
 
 ```bash
 # 1. Create test structure
 mkdir -p test_videos/{incoming,output}
 
-# 2. Copy a sample video (or use a dummy file)
-touch test_videos/incoming/test_video.mov
-
-# 3. Create a simple config
-cat > test_monitor.yaml << 'EOF'
-monitor_folder: ./test_videos/incoming
-output_folder: ./test_videos/output
-rules:
-  - pattern: "*.mov"
-    profile: "live_stream"
+# 2. Create a simple config with NO RULES
+cat > test_monitor_no_rules.yaml << 'EOF'
+watch_directory: ./test_videos/incoming
+output_directory: ./test_videos/output
+poll_interval: 5
+log_level: INFO
+rules: []
 EOF
 
-# 4. Try running the monitor
-python -m bulletproof.cli monitor --config test_monitor.yaml --dry-run
+# 3. Try running the monitor with no rules
+python -m bulletproof.cli monitor --config test_monitor_no_rules.yaml --dry-run
 
-# Expected output:
-# ✓ Config loaded successfully
-# ✓ Monitor folder: ./test_videos/incoming
-# ✓ Output folder: ./test_videos/output
-# ✓ 1 rule loaded: *.mov -> live_stream
-# ✓ Dry-run: would process 1 video
+# Expected: Should NOT crash with validation error
+# Should show monitor is ready (even with 0 rules)
 ```
 
 **Success criteria:**
-- ✅ Config loads without KeyError
-- ✅ Monitor folder is set
-- ✅ Rules are processed
-- ✅ Dry-run shows videos to process
+- ✅ Config loads without error
+- ✅ Monitor accepts empty rules list
+- ✅ No KeyError or validation error
 
-✅ **Will do after Step 5 is verified**
+✅ **Will do after Step 2 passes**
 
 ---
 
-### **Step 7: Commit Changes (2 minutes)** ⏳ WAITING
+### **Step 4: Commit Changes (2 minutes)** ⏳ WAITING
 
 ```bash
 # Check what changed
-git status
+git diff bulletproof/config/loader.py
 
-# Stage the two files you modified
+# Stage the file
 git add bulletproof/config/loader.py
-git add bulletproof/core/rules.py
 
 # Commit
-git commit -m "fix: Add default monitor folder and handle empty rules
+git commit -m "fix: Allow empty rules in ConfigLoader validation
 
-- Fix #1: ConfigLoader now sets default monitor folder if missing
-  - Users don't need to specify monitor_folder in config
-  - Falls back to ./videos/incoming
-  
-- Fix #2: RuleEngine.match() handles empty rules gracefully
-  - No longer crashes if rules list is empty
-  - Returns None for passthrough mode
-  
-- Fix #3: Cleaned up incomplete test files
-  - 32/32 tests passing, clean output
+- Remove requirement for at least one rule
+- Enables passthrough mode where monitor runs without rules
+- RuleEngine already handles empty rules gracefully
 
 Phase 2.4 is now 100% complete and production-ready."
 
@@ -359,19 +156,16 @@ Phase 2.4 is now 100% complete and production-ready."
 git log --oneline -1
 ```
 
-✅ **Will do after Step 6 is verified**
+✅ **Will do after Step 3 is verified**
 
 ---
 
 ## ✅ Completion Checklist
 
-- [ ] Step 1: Opened repo, checked out feature/folder-monitor
-- [ ] Step 2: Applied Fix #1 (ConfigLoader default folder)
-- [ ] Step 3: Applied Fix #2 (RuleEngine empty rules)
-- [ ] Step 4: Cleaned test files
-- [ ] Step 5: Ran pytest - shows 32/32 passing
-- [ ] Step 6: Ran end-to-end test - config loaded, monitor ready
-- [ ] Step 7: Committed changes to feature/folder-monitor
+- [ ] Step 1: Removed lines 52-54 from ConfigLoader.validate()
+- [ ] Step 2: Ran pytest - shows 32/32 passing
+- [ ] Step 3: Ran end-to-end test - config with empty rules works
+- [ ] Step 4: Committed changes
 
 ---
 
@@ -405,44 +199,37 @@ git log --oneline -1
 
 ## 🆘 Troubleshooting
 
-### **Issue: Tests fail after fixes**
+### **Issue: sed command doesn't work on macOS**
 
 ```bash
-# First, verify syntax is correct
+# Try with backup flag
+sed -i.bak '52,54d' bulletproof/config/loader.py
+
+# Or use your editor manually
+code bulletproof/config/loader.py
+# Find and delete lines 52-54
+```
+
+### **Issue: Tests still fail**
+
+```bash
+# Verify the syntax is correct
 python -m py_compile bulletproof/config/loader.py
-python -m py_compile bulletproof/core/rules.py
 
-# Check what tests are failing
-pytest tests/ -v --tb=long
+# Check what the file looks like now
+grep -A5 "Check output" bulletproof/config/loader.py
 
-# If it's an import error, reinstall package
-pip install -e . --force-reinstall
+# Should show output validation immediately after
 ```
 
-### **Issue: ConfigLoader fix doesn't work**
-
-Make sure you're modifying the `load()` method, not `__init__()`:
-- `__init__()` = constructor (called when creating Config object)
-- `load()` = class method (loads from file)
-
-### **Issue: RuleEngine test still fails**
-
-Make sure the empty rules check is at the START of `match()`:
-```python
-def match(self, filename: str):
-    if not self.rules:  # <-- MUST be first line after docstring
-        return None
-    # ... rest
-```
-
-### **Issue: Can't find the right files**
+### **Issue: Not sure what got deleted**
 
 ```bash
-# Search for the exact methods
-grep -r "def load" bulletproof/config/
-grep -r "def match" bulletproof/core/
+# Check git diff
+git diff bulletproof/config/loader.py
 
-# This will show you the exact file and line number
+# If something is wrong, restore and try again
+git checkout bulletproof/config/loader.py
 ```
 
 ---
@@ -451,24 +238,26 @@ grep -r "def match" bulletproof/core/
 
 | Step | Time | What You're Doing | Status |
 |------|------|------------------|--------|
-| 1. Open repo | 1 min | Clone/checkout feature branch | 🔴 **START HERE** |
-| 2. Fix ConfigLoader | 5 min | Add default monitor folder | ⏳ Waiting |
-| 3. Fix RuleEngine | 2 min | Handle empty rules | ⏳ Waiting |
-| 4. Clean tests | 1 min | Remove incomplete tests | ⏳ Waiting |
-| 5. Run pytest | 3 min | Verify 32/32 pass | ⏳ Waiting |
-| 6. End-to-end test | 10 min | Manual verification | ⏳ Waiting |
-| 7. Commit | 2 min | Save changes | ⏳ Waiting |
-| **TOTAL** | **24 min** | **Production Ready!** | 🎯 |
+| 1. Remove lines 52-54 | 1 min | Delete "require at least one rule" check | 🔴 **START HERE** |
+| 2. Run pytest | 3 min | Verify 32/32 pass | ⏳ Waiting |
+| 3. End-to-end test | 5 min | Test with no rules config | ⏳ Waiting |
+| 4. Commit | 2 min | Save changes | ⏳ Waiting |
+| **TOTAL** | **11 min** | **Production Ready!** | 🎯 |
 
 ---
 
-**READY? Run Step 1 now and paste the output here!** 🚀
+**READY? Edit the file and run the verification command!** 🚀
 
 ```bash
-cd /path/to/bulletproof-video-playback
-git checkout feature/folder-monitor
-git status
-git log --oneline -1
+# Option 1: Using sed
+sed -i '52,54d' bulletproof/config/loader.py
+
+# Option 2: Manual edit
+code bulletproof/config/loader.py
+# Find line 52 and delete lines 52-54
+
+# Verify:
+grep -n "Check output\|Check rules" bulletproof/config/loader.py
 ```
 
-Let me know what you see!
+Paste the output here!
