@@ -18,7 +18,13 @@ All notable changes to bulletproof-video-playback are documented in this file.
 #### Details
 - Web dashboard for real-time monitoring of video transcoding
 - Technology stack: FastAPI (backend) + React 18 (frontend) + WebSocket (real-time)
+<<<<<<< HEAD
 - Scope: MVP → Features → Production-ready
+=======
+- Timeline: 2-3 weeks (December 30, 2025 - January 17, 2026)
+- Scope: MVP → Features → Production-ready
+- Status: Ready to start building Monday, December 30
+>>>>>>> 52b2595b245a368c63eda3a98f66381012ced8e1
 
 ---
 
