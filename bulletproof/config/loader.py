@@ -73,10 +73,6 @@ class ConfigLoader:
         except Exception as e:
             raise ConfigError(f"Output directory not writable: {config.output_directory}: {e}")
 
-        # Check rules
-        if not config.rules:
-            raise ConfigError("at least one rule is required")
-
         for i, rule in enumerate(config.rules):
             if not rule.pattern:
                 raise ConfigError(f"Rule {i}: pattern is required")
