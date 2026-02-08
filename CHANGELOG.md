@@ -18,17 +18,120 @@ All notable changes to bulletproof-video-playback are documented in this file.
 #### Details
 - Web dashboard for real-time monitoring of video transcoding
 - Technology stack: FastAPI (backend) + React 18 (frontend) + WebSocket (real-time)
-<<<<<<< HEAD
-- Scope: MVP → Features → Production-ready
-=======
 - Timeline: 2-3 weeks (December 30, 2025 - January 17, 2026)
 - Scope: MVP → Features → Production-ready
 - Status: Ready to start building Monday, December 30
->>>>>>> 52b2595b245a368c63eda3a98f66381012ced8e1
 
 ---
 
-## [2.4.0] - 2025-12-28 (In Progress)
+## [2.5.0] - 2026-02-08
+
+### 🎬 Added - Keyframe Interval Control
+
+#### New Features
+- **Keyframe Interval Support** - Professional-grade GOP (Group of Pictures) control
+  - `keyframe_interval` parameter for TranscodeProfile (in seconds)
+  - `force_keyframes` flag for strict keyframe placement
+  - Automatic GOP size calculation based on frame rate
+  - Frame-accurate seeking and scrubbing support
+- **FFmpeg Integration**
+  - Dynamic GOP size calculation: `GOP = framerate × interval`
+  - `-g` flag for GOP size
+  - `-keyint_min` for minimum keyframe interval
+  - `-sc_threshold 0` to disable scene change detection
+  - `-force_key_frames` with time-based expression
+- **Profile Enhancement**
+  - Added `keyframe_interval` field to TranscodeProfile dataclass
+  - Added `force_keyframes` boolean flag
+  - Backward compatible (optional parameters with None defaults)
+
+#### Use Cases
+- **Live Event Playback** - Easy scrubbing during live theater performances
+- **Streaming** - Improved seek performance in HLS/DASH workflows
+- **Video Editing** - Frame-accurate timeline navigation
+- **QLab Integration** - Precise cue point timing for theater productions
+
+#### Documentation
+- Added `docs/KEYFRAME_FEATURE.md` with:
+  - Feature overview and technical details
+  - FFmpeg command examples
+  - Use case scenarios
+  - Testing guide with sample commands
+- Updated README.md with keyframe interval feature highlights
+- Added testing script: `scripts/test_keyframe_interval.sh`
+
+#### Technical Details
+- Supports all codecs (H.264, H.265, ProRes)
+- Works with variable and constant frame rates
+- Automatic frame rate detection via ffprobe
+- Graceful handling when frame rate cannot be determined
+
+### 🔧 Fixed - CI/CD and Code Quality
+
+#### Linting Configuration
+- **Added `.flake8` config** - Line length set to 100 characters (matching Black)
+- **Added `setup.cfg`** - Configured isort and flake8 for consistency
+  - `isort` profile set to "black" for compatibility
+  - Line length standardized to 100 across all tools
+  - Proper exclusions for build artifacts
+
+#### Code Quality Fixes
+- **Black Formatting** - All files reformatted to 100-character line length
+  - Fixed `bulletproof/core/job.py`
+  - Fixed `bulletproof/core/monitor.py`
+  - Fixed `bulletproof/cli/commands/config.py`
+- **Import Sorting (isort)** - All 30 files properly sorted
+  - Alphabetized imports
+  - Grouped by standard lib, third-party, local
+  - Consistent with Black formatting
+- **Unused Code Cleanup**
+  - Removed unused `frame_pattern` variable in `job.py`
+  - Removed unused `job` variable in `monitor_service.py`
+  - Removed unused imports across 25 files via autoflake
+  - Fixed f-strings without placeholders (F541)
+
+#### CI/CD Pipeline
+- ✅ All linting checks now passing:
+  - Black (100-char line length)
+  - isort (import sorting)
+  - flake8 (style guide enforcement)
+  - pytest (all tests passing)
+- ✅ Multi-Python version support:
+  - Python 3.9
+  - Python 3.10
+  - Python 3.11
+  - Python 3.12
+
+### 📝 Changed
+
+- **Terminology Update** - Replaced "theater" references with "live" for broader appeal
+  - Profile names now use "live-" prefix
+  - Documentation updated throughout
+  - More inclusive for non-theater live event use cases
+
+### 🛠️ Development
+
+- **Tools Added**:
+  - `autoflake` for unused import removal
+  - Comprehensive linting workflow documented
+  - Local testing guide before pushing to CI
+
+- **Configuration Files**:
+  - `.flake8` - Flake8 settings
+  - `setup.cfg` - isort and flake8 unified config
+  - `pyproject.toml` - Black settings (existing, now aligned with others)
+
+### 🚀 Production Status
+
+- ✅ All 30 files passing linting
+- ✅ CI/CD pipeline green across all Python versions
+- ✅ Keyframe feature tested and documented
+- ✅ Code quality at professional standard
+- ✅ Ready for production deployment
+
+---
+
+## [2.4.0] - 2025-12-28
 
 ### 🎉 Added - Phase 2.4: Folder Monitor + Queue System
 
@@ -274,7 +377,14 @@ All notable changes to bulletproof-video-playback are documented in this file.
 
 ## Version History Summary
 
-### v2.4.0 - Folder Monitor + Queue System (In Progress)
+### v2.5.0 - Keyframe Interval Control + CI/CD Fixes (2026-02-08)
+- Professional keyframe/GOP control for easy video scrubbing
+- Complete CI/CD pipeline fixes (all Python versions passing)
+- Code quality improvements (Black, isort, flake8)
+- 100-character line length standardization
+- Production-ready code quality
+
+### v2.4.0 - Folder Monitor + Queue System (2025-12-28)
 - Automatic folder monitoring for video files
 - Async job queue with worker pool
 - Pattern-based rule engine for video routing
@@ -282,7 +392,7 @@ All notable changes to bulletproof-video-playback are documented in this file.
 - 32 comprehensive tests, all passing
 - Foundation for Phase 3.1 Web Dashboard
 
-### v0.2.0 - Linux Bash Port + Universal Tools
+### v0.2.0 - Linux Bash Port + Universal Tools (2025-12-25)
 - Complete Linux implementation with pure Bash
 - Cross-platform universal tools (analyze, list-profiles)
 - 7 Linux-optimized profiles
@@ -290,7 +400,7 @@ All notable changes to bulletproof-video-playback are documented in this file.
 - Comprehensive Linux documentation
 - Production-ready on Fedora, Ubuntu, Debian
 
-### v0.1.0 - Initial Release
+### v0.1.0 - Initial Release (2024-12-25)
 - Complete video transcoding suite with 7 profiles
 - Three interfaces (CLI, TUI, Python API)
 - Real-time progress tracking
