@@ -20,7 +20,7 @@ All transcoding profiles now include **smart keyframe intervals** optimized for 
 
 | Profile | Interval | Reason |
 |---------|----------|--------|
-| live-qlab | 5s | Perfect for QLab cue setup and theater playback |
+| live-qlab | 5s | Perfect for QLab cue setup and live event playback |
 | live-prores-lt | 5s | Instant scrubbing for live shows |
 | live-h264 | 5s | Cross-platform with easy seeking |
 | standard-playback | 10s | Balanced for general use |
@@ -54,7 +54,7 @@ FFmpeg flags:
 
 ### File Size Impact
 - Shorter intervals = slightly larger files (typically 5-10% increase)
-- For theater/live work, this is worth it for instant scrubbing
+- For live events, this is worth it for instant scrubbing
 - Archival profiles preserve source keyframes to avoid bloat
 
 ### Performance
@@ -107,7 +107,7 @@ my_profile = TranscodeProfile(
 
 ### Guidelines
 
-- **Live playback:** 5-10 seconds (sweet spot for theater)
+- **Live playback:** 5-10 seconds (sweet spot for live events)
 - **Editing:** 2-3 seconds (responsive seeking)
 - **Streaming:** 2 seconds (HLS/DASH standard)
 - **Archive:** `None` (preserve source structure)
