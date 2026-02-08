@@ -34,7 +34,7 @@ Video transcoding for live playback, streaming, and archival. Uses ffmpeg under 
 
 All live playback profiles now include **5-second keyframe intervals** for instant seeking:
 - **QLab cue setup** - Jump to exact moments without lag
-- **Show prep** - Scrub through content quickly and precisely
+- **Live event prep** - Scrub through content quickly and precisely
 - **Live playback** - Reliable, predictable performance
 
 No configuration needed - keyframes are built into every profile!
@@ -295,7 +295,7 @@ else:
 
 ### Keyframe Intervals Explained
 
-- **5 seconds** (live profiles) - Perfect for QLab and theater playback. Jump anywhere instantly.
+- **5 seconds** (live profiles) - Perfect for QLab and live event playback. Jump anywhere instantly.
 - **2 seconds** (streaming) - Responsive seeking for web players and editing software.
 - **10 seconds** (general) - Balanced between file size and scrubbing convenience.
 - **Source** (archival) - Preserves original keyframe structure for maximum quality.
@@ -392,12 +392,12 @@ BUILT_IN_PROFILES["my-profile"] = TranscodeProfile(
 
 ### Keyframe Interval Guidelines
 
-- **Live playback (QLab, theater):** 5-10 seconds
+- **Live playback (QLab, events):** 5-10 seconds
 - **Editing/post-production:** 2-3 seconds
 - **Streaming/web delivery:** 2 seconds
 - **Archive/preservation:** None (preserve source)
 
-Shorter intervals = larger files but better scrubbing. For theater work, 5-10 seconds is the sweet spot.
+Shorter intervals = larger files but better scrubbing. For live events, 5-10 seconds is the sweet spot.
 
 ### Adding a New Command
 
