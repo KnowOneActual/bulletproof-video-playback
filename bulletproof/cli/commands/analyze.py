@@ -42,7 +42,7 @@ def analyze(input_file: str):
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
         data = json.loads(result.stdout)
 
-        click.echo(f"\nFile Analysis:")
+        click.echo("\nFile Analysis:")
         click.echo("=" * 60)
         click.echo(f"File: {input_path.name}")
         click.echo(f"Format: {data.get('format', {}).get('format_name', 'Unknown')}")
@@ -51,7 +51,7 @@ def analyze(input_file: str):
         bitrate = int(data.get("format", {}).get("bit_rate", 0))
         click.echo(f"Bitrate: {bitrate / 1_000_000:.1f} Mbps")
 
-        click.echo(f"\nStreams:")
+        click.echo("\nStreams:")
         click.echo("-" * 60)
         for i, stream in enumerate(data.get("streams", [])):
             codec_type = stream.get("codec_type")
