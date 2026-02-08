@@ -145,11 +145,7 @@ class TranscodeJob:
         # Keyframe interval settings
         if self.profile.keyframe_interval is not None:
             # Get source framerate (or use target framerate if specified)
-            fps = (
-                self.profile.frame_rate
-                if self.profile.frame_rate
-                else self._get_framerate()
-            )
+            fps = self.profile.frame_rate if self.profile.frame_rate else self._get_framerate()
 
             if fps:
                 # Calculate GOP size: framerate × interval in seconds
@@ -192,9 +188,7 @@ class TranscodeJob:
 
         return cmd
 
-    def _print_progress_bar(
-        self, current: int, total: int, prefix: str = "", decimals: int = 1
-    ):
+    def _print_progress_bar(self, current: int, total: int, prefix: str = "", decimals: int = 1):
         """Print a simple progress bar to terminal."""
         if total <= 0:
             return
@@ -271,9 +265,7 @@ class TranscodeJob:
 
             if process.returncode != 0:
                 stderr = process.stderr.read() if process.stderr else ""
-                raise subprocess.CalledProcessError(
-                    process.returncode, cmd, stderr=stderr
-                )
+                raise subprocess.CalledProcessError(process.returncode, cmd, stderr=stderr)
 
             if show_progress:
                 print("\n")  # New line after progress bar

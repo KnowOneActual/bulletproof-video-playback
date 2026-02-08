@@ -154,9 +154,7 @@ def reset():
     # Reset to factory defaults:
     bulletproof config reset
     """
-    if click.confirm(
-        "Are you sure? This will reset all your configuration to defaults."
-    ):
+    if click.confirm("Are you sure? This will reset all your configuration to defaults."):
         if CONFIG_FILE.exists():
             CONFIG_FILE.unlink()
         click.echo("✓ Configuration reset to defaults")
