@@ -110,7 +110,7 @@ class TUIApp:
                 print(f"\n[{i}/{len(video_files)}] Processing: {input_file.name}")
                 job = TranscodeJob(input_file, output_file, profile)
                 if job.execute():
-                    print(f"✓ Complete")
+                    print("✓ Complete")
                 else:
                     print(f"✗ Failed: {job.error_message}")
         else:
@@ -169,7 +169,7 @@ class TUIApp:
                 continue
 
             if self.output_file.exists():
-                overwrite = input(f"⚠️  Output file already exists. Overwrite? (y/n): ")
+                overwrite = input("⚠️  Output file already exists. Overwrite? (y/n): ")
                 if overwrite.lower() != "y":
                     print("   Cancelled. Choose a different filename.\n")
                     continue
@@ -189,7 +189,7 @@ class TUIApp:
             job = TranscodeJob(self.input_file, self.output_file, profile)
             print("\nStarting transcode...")
             if job.execute():
-                print(f"✓ Complete!")
+                print("✓ Complete!")
                 print(f"  Output: {self.output_file}")
             else:
                 print(f"✗ Failed: {job.error_message}")
