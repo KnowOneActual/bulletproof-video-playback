@@ -54,9 +54,7 @@ class TranscodeJob:
                 "default=noprint_wrappers=1:nokey=1:noprint_wrappers=1",
                 str(self.input_file),
             ]
-            result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=10
-            )
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
             if result.returncode == 0:
                 return float(result.stdout.strip())
         except (subprocess.TimeoutExpired, ValueError, FileNotFoundError):
@@ -78,9 +76,7 @@ class TranscodeJob:
                 "default=noprint_wrappers=1:nokey=1",
                 str(self.input_file),
             ]
-            result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=10
-            )
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
             if result.returncode == 0:
                 # Parse fraction (e.g., "30000/1001" or "24/1")
                 fps_str = result.stdout.strip()
@@ -106,16 +102,8 @@ class TranscodeJob:
         # For H.264 and H.265, adjust the preset
         preset_map = {
             "fast": {"fast": "fast", "medium": "fast", "slow": "medium"},
-            "normal": {
-                "fast": "fast",
-                "medium": "medium",
-                "slow": "slow",
-            },
-            "slow": {
-                "fast": "medium",
-                "medium": "slow",
-                "slow": "slower",
-            },
+            "normal": {"fast": "fast", "medium": "medium", "slow": "slow"},
+            "slow": {"fast": "medium", "medium": "slow", "slow": "slower"},
         }
 
         if codec_preset in preset_map[self.speed_preset]:
@@ -143,17 +131,13 @@ class TranscodeJob:
                 cmd.extend(["-profile:v", "0"])  # ProRes Proxy
         elif self.profile.codec == "h264":
             cmd.extend(["-c:v", "libx264"])
-            adjusted_preset = self._adjust_preset_for_speed(
-                self.profile.preset
-            )
+            adjusted_preset = self._adjust_preset_for_speed(self.profile.preset)
             cmd.extend(["-preset", adjusted_preset])
             if self.profile.max_bitrate:
                 cmd.extend(["-b:v", self.profile.max_bitrate])
         elif self.profile.codec == "h265":
             cmd.extend(["-c:v", "libx265"])
-            adjusted_preset = self._adjust_preset_for_speed(
-                self.profile.preset
-            )
+            adjusted_preset = self._adjust_preset_for_speed(self.profile.preset)
             cmd.extend(["-preset", adjusted_preset])
             if self.profile.max_bitrate:
                 cmd.extend(["-b:v", self.profile.max_bitrate])
@@ -185,10 +169,7 @@ class TranscodeJob:
                     # Force keyframes at exact time intervals
                     interval = self.profile.keyframe_interval
                     cmd.extend(
-                        [
-                            "-force_key_frames",
-                            f"expr:gte(t,n_forced*{interval})",
-                        ]
+                        ["-force_key_frames", f"expr:gte(t,n_forced*{interval})"]
                     )
 
         # Pixel format
@@ -256,10 +237,7 @@ class TranscodeJob:
                 # Show keyframe info if configured
                 if self.profile.keyframe_interval:
                     interval = self.profile.keyframe_interval
-                    print(
-                        f"Keyframe Interval: {interval}s "
-                        f"(easy scrubbing enabled)"
-                    )
+                    print(f"Keyframe Interval: {interval}s (easy scrubbing enabled)")
                 print()
 
             # Run ffmpeg with live progress parsing
@@ -282,9 +260,7 @@ class TranscodeJob:
                     if time_match:
                         time_ms = int(time_match.group(1))
                         elapsed_seconds = time_ms / 1_000_000
-                        progress = min(
-                            100, (elapsed_seconds / duration_seconds) * 100
-                        )
+                        progress = min(100, (elapsed_seconds / duration_seconds) * 100)
                         self.progress = progress
                         self._print_progress_bar(
                             int(elapsed_seconds),
