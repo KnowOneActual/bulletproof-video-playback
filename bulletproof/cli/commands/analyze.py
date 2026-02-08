@@ -1,9 +1,10 @@
 """Analyze command implementation."""
 
-import click
-import subprocess
 import json
+import subprocess
 from pathlib import Path
+
+import click
 
 
 @click.command()

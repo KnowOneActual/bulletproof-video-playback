@@ -5,11 +5,12 @@ Use 'bulletproof monitor generate-config' for folder monitoring.
 This is kept for backward compatibility with simple transcode workflow.
 """
 
-import click
 import json
 from pathlib import Path
-from bulletproof.core import list_profiles
 
+import click
+
+from bulletproof.core import list_profiles
 
 # Simple config file manager (replaces old ConfigManager)
 CONFIG_FILE = Path.home() / ".bulletproof" / "config.json"
@@ -50,7 +51,6 @@ def config():
     NOTE: For folder monitoring, use YAML config files:
       bulletproof monitor generate-config -o monitor.yaml -w ./incoming
     """
-    pass
 
 
 @config.command()

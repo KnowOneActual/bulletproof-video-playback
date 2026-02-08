@@ -1,15 +1,15 @@
 """Main CLI entry point."""
 
 import click
+
 from bulletproof import __version__
-from bulletproof.cli.commands import transcode, analyze, batch, tui, config, monitor
+from bulletproof.cli.commands import analyze, batch, config, monitor, transcode, tui
 
 
 @click.group()
 @click.version_option(version=__version__)
 def cli():
     """bulletproof-video-playback: Professional video transcoding for live playback & streaming."""
-    pass
 
 
 # Register commands

@@ -1,11 +1,10 @@
 """Tests for ConfigLoader."""
 
 import json
-import pytest
-from pathlib import Path
 
-from bulletproof.config import ConfigLoader, ConfigError
-from bulletproof.core.rules import PatternType
+import pytest
+
+from bulletproof.config import ConfigError, ConfigLoader
 
 
 class TestConfigLoader:

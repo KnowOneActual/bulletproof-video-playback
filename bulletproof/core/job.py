@@ -1,15 +1,14 @@
 """Transcode job execution and management."""
 
-import subprocess
 import json
 import re
-from pathlib import Path
-from typing import Optional, Dict, Any, Literal
-from dataclasses import dataclass, asdict
+import subprocess
+from dataclasses import asdict, dataclass
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, Literal, Optional
 
 from bulletproof.core.profile import TranscodeProfile
-
 
 SPEED_PRESET_TYPE = Literal["fast", "normal", "slow"]
 

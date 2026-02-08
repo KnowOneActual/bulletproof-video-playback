@@ -1,8 +1,8 @@
 """Transcode profile definitions and management."""
 
-from dataclasses import dataclass, asdict
-from typing import Optional, Dict, Any
 import json
+from dataclasses import asdict, dataclass
+from typing import Any, Dict, Optional
 
 
 @dataclass

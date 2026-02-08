@@ -4,8 +4,8 @@ __version__ = "0.1.0"
 __author__ = "Beau Bremer"
 __email__ = "dev@knowoneactual.com"
 
-from bulletproof.core import TranscodeProfile, TranscodeJob, get_profile, list_profiles
 from bulletproof.cli import cli
+from bulletproof.core import TranscodeJob, TranscodeProfile, get_profile, list_profiles
 
 __all__ = [
     "__version__",

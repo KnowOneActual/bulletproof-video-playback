@@ -2,21 +2,20 @@
 
 import asyncio
 import logging
-from pathlib import Path
-from typing import Optional, Dict, Any
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, Optional
 
-from bulletproof.core.monitor import FolderMonitor, FileInfo
-from bulletproof.core.queue import TranscodeQueue, QueuedJob, JobStatus
-from bulletproof.core.rules import RuleEngine
-from bulletproof.core.profile import BUILT_IN_PROFILES, TranscodeProfile
 from bulletproof.core.job import TranscodeJob
+from bulletproof.core.monitor import FileInfo, FolderMonitor
+from bulletproof.core.profile import BUILT_IN_PROFILES
+from bulletproof.core.queue import TranscodeQueue
+from bulletproof.core.rules import RuleEngine
 
 
 class MonitorServiceError(Exception):
     """Base exception for MonitorService errors."""
 
-    pass
 
 
 class MonitorServiceConfig:

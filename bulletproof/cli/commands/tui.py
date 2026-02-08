@@ -1,6 +1,7 @@
 """Interactive TUI command."""
 
 import click
+
 from bulletproof.tui.main import TUIApp
 
 

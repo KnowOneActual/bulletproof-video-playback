@@ -1,7 +1,8 @@
 """Tests for profile functionality."""
 
 import pytest
-from bulletproof.core import get_profile, list_profiles, TranscodeProfile
+
+from bulletproof.core import get_profile, list_profiles
 
 
 def test_list_profiles():

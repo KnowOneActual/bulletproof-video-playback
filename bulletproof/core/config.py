@@ -1,9 +1,9 @@
 """Configuration system for folder monitoring."""
 
 import json
-from pathlib import Path
-from typing import Optional, List, Dict, Any
 from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 try:
     import yaml
@@ -12,7 +12,7 @@ try:
 except ImportError:
     HAS_YAML = False
 
-from bulletproof.core.rules import Rule, PatternType
+from bulletproof.core.rules import PatternType, Rule
 
 
 @dataclass

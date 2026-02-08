@@ -1,7 +1,7 @@
 """Configuration loader for folder monitor."""
 
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 from bulletproof.core.config import MonitorConfig
 from bulletproof.services.monitor_service import MonitorService, MonitorServiceConfig
@@ -10,7 +10,6 @@ from bulletproof.services.monitor_service import MonitorService, MonitorServiceC
 class ConfigError(Exception):
     """Configuration loading or validation error."""
 
-    pass
 
 
 class ConfigLoader:

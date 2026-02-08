@@ -9,14 +9,12 @@ from typing import Optional
 
 import click
 
-from bulletproof.config import ConfigLoader, ConfigError
-from bulletproof.core.queue import TranscodeQueue
+from bulletproof.config import ConfigError, ConfigLoader
 
 
 @click.group()
 def monitor():
     """Folder monitoring and automatic transcoding."""
-    pass
 
 
 @monitor.command()

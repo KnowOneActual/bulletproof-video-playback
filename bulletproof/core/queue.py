@@ -1,14 +1,13 @@
 """Transcode job queue with persistence."""
 
 import json
-from pathlib import Path
-from typing import Optional, List
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
+from pathlib import Path
+from typing import List, Optional
 
 from bulletproof.core.monitor import FileInfo
-from bulletproof.core.profile import TranscodeProfile
 
 
 class JobStatus(str, Enum):

@@ -1,7 +1,9 @@
 """Transcode command implementation."""
 
-import click
 from pathlib import Path
+
+import click
+
 from bulletproof.core import TranscodeJob, get_profile, list_profiles
 
 # Note: ConfigManager is legacy - removed in favor of YAML config files

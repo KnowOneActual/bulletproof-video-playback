@@ -1,12 +1,10 @@
 """File system monitoring for video transcode workflows."""
 
-import os
-from pathlib import Path
-from typing import Set, Callable, Optional
+import hashlib
 from dataclasses import dataclass, field
 from datetime import datetime
-import hashlib
-
+from pathlib import Path
+from typing import Callable, Optional, Set
 
 # Common video file extensions
 VIDEO_EXTENSIONS = {

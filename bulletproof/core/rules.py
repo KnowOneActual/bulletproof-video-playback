@@ -1,10 +1,10 @@
 """Rule engine for mapping files to transcode profiles."""
 
 import re
-from pathlib import Path
-from typing import Optional, List, Union, Dict, Any
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
 
 
 class PatternType(str, Enum):

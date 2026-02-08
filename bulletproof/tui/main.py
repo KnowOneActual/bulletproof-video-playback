@@ -3,6 +3,7 @@
 import os
 import subprocess
 from pathlib import Path
+
 from bulletproof.core import TranscodeJob, list_profiles
 
 
