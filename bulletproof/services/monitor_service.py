@@ -17,7 +17,6 @@ class MonitorServiceError(Exception):
     """Base exception for MonitorService errors."""
 
 
-
 class MonitorServiceConfig:
     """Configuration for MonitorService."""
 

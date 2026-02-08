@@ -11,7 +11,6 @@ class ConfigError(Exception):
     """Configuration loading or validation error."""
 
 
-
 class ConfigLoader:
     """Loads configuration from YAML/JSON and creates MonitorService."""
 

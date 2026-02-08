@@ -1,7 +1,5 @@
 """Tests for validation utilities."""
 
-
-
 from bulletproof.utils import (
     get_file_size_mb,
     validate_input_file,
