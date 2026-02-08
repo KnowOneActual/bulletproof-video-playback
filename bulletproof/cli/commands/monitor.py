@@ -175,7 +175,7 @@ def status(queue: str, verbose: bool):
         click.echo(f"❌ Queue file not found: {queue_path}", err=True)
         sys.exit(1)
     except json.JSONDecodeError:
-        click.echo(f"❌ Invalid JSON in queue file", err=True)
+        click.echo("❌ Invalid JSON in queue file", err=True)
         sys.exit(1)
 
     # Parse status from queue structure
@@ -317,7 +317,7 @@ def generate_config(output: str, watch: str, profile: str, format: str):
     try:
         ConfigLoader.generate_example(output_path, format=format.lower())
         click.echo(f"✅ Config generated: {output_path}")
-        click.echo(f"\n📝 Edit the file and then run:")
+        click.echo("\n📝 Edit the file and then run:")
         click.echo(f"   bulletproof monitor start --config {output_path}")
     except ConfigError as e:
         click.echo(f"❌ {e}", err=True)

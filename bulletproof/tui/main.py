@@ -180,7 +180,7 @@ class TUIApp:
         """Execute the transcode job."""
         profile = self.profiles[self.selected_profile]
 
-        print(f"\nPrepared transcode:")
+        print("\nPrepared transcode:")
         print(f"  Input:   {self.input_file}")
         print(f"  Profile: {self.selected_profile}")
         print(f"  Output:  {self.output_file}")
