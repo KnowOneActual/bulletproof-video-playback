@@ -138,10 +138,7 @@ def show_config():
         click.echo(f"  {key:25} {value}")
     click.echo()
     click.echo("\nFor folder monitoring, use YAML config files:")
-    click.echo(
-        "  bulletproof monitor generate-config -o monitor.yaml "
-        "-w ./incoming"
-    )
+    click.echo("  bulletproof monitor generate-config -o monitor.yaml -w ./incoming")
     click.echo()
 
 

@@ -168,9 +168,7 @@ class TranscodeJob:
 
                     # Force keyframes at exact time intervals
                     interval = self.profile.keyframe_interval
-                    cmd.extend(
-                        ["-force_key_frames", f"expr:gte(t,n_forced*{interval})"]
-                    )
+                    cmd.extend(["-force_key_frames", f"expr:gte(t,n_forced*{interval})"])
 
         # Pixel format
         if self.profile.pixel_format:
@@ -287,9 +285,7 @@ class TranscodeJob:
 
         except subprocess.CalledProcessError as e:
             self.status = "error"
-            self.error_message = (
-                e.stderr if isinstance(e.stderr, str) else str(e.stderr)
-            )
+            self.error_message = e.stderr if isinstance(e.stderr, str) else str(e.stderr)
             if "ffmpeg" in self.error_message.lower():
                 print(f"\n✗ FFmpeg error: {self.error_message[:200]}")
             return False
