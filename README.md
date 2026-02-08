@@ -8,6 +8,8 @@
 
 Video transcoding for live playback, streaming, and archival. Uses ffmpeg under the hood with seven prebuilt profiles optimized for different use cases.
 
+**NEW:** **Smart Keyframe Intervals** - All profiles now include optimized keyframe settings for instant scrubbing in QLab, VLC, and editing software. No more waiting for the playhead!
+
 **NEW:** **Folder Monitoring** - Automatically transcode videos based on filename patterns. Drop videos in a folder, watch them auto-process. Perfect for live events, streaming, broadcast, and batch workflows.
 
 ## 🚀 What You Get
@@ -23,6 +25,19 @@ Video transcoding for live playback, streaming, and archival. Uses ffmpeg under 
 - **macOS** (Python) - Native ProRes support, recommended for interactive use
 - **Linux** (Pure Bash) - Zero dependencies beyond ffmpeg, no Python required
 - **Any OS** - CLI and Monitor work everywhere
+
+---
+
+## 🎯 Perfect for AV Techs
+
+### Easy Scrubbing with Smart Keyframes
+
+All live playback profiles now include **5-second keyframe intervals** for instant seeking:
+- **QLab cue setup** - Jump to exact moments without lag
+- **Live event prep** - Scrub through content quickly and precisely
+- **Live playback** - Reliable, predictable performance
+
+No configuration needed - keyframes are built into every profile!
 
 ---
 
@@ -63,6 +78,7 @@ bulletproof monitor start --config monitor.yaml
 - **Real-time progress tracking**
 - **Python API** for integration
 - **Folder Monitor** with async processing
+- **Smart keyframe intervals** for instant scrubbing
 - Requires: Python 3.9+
 
 👉 See **Installation** section below
@@ -81,7 +97,8 @@ bulletproof monitor start --config monitor.yaml
 
 ## Features
 
-✅ **Folder Monitoring** - Watch directories, auto-transcode based on patterns (NEW!)  
+✅ **Smart Keyframe Intervals** - Optimized for instant scrubbing (NEW!)  
+✅ **Folder Monitoring** - Watch directories, auto-transcode based on patterns  
 ✅ **Crash Recovery** - Queue persists to JSON, survives restarts  
 ✅ **Real-Time Progress Tracking** - See live progress bar during transcoding  
 ✅ **7 Transcoding Profiles** - Prebuilt profiles for live playback, streaming, archival  
@@ -266,15 +283,22 @@ else:
 
 ## Profiles
 
-| Name | Codec | Extension | Quality | Use Case | Speed |
-|------|-------|-----------|---------|----------|-------|
-| **live-qlab** | ProRes Proxy | .mov | Good | QLab on Mac (recommended) | Medium |
-| live-prores-lt | ProRes LT | .mov | High | Live playback (smaller) | Medium |
-| live-h264 | H.264 | .mp4 | High | Cross-platform live | Slow |
-| standard-playback | H.264 | .mp4 | Good | General playback | Medium |
-| stream-hd | H.265 | .mp4 | Good | 1080p streaming | Medium |
-| stream-4k | H.265 | .mp4 | Good | 4K streaming | Medium |
-| archival | ProRes HQ | .mov | Max | Long-term storage | Slow |
+| Name | Codec | Extension | Quality | Keyframe Interval | Use Case | Speed |
+|------|-------|-----------|---------|-------------------|----------|-------|
+| **live-qlab** | ProRes Proxy | .mov | Good | **5s** | QLab on Mac (instant scrubbing) | Medium |
+| live-prores-lt | ProRes LT | .mov | High | **5s** | Live playback (smaller, easy scrubbing) | Medium |
+| live-h264 | H.264 | .mp4 | High | **5s** | Cross-platform live (easy scrubbing) | Slow |
+| standard-playback | H.264 | .mp4 | Good | **10s** | General playback | Medium |
+| stream-hd | H.265 | .mp4 | Good | **2s** | 1080p streaming (responsive seeking) | Medium |
+| stream-4k | H.265 | .mp4 | Good | **2s** | 4K streaming (responsive seeking) | Medium |
+| archival | ProRes HQ | .mov | Max | Source | Long-term storage (preserve original) | Slow |
+
+### Keyframe Intervals Explained
+
+- **5 seconds** (live profiles) - Perfect for QLab and live event playback. Jump anywhere instantly.
+- **2 seconds** (streaming) - Responsive seeking for web players and editing software.
+- **10 seconds** (general) - Balanced between file size and scrubbing convenience.
+- **Source** (archival) - Preserves original keyframe structure for maximum quality.
 
 **Linux-specific profiles** (see `linux/QUICK_START.md`):
 - `live-h264-linux` — H.264 for cross-platform playback
@@ -317,11 +341,13 @@ The `__processed__` marker makes it easy to distinguish original vs transcoded f
 
 ## Progress Tracking
 
-During transcoding, you'll see a real-time progress bar:
+During transcoding, you'll see a real-time progress bar with keyframe info:
 
 ```
 Transcoding: SF90_Spider_Reveal(1).mov
 Duration: 2.2 minutes
+Speed Preset: normal
+Keyframe Interval: 5.0s (easy scrubbing enabled)
 
 Progress: |████████████░░░░░░░░░░░░░░░░░░░░| 35.2% (42/120s)
 ```
@@ -358,9 +384,20 @@ BUILT_IN_PROFILES["my-profile"] = TranscodeProfile(
     quality=85,
     max_bitrate="10M",
     description="Description for TUI",
-    extension="mp4"
+    extension="mp4",
+    keyframe_interval=5.0,  # Keyframes every 5 seconds
+    force_keyframes=True    # Strict intervals
 )
 ```
+
+### Keyframe Interval Guidelines
+
+- **Live playback (QLab, events):** 5-10 seconds
+- **Editing/post-production:** 2-3 seconds
+- **Streaming/web delivery:** 2 seconds
+- **Archive/preservation:** None (preserve source)
+
+Shorter intervals = larger files but better scrubbing. For live events, 5-10 seconds is the sweet spot.
 
 ### Adding a New Command
 
@@ -440,6 +477,7 @@ tests/                # Test suite
 | Import errors | Ensure venv is active and you ran `pip install -e ".[dev]"` |
 | Linux issues | See [`linux/QUICK_START.md`](./linux/QUICK_START.md) for troubleshooting |
 | Monitor not detecting files | Enable DEBUG logging or check permissions. See [MONITOR_GUIDE.md](./docs/MONITOR_GUIDE.md) |
+| Scrubbing still slow? | Ensure you're using a live profile with 5s keyframes. Check with `bulletproof analyze` |
 
 ## Documentation
 
@@ -460,11 +498,12 @@ Beau Bremer ([@KnowOneActual](https://github.com/KnowOneActual))
 > "What does this system need?" → Use that codec
 
 Instead of debating codecs, bulletproof asks the question:
-- Are you doing live playback? → Use ProRes/H.264
-- Are you streaming? → Use H.265
-- Are you long-term storage? → Use ProRes HQ
+- Are you doing live playback? → Use ProRes/H.264 with 5s keyframes
+- Are you streaming? → Use H.265 with 2s keyframes
+- Are you long-term storage? → Use ProRes HQ, preserve source keyframes
 - On Linux without Python? → Use H.264/H.265 with pure Bash
 - Do you need to automate? → Use Folder Monitor with pattern rules
+- Need easy scrubbing? → Keyframes are built-in!
 
 Each profile and tool is a prepackaged answer to that question.
 
@@ -479,5 +518,5 @@ Contributions welcome! Please:
 
 ---
 
-**Latest Update:** December 26, 2025 — Added Folder Monitor for automated batch processing  
-**Current Version:** 0.2.0 (Phase 2.4 Complete)
+**Latest Update:** February 8, 2026 — Added smart keyframe intervals for instant scrubbing  
+**Current Version:** 0.2.1 (Keyframe Support)

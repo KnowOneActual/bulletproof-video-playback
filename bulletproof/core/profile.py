@@ -21,6 +21,8 @@ class TranscodeProfile:
     audio_bitrate: str = "128k"
     description: str = ""
     extension: str = "mov"  # Default output extension
+    keyframe_interval: Optional[float] = None  # Seconds between keyframes (None = source)
+    force_keyframes: bool = False  # Strictly enforce keyframe interval
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
@@ -60,6 +62,8 @@ BUILT_IN_PROFILES = {
         audio_bitrate="0",
         description="ProRes Proxy for QLab on macOS (QLab recommended, smaller files)",
         extension="mov",
+        keyframe_interval=5.0,  # 5 seconds for easy scrubbing
+        force_keyframes=True,
     ),
     "live-prores-lt": TranscodeProfile(
         name="live-prores-lt",
@@ -74,6 +78,8 @@ BUILT_IN_PROFILES = {
         audio_bitrate="0",
         description="ProRes LT for live playback (reduced file size, good quality)",
         extension="mov",
+        keyframe_interval=5.0,  # 5 seconds for easy scrubbing
+        force_keyframes=True,
     ),
     "live-h264": TranscodeProfile(
         name="live-h264",
@@ -86,6 +92,8 @@ BUILT_IN_PROFILES = {
         scale=None,
         description="H.264 for cross-platform live playback",
         extension="mp4",
+        keyframe_interval=5.0,  # 5 seconds for easy scrubbing
+        force_keyframes=True,
     ),
     "standard-playback": TranscodeProfile(
         name="standard-playback",
@@ -98,6 +106,8 @@ BUILT_IN_PROFILES = {
         scale=None,
         description="H.264 for Miccia Player, VLC, general use",
         extension="mp4",
+        keyframe_interval=10.0,  # 10 seconds - balanced for general playback
+        force_keyframes=False,  # Allow scene detection
     ),
     "stream-hd": TranscodeProfile(
         name="stream-hd",
@@ -110,6 +120,8 @@ BUILT_IN_PROFILES = {
         scale="1920:1080",
         description="H.265 for streaming (1080p, efficient)",
         extension="mp4",
+        keyframe_interval=2.0,  # 2 seconds for responsive streaming
+        force_keyframes=True,
     ),
     "stream-4k": TranscodeProfile(
         name="stream-4k",
@@ -122,6 +134,8 @@ BUILT_IN_PROFILES = {
         scale="3840:2160",
         description="H.265 for 4K streaming",
         extension="mp4",
+        keyframe_interval=2.0,  # 2 seconds for responsive streaming
+        force_keyframes=True,
     ),
     "archival": TranscodeProfile(
         name="archival",
@@ -136,6 +150,8 @@ BUILT_IN_PROFILES = {
         audio_bitrate="0",
         description="ProRes HQ for long-term archival storage",
         extension="mov",
+        keyframe_interval=None,  # Preserve source keyframes
+        force_keyframes=False,
     ),
 }
 

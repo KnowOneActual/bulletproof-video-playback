@@ -46,7 +46,9 @@ class FileInfo:
     def __post_init__(self):
         """Calculate hash if not provided."""
         if not self.hash:
-            self.hash = hashlib.sha256(str(self.path).encode()).hexdigest()[:16]
+            self.hash = hashlib.sha256(
+                str(self.path).encode()
+            ).hexdigest()[:16]
 
 
 class FolderMonitor:
@@ -66,21 +68,25 @@ class FolderMonitor:
 
         Args:
             watch_path: Directory to monitor
-            extensions: Video file extensions to detect (defaults to VIDEO_EXTENSIONS)
+            extensions: Video file extensions to detect
             on_file_detected: Callback when new file is detected
         """
         self.watch_path = Path(watch_path)
         if not self.watch_path.exists():
-            raise FileNotFoundError(f"Watch path does not exist: {self.watch_path}")
+            raise FileNotFoundError(
+                f"Watch path does not exist: {self.watch_path}"
+            )
         if not self.watch_path.is_dir():
-            raise NotADirectoryError(f"Watch path is not a directory: {self.watch_path}")
+            raise NotADirectoryError(
+                f"Watch path is not a directory: {self.watch_path}"
+            )
 
         self.extensions = extensions or VIDEO_EXTENSIONS
         self.on_file_detected = on_file_detected
 
         # Track known files to avoid duplicate detection
         self._known_files: dict[str, FileInfo] = {}  # hash -> FileInfo
-        self._stable_files: Set[str] = set()  # hashes of stable (not changing) files
+        self._stable_files: Set[str] = set()  # hashes of stable files
 
     def scan(self) -> list[FileInfo]:
         """Scan directory for video files.
@@ -115,7 +121,10 @@ class FolderMonitor:
                 if file_info.hash in self._known_files:
                     # File is known - check if it's stable
                     prev_info = self._known_files[file_info.hash]
-                    if prev_info.size == file_info.size and prev_info.mtime == file_info.mtime:
+                    if (
+                        prev_info.size == file_info.size
+                        and prev_info.mtime == file_info.mtime
+                    ):
                         # File hasn't changed, it's stable
                         self._stable_files.add(file_info.hash)
                     else:
@@ -146,7 +155,9 @@ class FolderMonitor:
         return [
             info
             for hash_val, info in self._known_files.items()
-            if hash_val in self._stable_files and not info.processing and not info.processed
+            if hash_val in self._stable_files
+            and not info.processing
+            and not info.processed
         ]
 
     def mark_processing(self, file_info: FileInfo) -> None:
@@ -180,10 +191,14 @@ class FolderMonitor:
     def clear_processed(self) -> None:
         """Clear processed files from tracking (optional cleanup)."""
         self._known_files = {
-            hash_val: info for hash_val, info in self._known_files.items() if not info.processed
+            hash_val: info
+            for hash_val, info in self._known_files.items()
+            if not info.processed
         }
         self._stable_files = {
-            hash_val for hash_val in self._stable_files if hash_val in self._known_files
+            hash_val
+            for hash_val in self._stable_files
+            if hash_val in self._known_files
         }
 
     def get_status(self) -> dict:
@@ -192,9 +207,15 @@ class FolderMonitor:
         Returns:
             Dict with status information
         """
-        pending = sum(1 for info in self._known_files.values() if not info.processed)
-        processing = sum(1 for info in self._known_files.values() if info.processing)
-        processed = sum(1 for info in self._known_files.values() if info.processed)
+        pending = sum(
+            1 for info in self._known_files.values() if not info.processed
+        )
+        processing = sum(
+            1 for info in self._known_files.values() if info.processing
+        )
+        processed = sum(
+            1 for info in self._known_files.values() if info.processed
+        )
 
         return {
             "watch_path": str(self.watch_path),
@@ -209,7 +230,9 @@ class FolderMonitor:
                     "status": (
                         "processed"
                         if info.processed
-                        else "processing" if info.processing else "pending"
+                        else "processing"
+                        if info.processing
+                        else "pending"
                     ),
                     "detected_at": info.detected_at.isoformat(),
                 }
