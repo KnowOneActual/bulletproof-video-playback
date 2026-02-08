@@ -10,11 +10,11 @@ This script will:
 3. Report success or failure
 """
 
-import sys
-import subprocess
 import json
-from pathlib import Path
 import re
+import subprocess
+import sys
+from pathlib import Path
 
 
 def analyze_keyframes(video_path: Path) -> dict:
