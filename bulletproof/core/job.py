@@ -241,7 +241,6 @@ class TranscodeJob:
             )
 
             # Parse progress from ffmpeg output
-            frame_pattern = re.compile(r"frame=(\d+)")
             time_pattern = re.compile(r"out_time_ms=(\d+)")
 
             for line in process.stdout:

@@ -197,7 +197,6 @@ class MonitorService:
             output_file = self._generate_output_path(file_info.path, output_pattern, profile_name)
 
             # Create and queue job
-            job = self.queue.add_from_file(file_info, output_file, profile_name)
             self.monitor.mark_processing(file_info)
 
             self.logger.info(f"Queued: {file_info.path.name} → {profile_name} → {output_file.name}")
