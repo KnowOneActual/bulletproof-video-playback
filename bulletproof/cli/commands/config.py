@@ -138,7 +138,10 @@ def show_config():
         click.echo(f"  {key:25} {value}")
     click.echo()
     click.echo("\nFor folder monitoring, use YAML config files:")
-    click.echo("  bulletproof monitor generate-config -o monitor.yaml -w ./incoming")
+    click.echo(
+        "  bulletproof monitor generate-config -o monitor.yaml "
+        "-w ./incoming"
+    )
     click.echo()
 
 
@@ -154,7 +157,9 @@ def reset():
     # Reset to factory defaults:
     bulletproof config reset
     """
-    if click.confirm("Are you sure? This will reset all your configuration to defaults."):
+    if click.confirm(
+        "Are you sure? This will reset all your configuration to defaults."
+    ):
         if CONFIG_FILE.exists():
             CONFIG_FILE.unlink()
         click.echo("✓ Configuration reset to defaults")
