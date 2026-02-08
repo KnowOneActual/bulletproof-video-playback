@@ -61,6 +61,33 @@ class TranscodeJob:
             pass
         return None
 
+    def _get_framerate(self) -> Optional[float]:
+        """Get video framerate using ffprobe."""
+        try:
+            cmd = [
+                "ffprobe",
+                "-v",
+                "error",
+                "-select_streams",
+                "v:0",
+                "-show_entries",
+                "stream=r_frame_rate",
+                "-of",
+                "default=noprint_wrappers=1:nokey=1",
+                str(self.input_file),
+            ]
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+            if result.returncode == 0:
+                # Parse fraction (e.g., "30000/1001" or "24/1")
+                fps_str = result.stdout.strip()
+                if "/" in fps_str:
+                    num, denom = fps_str.split("/")
+                    return float(num) / float(denom)
+                return float(fps_str)
+        except (subprocess.TimeoutExpired, ValueError, FileNotFoundError, ZeroDivisionError):
+            pass
+        return None
+
     def _adjust_preset_for_speed(self, codec_preset: str) -> str:
         """Adjust codec preset based on speed_preset setting."""
         if self.profile.codec == "prores":
@@ -109,6 +136,33 @@ class TranscodeJob:
             cmd.extend(["-preset", adjusted_preset])
             if self.profile.max_bitrate:
                 cmd.extend(["-b:v", self.profile.max_bitrate])
+
+        # Keyframe interval settings
+        if self.profile.keyframe_interval is not None:
+            # Get source framerate (or use target framerate if specified)
+            fps = self.profile.frame_rate if self.profile.frame_rate else self._get_framerate()
+            
+            if fps:
+                # Calculate GOP size: framerate × interval in seconds
+                gop_size = int(fps * self.profile.keyframe_interval)
+                
+                # Set GOP size (-g flag)
+                cmd.extend(["-g", str(gop_size)])
+                
+                # Set minimum keyframe interval to same as GOP for consistency
+                cmd.extend(["-keyint_min", str(gop_size)])
+                
+                # Force strict keyframe intervals if requested
+                if self.profile.force_keyframes:
+                    # Disable scene change detection to maintain strict intervals
+                    cmd.extend(["-sc_threshold", "0"])
+                    
+                    # Alternative: Use force_key_frames for time-based keyframes
+                    # This ensures keyframes at exact time intervals
+                    cmd.extend([
+                        "-force_key_frames",
+                        f"expr:gte(t,n_forced*{self.profile.keyframe_interval})"
+                    ])
 
         # Pixel format
         if self.profile.pixel_format:
@@ -168,7 +222,12 @@ class TranscodeJob:
             if show_progress and duration_seconds:
                 print(f"\nTranscoding: {self.input_file.name}")
                 print(f"Duration: {duration_seconds / 60:.1f} minutes")
-                print(f"Speed Preset: {self.speed_preset}\n")
+                print(f"Speed Preset: {self.speed_preset}")
+                
+                # Show keyframe info if configured
+                if self.profile.keyframe_interval:
+                    print(f"Keyframe Interval: {self.profile.keyframe_interval}s (easy scrubbing enabled)")
+                print()
 
             # Run ffmpeg with live progress parsing
             process = subprocess.Popen(
