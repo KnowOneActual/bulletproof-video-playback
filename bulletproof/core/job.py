@@ -138,8 +138,17 @@ class TranscodeJob:
             cmd.extend(["-c:v", "libx265"])
             adjusted_preset = self._adjust_preset_for_speed(self.profile.preset)
             cmd.extend(["-preset", adjusted_preset])
-            if self.profile.max_bitrate:
+            
+            # Use CRF mode if quality is set and no bitrate limit
+            # CRF mode: quality value (0-51, lower = better quality)
+            if self.profile.quality and not self.profile.max_bitrate:
+                cmd.extend(["-crf", str(self.profile.quality)])
+            elif self.profile.max_bitrate:
                 cmd.extend(["-b:v", self.profile.max_bitrate])
+            
+            # Add compatibility tag for broader H.265 support
+            if self.profile.extension == "mp4":
+                cmd.extend(["-tag:v", "hvc1"])
 
         # Keyframe interval settings
         if self.profile.keyframe_interval is not None:
@@ -181,6 +190,10 @@ class TranscodeJob:
         cmd.extend(["-c:a", self.profile.audio_codec])
         if self.profile.audio_bitrate != "0":
             cmd.extend(["-b:a", self.profile.audio_bitrate])
+
+        # Add faststart flag for MP4/MKV streaming optimization
+        if self.profile.extension in ["mp4", "mkv"]:
+            cmd.extend(["-movflags", "+faststart"])
 
         # Output file (quiet stderr to avoid clutter)
         cmd.extend(["-y", "-loglevel", "error", str(self.output_file)])
