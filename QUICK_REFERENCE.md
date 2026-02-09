@@ -1,14 +1,15 @@
-# 📋 Quick Reference Card - v2.5.0
+# 📋 Quick Reference Card - v2.6.0
 
 ## 🎯 In 30 Seconds
 
 **Your GitHub Repo:** https://github.com/KnowOneActual/bulletproof-video-playback
 
 **What It Does:**
-- Transcode videos for live playback (QLab/PlaybackPro) + streaming + archival
+- Transcode videos for live playback (QLab/Linux Show Player) + streaming + archival
+- **NEW v2.6.0:** MKV profiles for Linux live events (GPU accelerated)
 - **NEW v2.5.0:** Professional keyframe control for frame-accurate seeking
 - **NEW:** Folder monitoring for automated batch processing
-- 7 optimized profiles with smart keyframe intervals
+- 9 optimized profiles with smart keyframe intervals
 - CLI + Folder Monitor + Python API
 - ⚠️ **TUI DEPRECATED** (removal in v3.0.0)
 
@@ -18,7 +19,10 @@
 
 ```bash
 # Set your defaults once
-bulletproof config set-default-profile live-qlab
+bulletproof config set-default-profile live-qlab  # macOS
+# Or for Linux:
+bulletproof config set-default-profile live-linux-hevc-mkv
+
 bulletproof config set-output-dir ~/Videos/processed
 bulletproof config set-preset normal
 
@@ -40,6 +44,9 @@ bulletproof transcode input.mov
 
 # Transcode with specific profile
 bulletproof transcode input.mov --profile live-qlab --output output.mov
+
+# Linux live events with MKV (NEW v2.6.0)
+bulletproof transcode input.mov --profile live-linux-hevc-mkv --output output.mkv
 
 # With custom keyframe interval (NEW v2.5.0)
 bulletproof transcode input.mov --profile live-qlab --keyframe-interval 3.0
@@ -128,17 +135,19 @@ bulletproof config reset
 
 ---
 
-## 🎬 The 7 Profiles
+## 🎬 The 9 Profiles
 
 | Name | Codec | Quality | Keyframes | Use When | Speed |
 |------|-------|---------|-----------|----------|-------|
 | **live-qlab** | ProRes Proxy | Good | **5s** | QLab on Mac | Medium |
 | live-prores-lt | ProRes LT | High | **5s** | Live playback | Medium |
 | live-h264 | H.264 | High | **5s** | Cross-platform | Slow |
+| **live-linux-hevc-mkv** | H.265 | High (CRF 20) | **5s** | Linux live events | Medium |
 | standard-playback | H.264 | Good | **10s** | General use | Medium |
 | stream-hd | H.265 | Good | **2s** | 1080p streaming | Medium |
 | stream-4k | H.265 | Good | **2s** | 4K streaming | Medium |
-| archival | ProRes HQ | Max | Source | Long-term storage | Slow |
+| archival | ProRes HQ | Max | Source | macOS long-term storage | Slow |
+| **archival-linux-mkv** | H.265 10-bit | Near-lossless (CRF 18) | Source | Linux archival (ProRes replacement) | Slow |
 
 ### Keyframe Intervals (NEW v2.5.0)
 
@@ -146,7 +155,7 @@ bulletproof config reset
 I-frames that enable instant video seeking. More keyframes = smoother scrubbing.
 
 **Guidelines:**
-- **Live playback (QLab):** 5-10 seconds
+- **Live playback (QLab/Linux Show Player):** 5-10 seconds
 - **Video editing:** 1-3 seconds  
 - **Streaming (HLS/DASH):** 2-4 seconds
 - **Archive:** Preserve source
@@ -157,6 +166,22 @@ bulletproof transcode input.mov --profile standard-playback --keyframe-interval 
 ```
 
 👉 **Full guide:** [docs/features/KEYFRAME_FEATURE.md](./docs/features/KEYFRAME_FEATURE.md)
+
+### MKV Profiles for Linux (NEW v2.6.0)
+
+**live-linux-hevc-mkv** - Linux live playback:
+- H.265 with CRF 20 (visually transparent quality)
+- MKV container for better seeking than MP4
+- 5-second keyframes for instant scrubbing
+- Perfect for mpv, VLC, Linux Show Player
+- GPU acceleration support (VA-API/VDPAU/NVDEC)
+
+**archival-linux-mkv** - ProRes 422 replacement:
+- H.265 10-bit (yuv422p10le) matching ProRes color depth
+- CRF 18 for visually lossless quality
+- ~60-80% smaller files than ProRes 422 HQ
+- Uncompressed PCM audio (24-bit)
+- Cross-platform compatible
 
 ---
 
@@ -193,6 +218,9 @@ rules:
   - pattern: "*_live.mov"
     profile: live-qlab
     output_pattern: "{filename_no_ext}_qlab.mov"
+  - pattern: "*_prores.mov"  # NEW: Convert ProRes to Linux MKV
+    profile: live-linux-hevc-mkv
+    output_pattern: "{filename_no_ext}_live.mkv"
 
 # 3. Start monitoring
 bulletproof monitor start --config monitor.yaml
@@ -229,7 +257,32 @@ bulletproof transcode video.mov
 # → 5-second keyframes for instant scrubbing
 ```
 
-### Workflow 2: Automated Hot Folder
+### Workflow 2: Linux Live Events (NEW v2.6.0)
+```bash
+# Setup for Linux Show Player
+bulletproof config set-default-profile live-linux-hevc-mkv
+bulletproof config set-output-dir ~/Videos/LiveEvents
+
+# Convert ProRes to Linux MKV
+bulletproof transcode prores_input.mov
+# → H.265 MKV with GPU acceleration support
+# → 5-second keyframes for cue system scrubbing
+
+# Test with GPU acceleration
+mpv --hwdec=auto output.mkv
+```
+
+### Workflow 3: ProRes Replacement on Linux (NEW v2.6.0)
+```bash
+# High-quality archival on Linux
+bulletproof transcode prores_422.mov --profile archival-linux-mkv
+# → 10-bit H.265 MKV
+# → Visually lossless (CRF 18)
+# → 60-80% smaller than ProRes
+# → Cross-platform compatible
+```
+
+### Workflow 4: Automated Hot Folder
 ```bash
 # Setup once
 bulletproof monitor generate-config -o monitor.yaml -w /dropbox
@@ -241,21 +294,21 @@ bulletproof monitor start --config monitor.yaml
 # Drop videos in /dropbox → auto-transcode!
 ```
 
-### Workflow 3: Frame-Accurate Editing
+### Workflow 5: Frame-Accurate Editing
 ```bash
 # 1-second keyframes for precise editing
 bulletproof transcode input.mov --profile standard-playback --keyframe-interval 1.0
 # → Perfect for Premiere, DaVinci Resolve, Final Cut
 ```
 
-### Workflow 4: HLS/DASH Streaming
+### Workflow 6: HLS/DASH Streaming
 ```bash
 # 2-second keyframes for responsive web seeking
 bulletproof transcode input.mov --profile stream-hd
 # → Optimized for web players and adaptive streaming
 ```
 
-### Workflow 5: Time-Sensitive Deadline
+### Workflow 7: Time-Sensitive Deadline
 ```bash
 # Need fast encode for tonight's show?
 bulletproof transcode video.mov --preset fast
@@ -286,8 +339,8 @@ flake8 bulletproof tests
 ```
 bulletproof/
 ├── core/
-│   ├── profile.py      # Profile definitions + keyframe support
-│   ├── job.py          # Transcode execution
+│   ├── profile.py      # Profile definitions + keyframe support + MKV profiles
+│   ├── job.py          # Transcode execution + CRF mode support
 │   ├── monitor.py      # Folder watching
 │   ├── queue.py        # Job queue
 │   └── rules.py        # Pattern matching
@@ -324,7 +377,8 @@ pip install bulletproof-video-playback
 pip install -e ".[dev]"
 
 # Set defaults (one time)
-bulletproof config set-default-profile live-qlab
+bulletproof config set-default-profile live-qlab  # macOS
+bulletproof config set-default-profile live-linux-hevc-mkv  # Linux
 bulletproof config set-output-dir ~/Videos/processed
 
 # Check version
@@ -338,6 +392,9 @@ bulletproof transcode video.mov
 
 # Transcode (with keyframes)
 bulletproof transcode video.mov --profile live-qlab --keyframe-interval 5.0
+
+# Linux MKV (NEW v2.6.0)
+bulletproof transcode prores.mov --profile live-linux-hevc-mkv
 
 # Analyze video
 bulletproof analyze video.mov
@@ -359,9 +416,16 @@ flake8 bulletproof tests
 
 ---
 
-## ✨ What's New in v2.5.0
+## ✨ What's New in v2.6.0
 
-🎬 **Keyframe Interval Control** (NEW!)
+🐧 **MKV Profiles for Linux** (NEW!)
+- `live-linux-hevc-mkv` - H.265 MKV for Linux live events
+- `archival-linux-mkv` - 10-bit H.265 for Linux archival (ProRes replacement)
+- CRF mode support for quality-based encoding
+- GPU acceleration compatible (VA-API/VDPAU/NVDEC)
+- 60-80% smaller files than ProRes with same quality
+
+🎬 **Keyframe Interval Control** (v2.5.0)
 - Professional GOP management for frame-accurate seeking
 - Customizable keyframe intervals per profile
 - Force keyframes flag for strict interval placement
@@ -397,15 +461,18 @@ flake8 bulletproof tests
 | Import errors | Ensure venv: `source .venv/bin/activate` |
 | Scrubbing still slow? | Use `--keyframe-interval 2.0` for more keyframes |
 | Monitor not detecting | Check permissions and `poll_interval` in config |
+| MKV playback issues? | Enable GPU: `mpv --hwdec=auto video.mkv` |
+| 10-bit not working? | Update ffmpeg (older versions lack 10-bit H.265) |
 
 ---
 
 ## 🚀 Next Steps
 
-1. ✅ **v2.5.0 Complete** - Keyframe control + TUI deprecation
-2. 🔴 **v3.0.0** - Remove TUI completely
-3. 🟢 **Phase 3.1** - Web Dashboard with real-time monitoring
-4. 🔵 **Future** - GPU acceleration, concurrent processing, Docker
+1. ✅ **v2.6.0 Complete** - MKV profiles for Linux
+2. ✅ **v2.5.0 Complete** - Keyframe control + TUI deprecation
+3. 🔴 **v3.0.0** - Remove TUI completely
+4. 🟢 **Phase 3.1** - Web Dashboard with real-time monitoring
+5. 🔵 **Future** - GPU acceleration, concurrent processing, Docker
 
 ---
 
@@ -415,9 +482,11 @@ flake8 bulletproof tests
 
 Instead of debating:
 - QLab on Mac? → ProRes Proxy + 5s keyframes
+- Linux live events? → H.265 MKV + 5s keyframes (NEW!)
 - Video editing? → H.264 + 1s keyframes
 - Streaming? → H.265 + 2s keyframes (HLS/DASH)
-- Archive? → ProRes HQ + preserve source
+- Archive (macOS)? → ProRes HQ + preserve source
+- Archive (Linux)? → H.265 10-bit MKV + preserve source (NEW!)
 - Automation? → Folder Monitor
 
 Each profile is a prepackaged answer.
@@ -428,8 +497,8 @@ Each profile is a prepackaged answer.
 
 ```bash
 # Tag a release
-git tag v2.5.0
-git push origin v2.5.0
+git tag v2.6.0
+git push origin v2.6.0
 
 # Share the repo
 # https://github.com/KnowOneActual/bulletproof-video-playback
@@ -437,4 +506,4 @@ git push origin v2.5.0
 
 ---
 
-**Status:** ✅ v2.5.0 Production Ready | All Tests Passing | Keyframe Control | TUI Deprecated
+**Status:** ✅ v2.6.0 Production Ready | 9 Profiles | MKV for Linux | All Tests Passing | GPU Accelerated
