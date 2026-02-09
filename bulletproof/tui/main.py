@@ -1,25 +1,55 @@
-"""Terminal User Interface - Interactive transcode wizard."""
+"""Terminal User Interface - Interactive transcode wizard.
+
+⚠️  DEPRECATION NOTICE ⚠️
+The TUI will be removed in v3.0.0.
+
+Please migrate to:
+- CLI: `bulletproof transcode input.mov --profile live-qlab`
+- Monitor: `bulletproof monitor start --config monitor.yaml`
+- Web Dashboard: Coming in Phase 3.1
+"""
 
 import os
 import subprocess
+import warnings
 from pathlib import Path
 
 from bulletproof.core import TranscodeJob, list_profiles
 
 
 class TUIApp:
-    """Interactive CLI-based TUI for bulletproof transcode."""
+    """Interactive CLI-based TUI for bulletproof transcode.
+    
+    DEPRECATED: This interface will be removed in v3.0.0.
+    """
 
     def __init__(self):
-        """Initialize TUI."""
+        """Initialize TUI with deprecation warning."""
         self.profiles = list_profiles()
         self.input_file = None
         self.selected_profile = "standard-playback"
+        self._show_deprecation_warning()
+
+    def _show_deprecation_warning(self):
+        """Display deprecation warning to users."""
+        print("\n" + "⚠" * 30)
+        print("\n  DEPRECATION WARNING")
+        print("  The TUI will be REMOVED in v3.0.0")
+        print("\n  Please migrate to:")
+        print("    • CLI: bulletproof transcode input.mov --profile live-qlab")
+        print("    • Monitor: bulletproof monitor start --config monitor.yaml")
+        print("    • Web Dashboard: Coming in Phase 3.1")
+        print("\n" + "⚠" * 30)
+        
+        response = input("\nContinue anyway? (y/n): ").strip().lower()
+        if response != "y":
+            print("\nExiting. Use 'bulletproof transcode --help' for CLI usage.\n")
+            exit(0)
 
     def main_menu(self):
         """Show main menu and get user choice."""
         print("\n" + "=" * 60)
-        print("  bulletproof-video-playback")
+        print("  bulletproof-video-playback (DEPRECATED)")
         print("=" * 60)
         print("\nWhat would you like to do?")
         print("  1. Transcode a video file")
@@ -212,7 +242,17 @@ class TUIApp:
 
 
 def main():
-    """Entry point for TUI."""
+    """Entry point for TUI.
+    
+    DEPRECATED: The TUI will be removed in v3.0.0.
+    Use 'bulletproof transcode' CLI instead.
+    """
+    warnings.warn(
+        "The TUI is deprecated and will be removed in v3.0.0. "
+        "Use 'bulletproof transcode' CLI or 'bulletproof monitor' instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     app = TUIApp()
     app.run()
 
