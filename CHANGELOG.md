@@ -24,6 +24,112 @@ All notable changes to bulletproof-video-playback are documented in this file.
 
 ---
 
+## [2.6.0] - 2026-02-09
+
+### 🐧 Added - MKV Profiles for Linux Live Events
+
+#### New Profiles
+- **live-linux-hevc-mkv** - H.265 MKV for Linux live playback
+  - Codec: H.265 (libx265) with CRF 20 quality
+  - Container: MKV for superior seeking reliability vs MP4
+  - Keyframes: 5-second intervals for instant scrubbing in live cue systems
+  - Audio: AAC 192k for broad compatibility
+  - Target applications: mpv, VLC, Linux Show Player
+  - GPU acceleration support: VA-API, VDPAU, NVDEC
+
+- **archival-linux-mkv** - H.265 10-bit MKV for Linux archival
+  - Codec: H.265 10-bit (yuv422p10le) matching ProRes 422 color depth
+  - Quality: CRF 18 for visually lossless output
+  - Audio: Uncompressed PCM 24-bit for maximum fidelity
+  - File size: ~60-80% smaller than ProRes 422 HQ
+  - Use case: ProRes 422 replacement for Linux workflows
+  - Preserves source keyframes for maximum quality
+
+#### FFmpeg Enhancements
+- **CRF Mode Support** - Quality-based encoding for H.265
+  - Uses `-crf` flag instead of bitrate when `quality` is numeric
+  - Maintains existing bitrate mode when `max_bitrate` is specified
+  - Better quality control for variable content
+
+- **10-bit Encoding** - Full 10-bit color depth support
+  - yuv422p10le pixel format for archival workflows
+  - Matches ProRes 422 color space
+  - Professional-grade color preservation
+
+- **MKV Container Optimization**
+  - `+faststart` flag for improved streaming
+  - Better seeking performance in live playback systems
+  - More reliable than MP4 for long-form content
+
+- **H.265 Compatibility**
+  - `hvc1` tag for broader player support
+  - Works with more hardware decoders
+  - Enhanced cross-platform playback
+
+#### Linux Integration
+- **Bash Script Updates** - `linux/scripts/transcode.sh`
+  - CRF mode support for quality-based encoding
+  - Keyframe interval support with `-g` flag
+  - Pixel format overrides for 10-bit encoding
+  - Audio codec/bitrate configuration from profiles
+  - MKV faststart support
+
+- **Profile Catalog** - `scripts/profiles.json`
+  - Added `live-linux-hevc-mkv` profile definition
+  - Added `archival-linux-mkv` profile definition
+  - Full CRF and keyframe configuration
+  - Backward compatible with existing profiles
+
+#### Documentation
+- **README.md Updates**
+  - New "Linux MKV Profiles" section
+  - Usage examples for live event workflows
+  - ProRes 422 replacement guidance
+  - GPU acceleration testing commands
+  - Linux Show Player integration examples
+  - Updated profiles comparison table (9 profiles total)
+
+- **Profile Count** - Now 9 profiles (7 original + 2 new MKV)
+  - live-qlab (ProRes Proxy)
+  - live-prores-lt (ProRes LT)
+  - live-h264 (H.264)
+  - **live-linux-hevc-mkv (H.265 MKV)** ← NEW
+  - standard-playback (H.264)
+  - stream-hd (H.265)
+  - stream-4k (H.265)
+  - archival (ProRes HQ)
+  - **archival-linux-mkv (H.265 10-bit MKV)** ← NEW
+
+### 🧪 Testing
+- **Test Suite Updates** - All 31 tests passing
+  - Updated `test_list_profiles` to expect 9 profiles
+  - Added `test_get_profile_live_linux_hevc_mkv`
+  - Added `test_get_profile_archival_linux_mkv`
+  - Added MKV extension tests to `test_codec_extensions`
+  - Comprehensive validation of profile attributes
+  - CRF mode, keyframes, and pixel format testing
+
+### 🎯 Use Cases
+- **Linux Live Events** - mpv and Linux Show Player with 5s keyframes
+- **ProRes Replacement** - 10-bit H.265 instead of ProRes 422 on Linux
+- **GPU Acceleration** - Hardware-accelerated decode on Linux systems
+- **File Size Reduction** - 60-80% smaller than ProRes with same quality
+- **Cross-Platform Archival** - MKV plays everywhere, unlike ProRes
+
+### 📝 Changed
+- Profile count increased from 7 to 9
+- CODEC_EXTENSIONS mapping now includes MKV alternatives
+- Terminology consistently uses "live" instead of "theater"
+
+### 🚀 Production Status
+- ✅ All 31 tests passing
+- ✅ Python and Bash implementations updated
+- ✅ Comprehensive documentation
+- ✅ Backward compatible with existing workflows
+- ✅ Ready for Linux live event production use
+
+---
+
 ## [2.5.0] - 2026-02-08
 
 ### 🎬 Added - Keyframe Interval Control
@@ -376,6 +482,15 @@ All notable changes to bulletproof-video-playback are documented in this file.
 ---
 
 ## Version History Summary
+
+### v2.6.0 - MKV Profiles for Linux Live Events (2026-02-09)
+- H.265 MKV profiles for Linux live playback and archival
+- CRF mode support for quality-based encoding
+- 10-bit color depth support (ProRes 422 replacement)
+- GPU acceleration compatibility (VA-API/VDPAU/NVDEC)
+- 9 total profiles (7 original + 2 new MKV)
+- MKV container optimization for live event seeking
+- Comprehensive test coverage (31 tests passing)
 
 ### v2.5.0 - Keyframe Interval Control + CI/CD Fixes (2026-02-08)
 - Professional keyframe/GOP control for easy video scrubbing
