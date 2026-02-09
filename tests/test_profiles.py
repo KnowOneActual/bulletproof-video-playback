@@ -6,16 +6,18 @@ from bulletproof.core import get_profile, list_profiles
 
 
 def test_list_profiles():
-    """Test that all 7 profiles are available."""
+    """Test that all 9 profiles are available (7 original + 2 new MKV profiles)."""
     profiles = list_profiles()
-    assert len(profiles) == 7
+    assert len(profiles) == 9
     assert "live-qlab" in profiles
     assert "live-prores-lt" in profiles
     assert "live-h264" in profiles
+    assert "live-linux-hevc-mkv" in profiles  # NEW
     assert "standard-playback" in profiles
     assert "stream-hd" in profiles
     assert "stream-4k" in profiles
     assert "archival" in profiles
+    assert "archival-linux-mkv" in profiles  # NEW
 
 
 def test_get_profile_live_qlab():
@@ -36,6 +38,21 @@ def test_get_profile_live_prores_lt():
     assert profile.codec == "prores"
     assert profile.quality == 85
     assert profile.extension == "mov"
+
+
+def test_get_profile_live_linux_hevc_mkv():
+    """Test live-linux-hevc-mkv profile (H.265 MKV for Linux live playback)."""
+    profile = get_profile("live-linux-hevc-mkv")
+    assert profile.name == "live-linux-hevc-mkv"
+    assert profile.codec == "h265"
+    assert profile.preset == "medium"
+    assert profile.quality == 20  # CRF 20 for high quality
+    assert profile.max_bitrate is None  # CRF mode
+    assert profile.extension == "mkv"
+    assert profile.keyframe_interval == 5.0  # 5-second keyframes for live
+    assert profile.force_keyframes is True
+    assert profile.audio_codec == "aac"
+    assert profile.audio_bitrate == "192k"
 
 
 def test_get_profile_standard_playback():
@@ -65,6 +82,21 @@ def test_get_profile_archival():
     assert profile.preset == "hq"  # ProRes HQ for archival
     assert profile.quality == 100
     assert profile.extension == "mov"
+
+
+def test_get_profile_archival_linux_mkv():
+    """Test archival-linux-mkv profile (H.265 10-bit MKV for Linux archival)."""
+    profile = get_profile("archival-linux-mkv")
+    assert profile.name == "archival-linux-mkv"
+    assert profile.codec == "h265"
+    assert profile.preset == "slow"  # Slow for maximum quality
+    assert profile.quality == 18  # CRF 18 for near-lossless
+    assert profile.max_bitrate is None  # CRF mode
+    assert profile.extension == "mkv"
+    assert profile.pixel_format == "yuv422p10le"  # 10-bit color depth
+    assert profile.keyframe_interval is None  # Preserve source keyframes
+    assert profile.audio_codec == "pcm_s24le"  # Uncompressed audio
+    assert profile.audio_bitrate == "0"  # No bitrate limit for PCM
 
 
 def test_get_profile_invalid():
@@ -99,3 +131,5 @@ def test_codec_extensions():
     assert get_profile("standard-playback").extension == "mp4"  # H.264 -> MP4
     assert get_profile("stream-hd").extension == "mp4"  # H.265 -> MP4
     assert get_profile("archival").extension == "mov"  # ProRes -> MOV
+    assert get_profile("live-linux-hevc-mkv").extension == "mkv"  # H.265 -> MKV (NEW)
+    assert get_profile("archival-linux-mkv").extension == "mkv"  # H.265 -> MKV (NEW)
