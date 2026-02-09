@@ -1,4 +1,4 @@
-# 📋 Quick Reference Card
+# 📋 Quick Reference Card - v2.5.0
 
 ## 🎯 In 30 Seconds
 
@@ -6,11 +6,11 @@
 
 **What It Does:**
 - Transcode videos for live playback (QLab/PlaybackPro) + streaming + archival
-- Professional Python project with CLI + TUI
-- 7 profiles for different use cases
-- Config support (save your defaults)
-- Speed presets (fast/normal/slow encode)
-- Tests + GitHub Actions CI/CD included
+- **NEW v2.5.0:** Professional keyframe control for frame-accurate seeking
+- **NEW:** Folder monitoring for automated batch processing
+- 7 optimized profiles with smart keyframe intervals
+- CLI + Folder Monitor + Python API
+- ⚠️ **TUI DEPRECATED** (removal in v3.0.0)
 
 ---
 
@@ -30,16 +30,19 @@ bulletproof config show
 
 ## 🎮 How to Use (Three Ways)
 
-### CLI (Fastest)
+### 1. CLI (Fastest - Recommended)
 ```bash
 # List all profiles
 bulletproof transcode --list-profiles
 
-# Transcode (uses your saved defaults!)
+# Transcode with defaults
 bulletproof transcode input.mov
 
 # Transcode with specific profile
 bulletproof transcode input.mov --profile live-qlab --output output.mov
+
+# With custom keyframe interval (NEW v2.5.0)
+bulletproof transcode input.mov --profile live-qlab --keyframe-interval 3.0
 
 # Fast encode for time-sensitive playback
 bulletproof transcode input.mov --preset fast
@@ -48,33 +51,52 @@ bulletproof transcode input.mov --preset fast
 bulletproof analyze input.mov
 
 # Batch process folder
-bulletproof tui
-# → Choose option 3
+bulletproof batch ./videos --profile live-qlab --output-dir ./output
 ```
 
-### TUI (Interactive - Recommended)
+### 2. Folder Monitor (Automation)
 ```bash
-bulletproof tui
+# Generate config
+bulletproof monitor generate-config --output monitor.yaml --watch /incoming
 
-# Menu:
-# 1. Transcode a video file
-# 2. Analyze a video file
-# 3. Batch process a folder
-# 4. Exit
+# Start watching
+bulletproof monitor start --config monitor.yaml
+
+# Check status
+bulletproof monitor status --queue queue.json
+
+# Clear queue
+bulletproof monitor clear-queue --queue queue.json
 ```
+
+### 3. ~~TUI (Interactive)~~ - DEPRECATED
+```bash
+bulletproof tui  # Shows deprecation warning
+```
+
+⚠️ **Migration:** Use `bulletproof transcode` CLI or `bulletproof monitor` instead.  
+👉 **Full guide:** [docs/TUI_DEPRECATION.md](./docs/TUI_DEPRECATION.md)
 
 ### Python API (Scripting)
 ```python
-from bulletproof.core import TranscodeJob
-from bulletproof.core.profile import get_profile
+from bulletproof.core import TranscodeJob, TranscodeProfile
 from pathlib import Path
 
-profile = get_profile("live-qlab")
+# Create profile with custom keyframes (NEW v2.5.0)
+profile = TranscodeProfile(
+    name="custom",
+    codec="h264",
+    preset="medium",
+    keyframe_interval=3.0,  # Keyframes every 3 seconds
+    force_keyframes=True,   # Strict keyframe placement
+    quality=85
+)
+
 job = TranscodeJob(
     Path("input.mov"),
-    Path("output.mov"),
+    Path("output.mp4"),
     profile,
-    speed_preset="normal"  # fast, normal, or slow
+    speed_preset="normal"
 )
 
 if job.execute():
@@ -108,15 +130,33 @@ bulletproof config reset
 
 ## 🎬 The 7 Profiles
 
-| Name | Codec | Quality | Use When | Speed |
-|------|-------|---------|----------|-------|
-| **live-qlab** | ProRes Proxy | Good | QLab on Mac (recommended) | Medium |
-| live-prores-lt | ProRes LT | High | Live playback (smaller files) | Medium |
-| live-h264 | H.264 | High | Cross-platform live playback | Slow |
-| standard-playback | H.264 | Good | Miccia, VLC, general use | Medium |
-| stream-hd | H.265 | Good | 1080p streaming | Medium |
-| stream-4k | H.265 | Good | 4K streaming | Medium |
-| archival | ProRes HQ | Max | Long-term storage | Slow |
+| Name | Codec | Quality | Keyframes | Use When | Speed |
+|------|-------|---------|-----------|----------|-------|
+| **live-qlab** | ProRes Proxy | Good | **5s** | QLab on Mac | Medium |
+| live-prores-lt | ProRes LT | High | **5s** | Live playback | Medium |
+| live-h264 | H.264 | High | **5s** | Cross-platform | Slow |
+| standard-playback | H.264 | Good | **10s** | General use | Medium |
+| stream-hd | H.265 | Good | **2s** | 1080p streaming | Medium |
+| stream-4k | H.265 | Good | **2s** | 4K streaming | Medium |
+| archival | ProRes HQ | Max | Source | Long-term storage | Slow |
+
+### Keyframe Intervals (NEW v2.5.0)
+
+**What are keyframes?**  
+I-frames that enable instant video seeking. More keyframes = smoother scrubbing.
+
+**Guidelines:**
+- **Live playback (QLab):** 5-10 seconds
+- **Video editing:** 1-3 seconds  
+- **Streaming (HLS/DASH):** 2-4 seconds
+- **Archive:** Preserve source
+
+**Override any profile:**
+```bash
+bulletproof transcode input.mov --profile standard-playback --keyframe-interval 3.0
+```
+
+👉 **Full guide:** [docs/features/KEYFRAME_FEATURE.md](./docs/features/KEYFRAME_FEATURE.md)
 
 ---
 
@@ -135,24 +175,43 @@ bulletproof transcode input.mov --preset normal
 bulletproof transcode input.mov --preset slow
 ```
 
-**How it works:**
-- **ProRes profiles:** Unaffected (fixed codec presets)
-- **H.264/H.265:** Adjusts ffmpeg preset dynamically
-- Shows active preset in progress output
-
 ---
 
-## 📂 File Output Naming
+## 🔄 Folder Monitor Quick Reference
 
-The tool auto-generates helpful filenames:
+### Basic Setup
+```bash
+# 1. Generate config
+bulletproof monitor generate-config -o monitor.yaml -w /incoming
 
+# 2. Edit monitor.yaml
+watch_directory: /incoming
+output_directory: /output
+poll_interval: 5
+
+rules:
+  - pattern: "*_live.mov"
+    profile: live-qlab
+    output_pattern: "{filename_no_ext}_qlab.mov"
+
+# 3. Start monitoring
+bulletproof monitor start --config monitor.yaml
 ```
-Input:   spider_reveal_v1.mov
-Profile: live-qlab
-Output:  spider_reveal_v1__processed__live-qlab.mov
-```
 
-The `__processed__` marker makes it easy to distinguish originals from transcoded files.
+### Monitor Commands
+```bash
+# Start watching folder
+bulletproof monitor start --config monitor.yaml
+
+# Check queue status
+bulletproof monitor status --queue queue.json --verbose
+
+# Clear queue (asks for confirmation)
+bulletproof monitor clear-queue --queue queue.json
+
+# Generate sample config
+bulletproof monitor generate-config -o monitor.yaml -w /incoming
+```
 
 ---
 
@@ -160,39 +219,47 @@ The `__processed__` marker makes it easy to distinguish originals from transcode
 
 ### Workflow 1: Live Playback (QLab on macOS)
 ```bash
-# First time
+# First time setup
 bulletproof config set-default-profile live-qlab
 bulletproof config set-output-dir ~/Videos/QLab
 
 # Then just:
 bulletproof transcode video.mov
 # → Saves to ~/Videos/QLab/video__processed__live-qlab.mov
+# → 5-second keyframes for instant scrubbing
 ```
 
-### Workflow 2: Time-Sensitive Deadline
+### Workflow 2: Automated Hot Folder
 ```bash
-# Need to encode fast for tonight's show?
-bulletproof transcode huge_video.mov --preset fast
-# → ~30% faster encoding, perfect for live playback
+# Setup once
+bulletproof monitor generate-config -o monitor.yaml -w /dropbox
+# Edit monitor.yaml with your rules
+
+# Run continuously
+bulletproof monitor start --config monitor.yaml
+
+# Drop videos in /dropbox → auto-transcode!
 ```
 
-### Workflow 3: Streaming Preparation
+### Workflow 3: Frame-Accurate Editing
 ```bash
-# Set streaming as default
-bulletproof config set-default-profile stream-hd
-
-# Batch process multiple videos
-bulletproof tui
-# → Choose option 3
-# → Select folder with videos
-# → Select stream-hd profile
+# 1-second keyframes for precise editing
+bulletproof transcode input.mov --profile standard-playback --keyframe-interval 1.0
+# → Perfect for Premiere, DaVinci Resolve, Final Cut
 ```
 
-### Workflow 4: Archival (Maximum Quality)
+### Workflow 4: HLS/DASH Streaming
 ```bash
-bulletproof transcode video.mov --profile archival --preset slow
-# → ProRes HQ (lossless) at maximum quality
-# → Slower encode but perfect for long-term storage
+# 2-second keyframes for responsive web seeking
+bulletproof transcode input.mov --profile stream-hd
+# → Optimized for web players and adaptive streaming
+```
+
+### Workflow 5: Time-Sensitive Deadline
+```bash
+# Need fast encode for tonight's show?
+bulletproof transcode video.mov --preset fast
+# → ~30% faster encoding
 ```
 
 ---
@@ -206,8 +273,10 @@ pytest -v
 # Run with coverage
 pytest --cov=bulletproof tests/ -v
 
-# Format code
+# Linting
 black bulletproof tests
+isort bulletproof tests  
+flake8 bulletproof tests
 ```
 
 ---
@@ -217,22 +286,31 @@ black bulletproof tests
 ```
 bulletproof/
 ├── core/
-│   ├── profile.py      # Profile definitions
-│   └── job.py          # Transcode execution + speed presets
+│   ├── profile.py      # Profile definitions + keyframe support
+│   ├── job.py          # Transcode execution
+│   ├── monitor.py      # Folder watching
+│   ├── queue.py        # Job queue
+│   └── rules.py        # Pattern matching
+├── services/
+│   └── monitor_service.py  # Monitoring orchestration
 ├── config/
-│   └── manager.py      # Config file management (~/.bulletproof/config.json)
+│   └── loader.py       # Config management
 ├── cli/
 │   ├── main.py         # CLI entry point
 │   └── commands/
-│       ├── transcode.py    # Transcode with preset support
+│       ├── transcode.py    # Transcode with keyframe support
 │       ├── analyze.py      # Video analysis
 │       ├── batch.py        # Batch processing
-│       ├── config.py       # Config management
-│       └── tui.py          # Interactive menu
-├── tui/
-│   └── main.py         # Terminal UI
+│       ├── monitor.py      # Folder monitoring
+│       └── config.py       # Config management
+├── tui/                # DEPRECATED (removal in v3.0.0)
 └── utils/
-    └── validation.py   # Input validation
+
+docs/
+├── features/           # Feature documentation
+├── testing/            # Testing guides
+├── phase-3.1/          # Web Dashboard planning
+└── TUI_DEPRECATION.md  # TUI migration guide
 ```
 
 ---
@@ -241,6 +319,8 @@ bulletproof/
 
 ```bash
 # Installation (one time)
+pip install bulletproof-video-playback
+# Or from source:
 pip install -e ".[dev]"
 
 # Set defaults (one time)
@@ -256,14 +336,14 @@ bulletproof transcode --list-profiles
 # Transcode (simple)
 bulletproof transcode video.mov
 
-# Transcode (with options)
-bulletproof transcode video.mov --profile live-qlab --preset fast
+# Transcode (with keyframes)
+bulletproof transcode video.mov --profile live-qlab --keyframe-interval 5.0
 
-# Analyze before transcoding
+# Analyze video
 bulletproof analyze video.mov
 
-# Interactive mode
-bulletproof tui
+# Start folder monitor
+bulletproof monitor start --config monitor.yaml
 
 # View config
 bulletproof config show
@@ -271,34 +351,37 @@ bulletproof config show
 # Testing
 pytest -v
 
-# Format code
+# Linting
 black bulletproof tests
+isort bulletproof tests
+flake8 bulletproof tests
 ```
 
 ---
 
-## ✨ What's New (Latest Update)
+## ✨ What's New in v2.5.0
 
-🎯 **Config Command Fully Integrated** - Now registered in main CLI
-- `bulletproof config set-default-profile`
-- `bulletproof config set-output-dir`
-- `bulletproof config set-preset`
-- `bulletproof config show`
-- `bulletproof config reset`
+🎬 **Keyframe Interval Control** (NEW!)
+- Professional GOP management for frame-accurate seeking
+- Customizable keyframe intervals per profile
+- Force keyframes flag for strict interval placement
+- CLI flag: `--keyframe-interval 3.0`
 
-⚡ **Speed Presets Working** - Control encode time vs quality
-- `--preset fast` for time-sensitive playback
-- `--preset normal` for balanced quality/speed
-- `--preset slow` for maximum quality
+🔄 **Folder Monitor** (v2.4.0)
+- Automated batch processing
+- Pattern-based rules engine
+- Queue persistence and crash recovery
+- Real-time status monitoring
 
-🎬 **Terminology Updated** - Changed "theater" → "live" throughout
-- `live-qlab`, `live-prores-lt`, `live-h264`
-- Cleaner naming for playback workflows
+🚧 **TUI Deprecated**
+- Shows warning on startup
+- Will be removed in v3.0.0
+- Migrate to CLI or wait for Web Dashboard
 
-📊 **18 Tests Passing** - Full test coverage
-- Config manager tests
-- Profile tests
-- Validation tests
+✅ **CI/CD Improvements**
+- All linting checks passing (Black, isort, flake8)
+- Multi-Python version support (3.9-3.12)
+- 100-character line length standardization
 
 ---
 
@@ -306,49 +389,47 @@ black bulletproof tests
 
 | Issue | Solution |
 |-------|----------|
-| "ffmpeg not found" | Install: `brew install ffmpeg` |
+| "ffmpeg not found" | Install: `brew install ffmpeg` or `apt install ffmpeg` |
 | Config not loading | Check: `cat ~/.bulletproof/config.json` |
+| TUI not working | It's deprecated. Use `bulletproof transcode` instead |
 | Tests failing | Run: `pytest -v` for details |
 | Want to reset config | Run: `bulletproof config reset` |
 | Import errors | Ensure venv: `source .venv/bin/activate` |
-| Config command not found | Run: `git pull && pip install -e .` |
+| Scrubbing still slow? | Use `--keyframe-interval 2.0` for more keyframes |
+| Monitor not detecting | Check permissions and `poll_interval` in config |
 
 ---
 
 ## 🚀 Next Steps
 
-After you're comfortable with config + presets:
-
-1. **GPU Acceleration** - Use NVIDIA/Apple hardware for faster encodes
-2. **Watch Folder** - Auto-transcode new files as they appear
-3. **Concurrent Processing** - Process multiple files in parallel
-4. **Web Dashboard** - Queue management and real-time progress UI
-5. **Docker Support** - Deploy on servers
+1. ✅ **v2.5.0 Complete** - Keyframe control + TUI deprecation
+2. 🔴 **v3.0.0** - Remove TUI completely
+3. 🟢 **Phase 3.1** - Web Dashboard with real-time monitoring
+4. 🔵 **Future** - GPU acceleration, concurrent processing, Docker
 
 ---
 
 ## 💡 Philosophy
 
-> "What does this system need?" → Use that codec
+> "What does this system need?" → Use that codec + keyframe strategy
 
-Instead of debating codecs:
-- Are you QLab on Mac? → Use ProRes Proxy
-- Are you streaming? → Use H.265
-- Long-term storage? → Use ProRes HQ
-- Have a deadline? → Use `--preset fast`
+Instead of debating:
+- QLab on Mac? → ProRes Proxy + 5s keyframes
+- Video editing? → H.264 + 1s keyframes
+- Streaming? → H.265 + 2s keyframes (HLS/DASH)
+- Archive? → ProRes HQ + preserve source
+- Automation? → Folder Monitor
 
-Each profile + preset is a prepackaged answer.
+Each profile is a prepackaged answer.
 
 ---
 
 ## 📤 Share It
 
-Your project is now production-ready!
-
 ```bash
 # Tag a release
-git tag v0.2.0
-git push origin v0.2.0
+git tag v2.5.0
+git push origin v2.5.0
 
 # Share the repo
 # https://github.com/KnowOneActual/bulletproof-video-playback
@@ -356,4 +437,4 @@ git push origin v0.2.0
 
 ---
 
-**Status:** ✅ Production Ready | 18 Tests Passing | Config + Presets Enabled | Config CLI Working
+**Status:** ✅ v2.5.0 Production Ready | All Tests Passing | Keyframe Control | TUI Deprecated
