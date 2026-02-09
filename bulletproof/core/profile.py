@@ -37,7 +37,7 @@ class TranscodeProfile:
 CODEC_EXTENSIONS = {
     "prores": "mov",
     "h264": "mp4",
-    "h265": "mp4",
+    "h265": "mp4",  # Default to MP4, but MKV also supported
     "vp9": "mkv",
 }
 
@@ -93,6 +93,22 @@ BUILT_IN_PROFILES = {
         description="H.264 for cross-platform live playback",
         extension="mp4",
         keyframe_interval=5.0,  # 5 seconds for easy scrubbing
+        force_keyframes=True,
+    ),
+    "live-linux-hevc-mkv": TranscodeProfile(
+        name="live-linux-hevc-mkv",
+        codec="h265",
+        preset="medium",
+        quality=20,  # CRF value for libx265
+        max_bitrate=None,  # CRF mode, no bitrate limit
+        frame_rate=None,  # Preserve source framerate
+        pixel_format="yuv420p",
+        scale=None,
+        audio_codec="aac",
+        audio_bitrate="192k",
+        description="H.265 MKV for Linux live playback (mpv, Linux Show Player, 5s keyframes)",
+        extension="mkv",
+        keyframe_interval=5.0,  # 5 seconds for easy scrubbing in live cues
         force_keyframes=True,
     ),
     "standard-playback": TranscodeProfile(
@@ -151,6 +167,22 @@ BUILT_IN_PROFILES = {
         description="ProRes HQ for long-term archival storage",
         extension="mov",
         keyframe_interval=None,  # Preserve source keyframes
+        force_keyframes=False,
+    ),
+    "archival-linux-mkv": TranscodeProfile(
+        name="archival-linux-mkv",
+        codec="h265",
+        preset="slow",
+        quality=18,  # CRF 18 for near-lossless quality
+        max_bitrate=None,  # CRF mode, no bitrate limit
+        frame_rate=None,  # Preserve source framerate
+        pixel_format="yuv422p10le",  # 10-bit color depth (ProRes 422 replacement)
+        scale=None,
+        audio_codec="pcm_s24le",  # Uncompressed 24-bit audio
+        audio_bitrate="0",
+        description="H.265 10-bit MKV for Linux archival (ProRes 422 replacement, visually lossless)",
+        extension="mkv",
+        keyframe_interval=None,  # Preserve source keyframes for archival
         force_keyframes=False,
     ),
 }
