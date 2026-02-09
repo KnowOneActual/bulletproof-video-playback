@@ -3,12 +3,11 @@
 [![Tests](https://github.com/KnowOneActual/bulletproof-video-playback/actions/workflows/test.yml/badge.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/actions/workflows/test.yml)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-# **Under Development** 
+[![Version](https://img.shields.io/badge/version-2.5.0-green.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/releases)
 
 Video transcoding for live playback, streaming, and archival. Uses ffmpeg under the hood with seven prebuilt profiles optimized for different use cases.
 
-**NEW:** **Smart Keyframe Intervals** - All profiles now include optimized keyframe settings for instant scrubbing in QLab, VLC, and editing software. No more waiting for the playhead!
+**NEW v2.5.0:** **Professional Keyframe Control** - Customize GOP (Group of Pictures) intervals for frame-accurate seeking in QLab, video editors, and streaming workflows.
 
 **NEW:** **Folder Monitoring** - Automatically transcode videos based on filename patterns. Drop videos in a folder, watch them auto-process. Perfect for live events, streaming, broadcast, and batch workflows.
 
@@ -16,32 +15,47 @@ Video transcoding for live playback, streaming, and archival. Uses ffmpeg under 
 
 ### Three Ways to Use
 
-1. **TUI (Interactive)** - Beginner-friendly terminal UI with smart defaults
-2. **CLI (Scripting)** - Command-line for automation and CI/CD
-3. **Folder Monitor** - Watch a folder, auto-transcode based on rules
+1. **CLI (Command Line)** - Fast, scriptable, automation-ready ⚡
+2. **Folder Monitor** - Watch directories, auto-transcode with rules 🔄
+3. **~~TUI (Interactive)~~** - ⚠️ **DEPRECATED** (Will be removed in v3.0.0) ❌
+
+> **Migration Notice:** The TUI is deprecated. Use `bulletproof transcode` CLI or wait for the Web Dashboard (Phase 3.1). See [TUI_DEPRECATION.md](./docs/TUI_DEPRECATION.md).
 
 ### Platforms
 
-- **macOS** (Python) - Native ProRes support, recommended for interactive use
+- **macOS** (Python) - Native ProRes support, recommended for ProRes workflows
 - **Linux** (Pure Bash) - Zero dependencies beyond ffmpeg, no Python required
-- **Any OS** - CLI and Monitor work everywhere
+- **Windows/WSL** - CLI and Monitor work everywhere Python runs
 
 ---
 
 ## 🎯 Perfect for AV Techs
 
-### Easy Scrubbing with Smart Keyframes
+### Professional Keyframe Control (NEW in v2.5.0)
 
-All live playback profiles now include **5-second keyframe intervals** for instant seeking:
-- **QLab cue setup** - Jump to exact moments without lag
-- **Live event prep** - Scrub through content quickly and precisely
-- **Live playback** - Reliable, predictable performance
+All profiles support customizable **keyframe intervals** for professional GOP management:
+- **Frame-accurate seeking** - Jump to exact frames in QLab, Premiere, DaVinci
+- **Streaming optimization** - 2-second GOP for HLS/DASH responsive seeking
+- **Live event prep** - 5-second GOP for quick scrubbing during show setup
+- **Broadcast compliance** - Match network requirements for frame-accurate edits
 
-No configuration needed - keyframes are built into every profile!
+**Examples:**
+```bash
+# QLab live playback (5-second keyframes)
+bulletproof transcode input.mov --profile live-qlab
+
+# Streaming (2-second keyframes for web players)
+bulletproof transcode input.mov --profile stream-hd
+
+# Custom keyframe interval (every 3 seconds)
+bulletproof transcode input.mov --profile standard-playback --keyframe-interval 3.0
+```
+
+👉 **Full guide:** [docs/features/KEYFRAME_FEATURE.md](./docs/features/KEYFRAME_FEATURE.md)
 
 ---
 
-## Quick Start: Folder Monitor (NEW!)
+## Quick Start: Folder Monitor
 
 Watch a folder for videos and automatically transcode them:
 
@@ -65,20 +79,18 @@ bulletproof monitor start --config monitor.yaml
 - ✅ Quality control
 - 🔄 Batch processing
 
-👉 **Full guide:** [docs/MONITOR_GUIDE.md](./docs/MONITOR_GUIDE.md)
-
 ---
 
 ## Choose Your Platform
 
-### 🍎 **macOS / Python Version** (Recommended for interactive use)
+### 🍎 **macOS / Python Version** (Recommended)
 
-- **TUI (Terminal UI)** with smart defaults
+- **CLI** - Fast, scriptable command-line interface
 - **ProRes support** (native to macOS)
+- **Keyframe control** (NEW v2.5.0)
 - **Real-time progress tracking**
 - **Python API** for integration
 - **Folder Monitor** with async processing
-- **Smart keyframe intervals** for instant scrubbing
 - Requires: Python 3.9+
 
 👉 See **Installation** section below
@@ -97,12 +109,12 @@ bulletproof monitor start --config monitor.yaml
 
 ## Features
 
-✅ **Smart Keyframe Intervals** - Optimized for instant scrubbing (NEW!)  
+✅ **Keyframe Interval Control** - Professional GOP management (NEW v2.5.0!)  
 ✅ **Folder Monitoring** - Watch directories, auto-transcode based on patterns  
 ✅ **Crash Recovery** - Queue persists to JSON, survives restarts  
 ✅ **Real-Time Progress Tracking** - See live progress bar during transcoding  
 ✅ **7 Transcoding Profiles** - Prebuilt profiles for live playback, streaming, archival  
-✅ **Three Interfaces** - CLI, TUI (interactive), and Folder Monitor  
+✅ **CLI + Folder Monitor** - Command-line and automation interfaces  
 ✅ **Smart Output Naming** - Auto-correct extensions, includes processing marker  
 ✅ **Safety Features** - Prevents overwrites, auto-cleans incomplete files  
 ✅ **Video Analysis** - Inspect codec, resolution, fps, audio specs  
@@ -150,6 +162,30 @@ See [`linux/QUICK_START.md`](./linux/QUICK_START.md) for full Linux instructions
 
 ## Quick Start
 
+### CLI (Recommended)
+
+Fast and scriptable:
+
+```bash
+# List available profiles
+bulletproof transcode --list-profiles
+
+# Transcode with a profile
+bulletproof transcode input.mov --profile live-qlab --output output.mov
+
+# With custom keyframe interval (NEW v2.5.0)
+bulletproof transcode input.mov --profile live-qlab --keyframe-interval 3.0
+
+# With speed preset (for time-sensitive deadlines)
+bulletproof transcode input.mov --profile live-qlab --preset fast
+
+# Analyze video before transcoding
+bulletproof analyze input.mov
+
+# Batch process directory
+bulletproof batch ./videos --profile standard-playback --output-dir ./output
+```
+
 ### Folder Monitor (Automated Processing)
 
 Watch a folder and transcode automatically:
@@ -183,42 +219,20 @@ rules:
     priority: 100
 ```
 
-### TUI (Interactive Mode - Recommended)
+### ~~TUI (Interactive)~~ - DEPRECATED
 
-Best for beginners and one-off transcodes:
-
-```bash
-bulletproof tui
-```
-
-Will prompt you for:
-1. Input video file
-2. Transcoding profile (shows descriptions)
-3. Output location (defaults to `input__processed__profile.mp4`)
-4. Speed preset if needed (fast/normal/slow)
-5. Shows real-time progress bar during transcode
-6. Auto-cleans up if you press Ctrl+C
-
-### CLI Usage
-
-For scripting and automation:
+⚠️ **The TUI is deprecated and will be removed in v3.0.0.**
 
 ```bash
-# List available profiles
-bulletproof transcode --list-profiles
-
-# Transcode single file with profile
-bulletproof transcode input.mov --profile live-qlab --output output.mov
-
-# Transcode with speed preset (for time-sensitive deadlines)
-bulletproof transcode input.mov --profile live-qlab --preset fast
-
-# Analyze video specs before transcoding
-bulletproof analyze input.mov
-
-# Batch process directory
-bulletproof batch ./videos --profile standard-playback --output-dir ./output
+bulletproof tui  # Shows deprecation warning
 ```
+
+**Migration:**
+- Single files → Use `bulletproof transcode` CLI
+- Batch processing → Use `bulletproof batch` or `bulletproof monitor`
+- Interactive UI → Wait for Web Dashboard (Phase 3.1)
+
+👉 **Full migration guide:** [docs/TUI_DEPRECATION.md](./docs/TUI_DEPRECATION.md)
 
 ### Config Management
 
@@ -258,23 +272,30 @@ cd linux/scripts
 For integration into other projects:
 
 ```python
-from bulletproof.core import TranscodeJob, list_profiles
+from bulletproof.core import TranscodeJob, TranscodeProfile
 from pathlib import Path
 
-# Get a profile
-profile = list_profiles()["live-qlab"]
+# Create a profile with custom keyframe interval
+profile = TranscodeProfile(
+    name="custom-live",
+    codec="h264",
+    preset="medium",
+    keyframe_interval=3.0,  # NEW: Keyframes every 3 seconds
+    force_keyframes=True,   # NEW: Strict keyframe placement
+    quality=85,
+    description="Custom live profile"
+)
 
 # Create and execute a job
 job = TranscodeJob(
     input_file=Path("input.mov"),
-    output_file=Path("output.mov"),
+    output_file=Path("output.mp4"),
     profile=profile,
-    speed_preset="normal"  # fast, normal, or slow
+    speed_preset="normal"
 )
 
 if job.execute():
     print(f"Success! Output: {job.output_file}")
-    print(f"Progress was: {job.progress}%")
 else:
     print(f"Failed: {job.error_message}")
 ```
@@ -293,19 +314,30 @@ else:
 | stream-4k | H.265 | .mp4 | Good | **2s** | 4K streaming (responsive seeking) | Medium |
 | archival | ProRes HQ | .mov | Max | Source | Long-term storage (preserve original) | Slow |
 
-### Keyframe Intervals Explained
+### Keyframe Intervals Explained (NEW v2.5.0)
 
+**What are keyframes?**
+Keyframes (I-frames) are reference points in video that enable instant seeking. More frequent keyframes = smoother scrubbing but larger file sizes.
+
+**Built-in intervals:**
 - **5 seconds** (live profiles) - Perfect for QLab and live event playback. Jump anywhere instantly.
-- **2 seconds** (streaming) - Responsive seeking for web players and editing software.
+- **2 seconds** (streaming) - Responsive seeking for web players and HLS/DASH streaming.
 - **10 seconds** (general) - Balanced between file size and scrubbing convenience.
 - **Source** (archival) - Preserves original keyframe structure for maximum quality.
 
-**Linux-specific profiles** (see `linux/QUICK_START.md`):
-- `live-h264-linux` — H.264 for cross-platform playback
-- `standard-playback` — General-purpose H.264
-- `stream-hd` / `stream-4k` — H.265/HEVC streaming
-- `archival-lossless` — FFv1 lossless for preservation
-- `web-compat` — H.264 Baseline for maximum compatibility
+**Custom intervals:**
+```bash
+# Override any profile's keyframe interval
+bulletproof transcode input.mov --profile standard-playback --keyframe-interval 3.0
+```
+
+**Guidelines:**
+- **Live playback (QLab, events):** 5-10 seconds
+- **Editing/post-production:** 1-3 seconds
+- **Streaming/HLS/DASH:** 2-4 seconds
+- **Archive/preservation:** None (preserve source)
+
+👉 **Full technical guide:** [docs/features/KEYFRAME_FEATURE.md](./docs/features/KEYFRAME_FEATURE.md)
 
 ---
 
@@ -316,20 +348,17 @@ Control encode time vs quality:
 ```bash
 # For time-sensitive live playback (encode faster, slight quality loss)
 bulletproof transcode input.mov --profile live-qlab --preset fast
-# ~3 hours for 2-hour video
 
 # Balanced (default)
 bulletproof transcode input.mov --profile live-qlab --preset normal
-# ~4-5 hours for 2-hour video
 
 # Maximum quality (encode slower)
 bulletproof transcode input.mov --profile live-qlab --preset slow
-# ~6-8 hours for 2-hour video
 ```
 
 ## Output Naming
 
-The TUI automatically generates helpful output filenames:
+Automatic helpful output filenames:
 
 ```
 Input:   spider_reveal_v1.mov
@@ -337,11 +366,11 @@ Profile: live-qlab
 Output:  spider_reveal_v1__processed__live-qlab.mov
 ```
 
-The `__processed__` marker makes it easy to distinguish original vs transcoded files in your folder.
+The `__processed__` marker makes it easy to distinguish original vs transcoded files.
 
 ## Progress Tracking
 
-During transcoding, you'll see a real-time progress bar with keyframe info:
+Real-time progress bar with keyframe info:
 
 ```
 Transcoding: SF90_Spider_Reveal(1).mov
@@ -351,8 +380,6 @@ Keyframe Interval: 5.0s (easy scrubbing enabled)
 
 Progress: |████████████░░░░░░░░░░░░░░░░░░░░| 35.2% (42/120s)
 ```
-
-**Pro Tip:** If no progress bar appears, the video might lack duration metadata. The transcode is still running! This is common with some MOV files.
 
 ## Testing
 
@@ -366,8 +393,10 @@ pytest -v
 # Run with coverage
 pytest --cov=bulletproof tests/
 
-# Format code
+# Linting
 black bulletproof tests
+isort bulletproof tests
+flake8 bulletproof tests
 ```
 
 ## Development
@@ -383,53 +412,11 @@ BUILT_IN_PROFILES["my-profile"] = TranscodeProfile(
     preset="medium",
     quality=85,
     max_bitrate="10M",
-    description="Description for TUI",
+    description="Description for CLI",
     extension="mp4",
-    keyframe_interval=5.0,  # Keyframes every 5 seconds
-    force_keyframes=True    # Strict intervals
+    keyframe_interval=5.0,  # Keyframes every 5 seconds (NEW v2.5.0)
+    force_keyframes=True    # Strict intervals (NEW v2.5.0)
 )
-```
-
-### Keyframe Interval Guidelines
-
-- **Live playback (QLab, events):** 5-10 seconds
-- **Editing/post-production:** 2-3 seconds
-- **Streaming/web delivery:** 2 seconds
-- **Archive/preservation:** None (preserve source)
-
-Shorter intervals = larger files but better scrubbing. For live events, 5-10 seconds is the sweet spot.
-
-### Adding a New Command
-
-Create `bulletproof/cli/commands/my_command.py`:
-
-```python
-import click
-
-@click.command()
-@click.argument("input_file")
-def my_command(input_file):
-    """Description of my command."""
-    # Implementation
-    pass
-```
-
-Then register in `bulletproof/cli/main.py` and `bulletproof/cli/commands/__init__.py`.
-
-## Releases
-
-To release a new version:
-
-```bash
-# Tag a release
-git tag v0.2.0
-git push origin v0.2.0
-
-# GitHub Actions will:
-# 1. Run tests
-# 2. Build package
-# 3. Create GitHub release
-# 4. Upload to PyPI (requires PYPI_API_TOKEN secret)
 ```
 
 ## Architecture
@@ -441,29 +428,29 @@ bulletproof/
 │   ├── monitor.py     # Folder watching and file detection
 │   ├── rules.py       # Pattern matching rules
 │   ├── queue.py       # Job queue with persistence
-│   └── job.py         # Transcode execution with progress tracking
+│   └── job.py         # Transcode execution with keyframe control
 ├── services/          # High-level services
 │   └── monitor_service.py  # Orchestration for folder monitoring
 ├── cli/               # Command-line interface
 │   ├── main.py        # CLI entry point
-│   └── commands/      # Subcommands (transcode, monitor, analyze, batch, config, tui)
+│   └── commands/      # Subcommands (transcode, monitor, analyze, batch, config)
 ├── config/            # Configuration management
-│   └── manager.py     # Config file handling
-├── tui/               # Terminal UI with smart defaults
+│   └── loader.py      # Config file handling
+├── tui/               # Terminal UI (DEPRECATED - removal in v3.0.0)
 └── utils/             # Utilities (validation, etc)
 
+docs/
+├── features/          # Feature documentation
+│   └── KEYFRAME_FEATURE.md
+├── testing/           # Testing guides
+│   └── TESTING_KEYFRAMES.md
+├── phase-3.1/        # Web Dashboard planning
+└── TUI_DEPRECATION.md # TUI migration guide
+
 linux/                # Pure Bash implementation (no Python)
-├── scripts/           # Bash scripts (transcode, batch, analyze, config, list-profiles)
-├── profiles.json      # Profile catalog (shared with root scripts/)
-└── install.sh         # Setup script
-
-scripts/              # Universal tools (work on any OS with ffmpeg + jq)
-├── analyze.sh         # Video analysis
-├── list-profiles.sh   # Profile browser
-└── profiles.json      # Profile catalog
-
+scripts/              # Universal tools (work on any OS)
 tests/                # Test suite
-.github/workflows/    # CI/CD (test.yml, release.yml)
+.github/workflows/    # CI/CD
 ```
 
 ## Troubleshooting
@@ -471,19 +458,24 @@ tests/                # Test suite
 | Issue | Solution |
 |-------|----------|
 | "ffmpeg not found" | Install ffmpeg: `brew install ffmpeg` or `apt install ffmpeg` |
-| No progress bar | Video lacks duration metadata. Transcode is still running. Use Ctrl+C to cancel. |
-| Transcode takes 20+ minutes | This is normal for large files or complex codecs. Progress bar shows speed. |
+| No progress bar | Video lacks duration metadata. Transcode is still running. |
+| Transcode takes long | Normal for large files. Check progress bar for speed estimate. |
 | Want to cancel? | Press Ctrl+C - incomplete file is auto-deleted |
 | Import errors | Ensure venv is active and you ran `pip install -e ".[dev]"` |
-| Linux issues | See [`linux/QUICK_START.md`](./linux/QUICK_START.md) for troubleshooting |
-| Monitor not detecting files | Enable DEBUG logging or check permissions. See [MONITOR_GUIDE.md](./docs/MONITOR_GUIDE.md) |
-| Scrubbing still slow? | Ensure you're using a live profile with 5s keyframes. Check with `bulletproof analyze` |
+| Linux issues | See [`linux/QUICK_START.md`](./linux/QUICK_START.md) |
+| Monitor not detecting | Enable DEBUG logging. See monitor docs. |
+| Scrubbing still slow? | Use `--keyframe-interval 2.0` for more frequent keyframes |
+| TUI not working? | It's deprecated. Use `bulletproof transcode` instead. |
 
 ## Documentation
 
-- **[MONITOR_GUIDE.md](./docs/MONITOR_GUIDE.md)** - Complete folder monitoring documentation
-- **[ROADMAP.md](./ROADMAP.md)** - Project phases and future plans
-- **[PHASE_2_4_COMPLETE.md](./PHASE_2_4_COMPLETE.md)** - What's in this release
+- **[CHANGELOG.md](./CHANGELOG.md)** - Version history and release notes
+- **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)** - Common commands quick reference
+- **[docs/features/KEYFRAME_FEATURE.md](./docs/features/KEYFRAME_FEATURE.md)** - Keyframe control guide
+- **[docs/TUI_DEPRECATION.md](./docs/TUI_DEPRECATION.md)** - TUI migration guide
+- **[docs/ROADMAP.md](./docs/ROADMAP.md)** - Project roadmap and future plans
+- **[docs/SCRIPTS_STRUCTURE.md](./docs/SCRIPTS_STRUCTURE.md)** - Architecture overview
+- **[linux/QUICK_START.md](./linux/QUICK_START.md)** - Linux Bash version guide
 
 ## License
 
@@ -495,15 +487,15 @@ Beau Bremer ([@KnowOneActual](https://github.com/KnowOneActual))
 
 ## Philosophy
 
-> "What does this system need?" → Use that codec
+> "What does this system need?" → Use that codec + keyframe strategy
 
 Instead of debating codecs, bulletproof asks the question:
-- Are you doing live playback? → Use ProRes/H.264 with 5s keyframes
-- Are you streaming? → Use H.265 with 2s keyframes
-- Are you long-term storage? → Use ProRes HQ, preserve source keyframes
-- On Linux without Python? → Use H.264/H.265 with pure Bash
-- Do you need to automate? → Use Folder Monitor with pattern rules
-- Need easy scrubbing? → Keyframes are built-in!
+- Live playback? → ProRes/H.264 with 5s keyframes
+- Streaming? → H.265 with 2s keyframes for HLS/DASH
+- Long-term storage? → ProRes HQ, preserve source keyframes
+- Linux without Python? → H.264/H.265 with pure Bash
+- Automation? → Folder Monitor with pattern rules
+- Frame-accurate editing? → Custom keyframe intervals (NEW!)
 
 Each profile and tool is a prepackaged answer to that question.
 
@@ -513,10 +505,12 @@ Contributions welcome! Please:
 1. Fork the repo
 2. Create a feature branch
 3. Add tests for new functionality
-4. Ensure tests pass and code is formatted with `black`
-5. Submit a pull request
+4. Ensure tests pass: `pytest -v`
+5. Format code: `black bulletproof tests && isort bulletproof tests`
+6. Run linting: `flake8 bulletproof tests`
+7. Submit a pull request
 
 ---
 
-**Latest Update:** February 8, 2026 — Added smart keyframe intervals for instant scrubbing  
-**Current Version:** 0.2.1 (Keyframe Support)
+**Latest Update:** February 8, 2026 — v2.5.0 with keyframe control + TUI deprecation  
+**Current Version:** 2.5.0
