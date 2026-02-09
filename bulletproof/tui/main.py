@@ -19,7 +19,7 @@ from bulletproof.core import TranscodeJob, list_profiles
 
 class TUIApp:
     """Interactive CLI-based TUI for bulletproof transcode.
-    
+
     DEPRECATED: This interface will be removed in v3.0.0.
     """
 
@@ -40,7 +40,7 @@ class TUIApp:
         print("    • Monitor: bulletproof monitor start --config monitor.yaml")
         print("    • Web Dashboard: Coming in Phase 3.1")
         print("\n" + "⚠" * 30)
-        
+
         response = input("\nContinue anyway? (y/n): ").strip().lower()
         if response != "y":
             print("\nExiting. Use 'bulletproof transcode --help' for CLI usage.\n")
@@ -243,7 +243,7 @@ class TUIApp:
 
 def main():
     """Entry point for TUI.
-    
+
     DEPRECATED: The TUI will be removed in v3.0.0.
     Use 'bulletproof transcode' CLI instead.
     """
