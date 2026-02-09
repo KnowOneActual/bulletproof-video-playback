@@ -23,7 +23,7 @@ Usage: $(basename "$0") <input_file> --profile <profile> [OPTIONS]
 
 Required:
   <input_file>           Input video file to transcode
-  --profile <profile>    Transcoding profile (e.g., live-h264-linux, standard-playback)
+  --profile <profile>    Transcoding profile (e.g., live-h264-linux, live-linux-hevc-mkv)
 
 Options:
   --output <file>        Output filename (default: input__processed__profile.ext)
@@ -39,6 +39,9 @@ Examples:
   # Transcode with live-h264-linux profile, fast preset
   $(basename "$0") video.mov --profile live-h264-linux --preset fast
 
+  # Linux live events with MKV
+  $(basename "$0") prores_input.mov --profile live-linux-hevc-mkv
+
   # Transcode to specific output file
   $(basename "$0") video.mov --profile standard-playback --output output.mp4
 
@@ -53,7 +56,7 @@ Speed Presets:
 Note: If output file is not specified, it will be named as:
   <basename>__processed__<profile>.<extension>
 
-Example: spider_reveal.mov + live-h264-linux = spider_reveal__processed__live-h264-linux.mp4
+Example: spider_reveal.mov + live-linux-hevc-mkv = spider_reveal__processed__live-linux-hevc-mkv.mkv
 
 EOF
 }
@@ -143,10 +146,15 @@ fi
 
 # Extract profile values
 CODEC=$(echo "$PROFILE_DATA" | jq -r '.codec')
-CODEC_PROFILE=$(echo "$PROFILE_DATA" | jq -r '.codec_profile')
-BITRATE=$(echo "$PROFILE_DATA" | jq -r '.bitrate')
+CODEC_PROFILE=$(echo "$PROFILE_DATA" | jq -r '.codec_profile // "main"')
+BITRATE=$(echo "$PROFILE_DATA" | jq -r '.bitrate // "null"')
+CRF=$(echo "$PROFILE_DATA" | jq -r '.crf // "null"')
 EXTENSION=$(echo "$PROFILE_DATA" | jq -r '.extension')
 FFMPEG_PRESET=$(echo "$PROFILE_DATA" | jq -r '.preset')
+KEYFRAME_INTERVAL=$(echo "$PROFILE_DATA" | jq -r '.keyframe_interval // "null"')
+PIXEL_FORMAT=$(echo "$PROFILE_DATA" | jq -r '.pixel_format // "null"')
+AUDIO_CODEC=$(echo "$PROFILE_DATA" | jq -r '.audio_codec // "aac"')
+AUDIO_BITRATE=$(echo "$PROFILE_DATA" | jq -r '.audio_bitrate // "192k"')
 
 # Override preset from CLI if provided
 if [[ "$PRESET" != "normal" ]]; then
@@ -186,6 +194,19 @@ if [[ "$(realpath "$OUTPUT_FILE")" == "$(realpath "$INPUT_FILE")" ]]; then
     exit 1
 fi
 
+# Get video framerate for keyframe calculation
+get_framerate() {
+    local fps_str
+    fps_str=$(ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of default=noprint_wrappers=1:nokey=1 "$INPUT_FILE" 2>/dev/null || echo "30/1")
+    if [[ $fps_str == *"/"* ]]; then
+        local num=${fps_str%/*}
+        local denom=${fps_str#*/}
+        echo "scale=2; $num / $denom" | bc -l
+    else
+        echo "$fps_str"
+    fi
+}
+
 # Display transcode information
 echo "Bulletproof Video Playback - Linux Transcoder"
 echo "="
@@ -193,46 +214,59 @@ echo "Profile:       $PROFILE"
 echo "Input:         $INPUT_FILE"
 echo "Output:        $OUTPUT_FILE"
 echo "Codec:         $CODEC (profile: $CODEC_PROFILE)"
-echo "Bitrate:       $BITRATE"
+if [[ "$CRF" != "null" ]]; then
+    echo "Quality:       CRF $CRF (constant quality mode)"
+else
+    echo "Bitrate:       $BITRATE"
+fi
+if [[ "$KEYFRAME_INTERVAL" != "null" ]]; then
+    echo "Keyframes:     Every ${KEYFRAME_INTERVAL}s (easy scrubbing for live)"
+fi
 echo "Speed Preset:  $PRESET (ffmpeg: $FFMPEG_PRESET)"
 echo ""
 echo "Processing..."
 echo ""
 
 # Build ffmpeg command based on codec
+FFMPEG_ARGS=()
+
 case "$CODEC" in
     h264)
-        FFMPEG_ARGS=(
+        FFMPEG_ARGS+=(
             "-c:v" "libx264"
             "-preset" "$FFMPEG_PRESET"
             "-profile:v" "$CODEC_PROFILE"
-            "-b:v" "$BITRATE"
-            "-c:a" "aac"
-            "-b:a" "192k"
         )
+        if [[ "$BITRATE" != "null" ]]; then
+            FFMPEG_ARGS+=("-b:v" "$BITRATE")
+        fi
         ;;
     hevc)
-        FFMPEG_ARGS=(
+        FFMPEG_ARGS+=(
             "-c:v" "libx265"
             "-preset" "$FFMPEG_PRESET"
-            "-profile:v" "$CODEC_PROFILE"
-            "-b:v" "$BITRATE"
-            "-c:a" "aac"
-            "-b:a" "192k"
         )
+        # Use CRF mode if specified, otherwise bitrate
+        if [[ "$CRF" != "null" ]]; then
+            FFMPEG_ARGS+=("-crf" "$CRF")
+        elif [[ "$BITRATE" != "null" ]]; then
+            FFMPEG_ARGS+=("-b:v" "$BITRATE")
+        fi
+        # Add hvc1 tag for MP4 containers for compatibility
+        if [[ "$EXTENSION" == "mp4" ]]; then
+            FFMPEG_ARGS+=("-tag:v" "hvc1")
+        fi
         ;;
     ffv1)
-        FFMPEG_ARGS=(
+        FFMPEG_ARGS+=(
             "-c:v" "ffv1"
             "-level" "3"
-            "-c:a" "flac"
         )
         ;;
     prores)
-        FFMPEG_ARGS=(
+        FFMPEG_ARGS+=(
             "-c:v" "prores_hq"
             "-profile:v" "$CODEC_PROFILE"
-            "-c:a" "pcm_s16le"
         )
         ;;
     *)
@@ -241,9 +275,37 @@ case "$CODEC" in
         ;;
 esac
 
+# Add keyframe interval if specified
+if [[ "$KEYFRAME_INTERVAL" != "null" ]]; then
+    FPS=$(get_framerate)
+    GOP_SIZE=$(echo "scale=0; $FPS * $KEYFRAME_INTERVAL / 1" | bc)
+    FFMPEG_ARGS+=(
+        "-g" "$GOP_SIZE"
+        "-keyint_min" "$GOP_SIZE"
+        "-sc_threshold" "0"
+        "-force_key_frames" "expr:gte(t,n_forced*${KEYFRAME_INTERVAL})"
+    )
+fi
+
+# Add pixel format if specified
+if [[ "$PIXEL_FORMAT" != "null" ]]; then
+    FFMPEG_ARGS+=("-pix_fmt" "$PIXEL_FORMAT")
+fi
+
+# Add audio settings
+FFMPEG_ARGS+=("-c:a" "$AUDIO_CODEC")
+if [[ "$AUDIO_BITRATE" != "0" ]] && [[ "$AUDIO_CODEC" != "pcm"* ]]; then
+    FFMPEG_ARGS+=("-b:a" "$AUDIO_BITRATE")
+fi
+
+# Add faststart for MP4/MKV streaming optimization
+if [[ "$EXTENSION" == "mp4" ]] || [[ "$EXTENSION" == "mkv" ]]; then
+    FFMPEG_ARGS+=("-movflags" "+faststart")
+fi
+
 # Run ffmpeg with optional verbose output
 if [[ "$VERBOSE" == true ]]; then
-    echo "Running: ffmpeg -i \"$INPUT_FILE\" ${FFMPEG_ARGS[@]} \"$OUTPUT_FILE\""
+    echo "Running: ffmpeg -i \"$INPUT_FILE\" ${FFMPEG_ARGS[*]} \"$OUTPUT_FILE\""
     echo ""
     ffmpeg -i "$INPUT_FILE" "${FFMPEG_ARGS[@]}" "$OUTPUT_FILE"
 else
@@ -261,8 +323,11 @@ if [[ -f "$OUTPUT_FILE" ]]; then
     echo ""
     echo "Next steps:"
     echo "  1. Test playback on your target device"
-    echo "  2. Keep original file for archival"
-    echo "  3. Delete if satisfied (output marked with __processed__ for easy identification)"
+    if [[ "$EXTENSION" == "mkv" ]]; then
+        echo "  2. For Linux: Test with GPU acceleration: mpv --hwdec=auto $OUTPUT_FILE"
+    fi
+    echo "  3. Keep original file for archival"
+    echo "  4. Delete if satisfied (output marked with __processed__ for easy identification)"
 else
     echo "✗ Transcode failed. No output file created."
     exit 1
