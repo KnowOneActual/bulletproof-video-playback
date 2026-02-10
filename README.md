@@ -13,15 +13,17 @@ Video transcoding for live playback, streaming, and archival. Uses ffmpeg under 
 
 **NEW:** **Folder Monitoring** - Automatically transcode videos based on filename patterns. Drop videos in a folder, watch them auto-process. Perfect for live events, streaming, broadcast, and batch workflows.
 
+**COMING SOON:** **Web Dashboard** - Phase 3.1 in progress! Real-time monitoring via REST API + WebSocket. See [ROADMAP.md](./docs/ROADMAP.md) for details.
+
 ## 🚀 What You Get
 
 ### Three Ways to Use
 
 1. **CLI (Command Line)** - Fast, scriptable, automation-ready ⚡
 2. **Folder Monitor** - Watch directories, auto-transcode with rules 🔄
-3. **~~TUI (Interactive)~~** - ⚠️ **DEPRECATED** (Will be removed in v3.0.0) ❌
+3. **REST API** (NEW!) - Remote monitoring and control via web dashboard 🌐
 
-> **Migration Notice:** The TUI is deprecated. Use `bulletproof transcode` CLI or wait for the Web Dashboard (Phase 3.1). See [TUI_DEPRECATION.md](./docs/TUI_DEPRECATION.md).
+> **Note:** This project has shifted focus away from the Terminal UI (TUI) to concentrate on more practical automation tools (Folder Monitor) and modern web-based interfaces (Web Dashboard). The legacy TUI code remains in the codebase but is no longer actively developed.
 
 ### Platforms
 
@@ -96,6 +98,7 @@ bulletproof monitor start --config monitor.yaml
 - **Real-time progress tracking**
 - **Python API** for integration
 - **Folder Monitor** with async processing
+- **REST API** for remote monitoring (NEW!)
 - Requires: Python 3.9+
 
 👉 See **Installation** section below
@@ -123,6 +126,7 @@ bulletproof monitor start --config monitor.yaml
 
 ## Features
 
+✅ **REST API for Remote Monitoring** - WebSocket + FastAPI (NEW Phase 3.1!)  
 ✅ **MKV Profiles for Linux** - H.265 MKV for live events (NEW!)  
 ✅ **Keyframe Interval Control** - Professional GOP management (NEW v2.5.0!)  
 ✅ **Folder Monitoring** - Watch directories, auto-transcode based on patterns  
@@ -237,20 +241,37 @@ rules:
     priority: 100
 ```
 
-### ~~TUI (Interactive)~~ - DEPRECATED
+### REST API (NEW - Phase 3.1)
 
-⚠️ **The TUI is deprecated and will be removed in v3.0.0.**
+Monitor and control transcoding via REST API:
 
 ```bash
-bulletproof tui  # Shows deprecation warning
+# Install API dependencies
+pip install fastapi uvicorn[standard] websockets pydantic
+
+# Start API server with monitoring
+python examples/dashboard_example.py --config monitor.yaml
+
+# API is now available at http://localhost:8080
+# Interactive docs at http://localhost:8080/docs
+
+# Test endpoints
+curl http://localhost:8080/api/v1/health | jq
+curl http://localhost:8080/api/v1/status | jq
+curl http://localhost:8080/api/v1/queue | jq
 ```
 
-**Migration:**
-- Single files → Use `bulletproof transcode` CLI
-- Batch processing → Use `bulletproof batch` or `bulletproof monitor`
-- Interactive UI → Wait for Web Dashboard (Phase 3.1)
+**Available endpoints:**
+- `GET /api/v1/health` - Health check
+- `GET /api/v1/status` - Monitor status
+- `GET /api/v1/queue` - Queue status and jobs
+- `GET /api/v1/history` - Processing history
+- `GET /api/v1/rules` - Active rules
+- `GET /api/v1/jobs/{id}` - Job details
+- `WS /api/v1/stream` - Real-time WebSocket updates
+- `GET /docs` - Interactive API documentation
 
-👉 **Full migration guide:** [docs/TUI_DEPRECATION.md](./docs/TUI_DEPRECATION.md)
+👉 **Full API guide:** [docs/API_QUICKSTART.md](./docs/API_QUICKSTART.md)
 
 ### Config Management
 
@@ -426,7 +447,7 @@ Duration: 2.2 minutes
 Speed Preset: normal
 Keyframe Interval: 5.0s (easy scrubbing enabled)
 
-Progress: |████████████░░░░░░░░░░░░░░░░░░░░| 35.2% (42/120s)
+Progress: |████████████░░░░░░░░░░░░░░░░░░| 35.2% (42/120s)
 ```
 
 ## Testing
@@ -471,6 +492,10 @@ BUILT_IN_PROFILES["my-profile"] = TranscodeProfile(
 
 ```
 bulletproof/
+├── api/               # REST API (NEW Phase 3.1!)
+│   ├── models.py      # Pydantic response models
+│   ├── routes.py      # REST + WebSocket endpoints
+│   └── server.py      # FastAPI app
 ├── core/              # Transcode logic
 │   ├── profile.py     # Profile definitions & codec mapping
 │   ├── monitor.py     # Folder watching and file detection
@@ -484,20 +509,21 @@ bulletproof/
 │   └── commands/      # Subcommands (transcode, monitor, analyze, batch, config)
 ├── config/            # Configuration management
 │   └── loader.py      # Config file handling
-├── tui/               # Terminal UI (DEPRECATED - removal in v3.0.0)
 └── utils/             # Utilities (validation, etc)
 
 docs/
 ├── features/          # Feature documentation
 │   └── KEYFRAME_FEATURE.md
-├── testing/           # Testing guides
-│   └── TESTING_KEYFRAMES.md
-├── phase-3.1/        # Web Dashboard planning
-└── TUI_DEPRECATION.md # TUI migration guide
+├── API_QUICKSTART.md # REST API guide (NEW!)
+├── ROADMAP.md         # Project roadmap
+└── phase-3.1/        # Web Dashboard planning
+
+examples/
+└── dashboard_example.py  # API server example (NEW!)
 
 linux/                # Pure Bash implementation (no Python)
 scripts/              # Universal tools (work on any OS)
-tests/                # Test suite
+tests/                # Test suite (33 tests passing)
 .github/workflows/    # CI/CD
 ```
 
@@ -513,16 +539,16 @@ tests/                # Test suite
 | Linux issues | See [`linux/QUICK_START.md`](./linux/QUICK_START.md) |
 | Monitor not detecting | Enable DEBUG logging. See monitor docs. |
 | Scrubbing still slow? | Use `--keyframe-interval 2.0` for more frequent keyframes |
-| TUI not working? | It's deprecated. Use `bulletproof transcode` instead. |
 | MKV playback issues on Linux? | Enable GPU acceleration: `mpv --hwdec=auto video.mkv` |
 | 10-bit encoding not working? | Update ffmpeg: some older versions lack 10-bit H.265 support |
+| API not starting? | Install dependencies: `pip install fastapi uvicorn[standard] websockets pydantic` |
 
 ## Documentation
 
 - **[CHANGELOG.md](./CHANGELOG.md)** - Version history and release notes
 - **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)** - Common commands quick reference
+- **[docs/API_QUICKSTART.md](./docs/API_QUICKSTART.md)** - REST API guide (NEW!)
 - **[docs/features/KEYFRAME_FEATURE.md](./docs/features/KEYFRAME_FEATURE.md)** - Keyframe control guide
-- **[docs/TUI_DEPRECATION.md](./docs/TUI_DEPRECATION.md)** - TUI migration guide
 - **[docs/ROADMAP.md](./docs/ROADMAP.md)** - Project roadmap and future plans
 - **[docs/SCRIPTS_STRUCTURE.md](./docs/SCRIPTS_STRUCTURE.md)** - Architecture overview
 - **[linux/QUICK_START.md](./linux/QUICK_START.md)** - Linux Bash version guide
@@ -548,6 +574,7 @@ Instead of debating codecs, bulletproof asks the question:
 - Linux without Python? → H.264/H.265 with pure Bash
 - Automation? → Folder Monitor with pattern rules
 - Frame-accurate editing? → Custom keyframe intervals (NEW!)
+- Remote monitoring? → REST API + WebSocket (NEW Phase 3.1!)
 
 Each profile and tool is a prepackaged answer to that question.
 
@@ -564,5 +591,5 @@ Contributions welcome! Please:
 
 ---
 
-**Latest Update:** February 8, 2026 — v2.5.0 with keyframe control + MKV Linux profiles  
-**Current Version:** 2.5.0
+**Latest Update:** February 10, 2026 — Phase 3.1 Day 1: REST API + WebSocket  
+**Current Version:** 2.5.0 (API in development)
