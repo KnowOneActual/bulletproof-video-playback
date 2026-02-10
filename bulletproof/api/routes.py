@@ -2,13 +2,10 @@
 
 import asyncio
 from datetime import datetime
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
-from fastapi.responses import JSONResponse
 
 from bulletproof.api.models import (
-    ErrorResponse,
     HealthResponse,
     HistoryResponse,
     JobResponse,
@@ -285,5 +282,6 @@ async def websocket_endpoint(websocket: WebSocket):
         )
         try:
             await websocket.send_json(error_msg.model_dump())
-        except:
+        except Exception:
+            # Client disconnected, can't send error
             pass
