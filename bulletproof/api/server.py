@@ -24,8 +24,6 @@ _service_task: Optional[asyncio.Task] = None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage application lifespan (startup/shutdown)."""
-    global _service, _service_task
-
     # Startup
     logger.info("Starting bulletproof dashboard API...")
 
