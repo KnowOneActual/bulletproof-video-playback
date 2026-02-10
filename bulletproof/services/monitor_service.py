@@ -180,8 +180,8 @@ class MonitorService:
             file_info: FileInfo from monitor
         """
         try:
-            # Match file to rule
-            rule = self.rule_engine.match(file_info.path)
+            # Match file to rule - pass filename string, not Path object
+            rule = self.rule_engine.match(file_info.path.name)
             if not rule:
                 self.logger.warning(f"No rule matched for {file_info.path.name}")
                 return
