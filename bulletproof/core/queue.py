@@ -105,7 +105,9 @@ class TranscodeQueue:
         self._jobs.append(job)
         self._save()
 
-    def add_from_file(self, file_info: FileInfo, output_file: Path, profile_name: str, priority: int = 100) -> QueuedJob:
+    def add_from_file(
+        self, file_info: FileInfo, output_file: Path, profile_name: str, priority: int = 100
+    ) -> QueuedJob:
         """Create and add job from FileInfo.
 
         Args:
