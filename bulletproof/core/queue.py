@@ -1,7 +1,8 @@
 """Transcode job queue with persistence."""
 
 import json
-from dataclasses import dataclass
+import uuid
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
@@ -28,6 +29,9 @@ class QueuedJob:
     output_file: Path
     profile_name: str
     status: JobStatus = JobStatus.PENDING
+    id: str = field(default_factory=lambda: f"job_{uuid.uuid4().hex[:8]}")
+    priority: int = 100
+    progress: float = 0.0
     created_at: str = ""
     started_at: Optional[str] = None
     completed_at: Optional[str] = None
@@ -44,10 +48,13 @@ class QueuedJob:
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization."""
         return {
+            "id": self.id,
             "input_file": str(self.input_file),
             "output_file": str(self.output_file),
             "profile_name": self.profile_name,
             "status": self.status.value,
+            "priority": self.priority,
+            "progress": self.progress,
             "created_at": self.created_at,
             "started_at": self.started_at,
             "completed_at": self.completed_at,
@@ -62,6 +69,9 @@ class QueuedJob:
             output_file=Path(data["output_file"]),
             profile_name=data["profile_name"],
             status=JobStatus(data.get("status", "pending")),
+            id=data.get("id", f"job_{uuid.uuid4().hex[:8]}"),
+            priority=data.get("priority", 100),
+            progress=data.get("progress", 0.0),
             created_at=data.get("created_at", ""),
             started_at=data.get("started_at"),
             completed_at=data.get("completed_at"),
@@ -95,13 +105,14 @@ class TranscodeQueue:
         self._jobs.append(job)
         self._save()
 
-    def add_from_file(self, file_info: FileInfo, output_file: Path, profile_name: str) -> QueuedJob:
+    def add_from_file(self, file_info: FileInfo, output_file: Path, profile_name: str, priority: int = 100) -> QueuedJob:
         """Create and add job from FileInfo.
 
         Args:
             file_info: FileInfo from FolderMonitor
             output_file: Output file path
             profile_name: Name of profile to use
+            priority: Job priority (higher = processed first)
 
         Returns:
             The created QueuedJob
@@ -110,6 +121,7 @@ class TranscodeQueue:
             input_file=file_info.path,
             output_file=output_file,
             profile_name=profile_name,
+            priority=priority,
         )
         self.add(job)
         return job
@@ -120,8 +132,21 @@ class TranscodeQueue:
         Returns:
             First pending QueuedJob or None
         """
+        # Sort by priority (highest first)
+        pending = [j for j in self._jobs if j.status == JobStatus.PENDING]
+        if not pending:
+            return None
+        pending.sort(key=lambda j: j.priority, reverse=True)
+        return pending[0]
+
+    def get_current(self) -> Optional[QueuedJob]:
+        """Get currently processing job.
+
+        Returns:
+            Processing QueuedJob or None
+        """
         for job in self._jobs:
-            if job.status == JobStatus.PENDING:
+            if job.status == JobStatus.PROCESSING:
                 return job
         return None
 
@@ -138,6 +163,25 @@ class TranscodeQueue:
             self._save()
         return job
 
+    def get_job(self, job_id: str) -> Optional[QueuedJob]:
+        """Get job by ID.
+
+        Args:
+            job_id: Job ID to find
+
+        Returns:
+            QueuedJob or None if not found
+        """
+        # Check active queue
+        for job in self._jobs:
+            if job.id == job_id:
+                return job
+        # Check history
+        for job in self._history:
+            if job.id == job_id:
+                return job
+        return None
+
     def mark_complete(self, job: QueuedJob) -> None:
         """Mark job as complete.
 
@@ -145,9 +189,11 @@ class TranscodeQueue:
             job: QueuedJob to mark complete
         """
         job.status = JobStatus.COMPLETE
+        job.progress = 100.0
         job.completed_at = datetime.now().isoformat()
         self._history.append(job)
-        self._jobs.remove(job)
+        if job in self._jobs:
+            self._jobs.remove(job)
         self._save()
 
     def mark_error(self, job: QueuedJob, error_message: str) -> None:
@@ -161,7 +207,8 @@ class TranscodeQueue:
         job.error_message = error_message
         job.completed_at = datetime.now().isoformat()
         self._history.append(job)
-        self._jobs.remove(job)
+        if job in self._jobs:
+            self._jobs.remove(job)
         self._save()
 
     def remove(self, job: QueuedJob) -> None:
@@ -174,6 +221,11 @@ class TranscodeQueue:
             self._jobs.remove(job)
             self._save()
 
+    def clear(self) -> None:
+        """Clear all jobs from queue (not history)."""
+        self._jobs.clear()
+        self._save()
+
     def get_status(self) -> dict:
         """Get queue status.
 
@@ -183,9 +235,9 @@ class TranscodeQueue:
         return {
             "pending": sum(1 for j in self._jobs if j.status == JobStatus.PENDING),
             "processing": sum(1 for j in self._jobs if j.status == JobStatus.PROCESSING),
-            "total_queued": len(self._jobs),
-            "completed": sum(1 for j in self._history if j.status == JobStatus.COMPLETE),
-            "errored": sum(1 for j in self._history if j.status == JobStatus.ERROR),
+            "total_jobs": len(self._jobs) + len(self._history),
+            "complete": sum(1 for j in self._history if j.status == JobStatus.COMPLETE),
+            "error": sum(1 for j in self._history if j.status == JobStatus.ERROR),
             "total_processed": len(self._history),
         }
 
@@ -197,18 +249,17 @@ class TranscodeQueue:
         """
         return self._jobs.copy()
 
-    def get_history(self, limit: Optional[int] = None) -> list[QueuedJob]:
+    def get_history(self, limit: Optional[int] = None) -> list[dict]:
         """Get processing history.
 
         Args:
             limit: Maximum number of history items to return
 
         Returns:
-            List of processed QueuedJob objects
+            List of processed job dicts
         """
-        if limit:
-            return self._history[-limit:]
-        return self._history.copy()
+        history = self._history[-limit:] if limit else self._history
+        return [job.to_dict() for job in history]
 
     def _save(self) -> None:
         """Persist queue to JSON file."""
