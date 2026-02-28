@@ -120,8 +120,8 @@ for tool in "${UNIVERSAL_TOOLS[@]}"; do
         if [[ -e "$TARGET_FILE" ]]; then
             rm -f "$TARGET_FILE"
         fi
-        # Create symlink to root scripts/
-        ln -s "$SOURCE_FILE" "$TARGET_FILE"
+        # Create relative symlink to root scripts/
+        ln -s "../../scripts/${tool}" "$TARGET_FILE"
         echo "  + Symlinked $tool from ../scripts/"
     else
         echo -e "  ${YELLOW}⚠${NC} Source not found: $SOURCE_FILE"
@@ -135,7 +135,7 @@ if [[ -f "$SOURCE_PROFILES" ]]; then
     if [[ -e "$TARGET_PROFILES" ]]; then
         rm -f "$TARGET_PROFILES"
     fi
-    ln -s "$SOURCE_PROFILES" "$TARGET_PROFILES"
+    ln -s "../scripts/profiles.json" "$TARGET_PROFILES"
     echo "  + Symlinked profiles.json from ../scripts/"
 else
     echo -e "  ${YELLOW}⚠${NC} Source not found: $SOURCE_PROFILES"

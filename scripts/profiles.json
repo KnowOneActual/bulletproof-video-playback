@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Linux-native video transcoding profiles optimized for live playback, streaming, and archival",
   "metadata": {
     "platform": "linux",
@@ -20,6 +20,22 @@
       "use_case": "Live event playback, streaming to networked clients",
       "speed_estimate": "Medium (4-6 hrs for 2hr video)",
       "notes": "Universal codec, good quality, widely supported on Linux desktop and ARM devices"
+    },
+    "live-linux-hevc-mkv": {
+      "name": "live-linux-hevc-mkv",
+      "codec": "hevc",
+      "codec_profile": "main",
+      "crf": "20",
+      "preset": "medium",
+      "extension": "mkv",
+      "quality": 90,
+      "keyframe_interval": "5",
+      "audio_codec": "aac",
+      "audio_bitrate": "192k",
+      "description": "H.265 MKV for Linux live event playback (mpv, Linux Show Player, 5s keyframes)",
+      "use_case": "Linux live events with mpv/VLC, ProRes replacement for live playback",
+      "speed_estimate": "Medium (5-7 hrs for 2hr video)",
+      "notes": "MKV container for better seeking reliability. GPU acceleration recommended (VA-API/VDPAU). CRF 20 for visually transparent quality."
     },
     "standard-playback": {
       "name": "standard-playback",
@@ -72,6 +88,21 @@
       "use_case": "Long-term storage, digital preservation, legal archival",
       "speed_estimate": "Slow (10-15 hrs for 2hr video)",
       "notes": "Lossless, royalty-free codec; outputs MKV container for maximum compatibility"
+    },
+    "archival-linux-mkv": {
+      "name": "archival-linux-mkv",
+      "codec": "hevc",
+      "codec_profile": "main10",
+      "crf": "18",
+      "preset": "slow",
+      "extension": "mkv",
+      "quality": 98,
+      "pixel_format": "yuv422p10le",
+      "audio_codec": "pcm_s24le",
+      "description": "H.265 10-bit MKV for Linux archival (ProRes 422 replacement, visually lossless)",
+      "use_case": "Linux archival storage, ProRes 422 HQ replacement, professional preservation",
+      "speed_estimate": "Slow (8-12 hrs for 2hr video)",
+      "notes": "10-bit color depth matches ProRes 422. CRF 18 for near-lossless quality. ~60-80% smaller than ProRes 422 HQ. Uncompressed PCM audio."
     },
     "archival-prores-alt": {
       "name": "archival-prores-alt",
