@@ -609,5 +609,5 @@ Contributions welcome! Please:
 
 ---
 
-**Latest Update:** February 10, 2026 — Phase 3.1 Day 1: REST API + WebSocket  
+**Latest Update:** February 27, 2026  
 **Current Version:** 2.5.0 (API in development)
