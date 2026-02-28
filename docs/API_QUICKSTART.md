@@ -4,21 +4,28 @@
 
 A production-ready **REST API + WebSocket** backend for the bulletproof dashboard! 🚀
 
-**Date:** February 10, 2026  
-**Phase:** 3.1 - Week 1, Day 1  
-**Status:** MVP Backend Complete ✅
+**Date:** February 27, 2026  
+**Phase:** 3.1 - Week 1, Day 2  
+**Status:** MVP Backend + Job Controls Complete ✅
 
 ---
 
 ## Features
 
-### REST API Endpoints
+### REST API Endpoints (Monitoring)
 - `GET /api/v1/health` - Health check
 - `GET /api/v1/status` - Monitor service status
 - `GET /api/v1/queue` - Queue status and jobs
 - `GET /api/v1/history` - Processing history
 - `GET /api/v1/rules` - Active rules
 - `GET /api/v1/jobs/{job_id}` - Specific job details
+
+### REST API Endpoints (Control)
+- `POST /api/v1/queue/pause` - Pause processing
+- `POST /api/v1/queue/resume` - Resume processing
+- `POST /api/v1/queue/clear` - Clear pending jobs
+- `POST /api/v1/jobs/{job_id}/cancel` - Cancel a job
+- `POST /api/v1/jobs/{job_id}/retry` - Retry a job
 
 ### WebSocket
 - `WS /api/v1/stream` - Real-time status updates (every 2 seconds)
@@ -75,6 +82,15 @@ curl http://localhost:8080/api/v1/status
 
 # Queue status
 curl http://localhost:8080/api/v1/queue
+
+# Pause queue
+curl -X POST http://localhost:8080/api/v1/queue/pause
+
+# Resume queue
+curl -X POST http://localhost:8080/api/v1/queue/resume
+
+# Cancel job
+curl -X POST http://localhost:8080/api/v1/jobs/job_123/cancel
 
 # Processing history
 curl http://localhost:8080/api/v1/history?limit=5
@@ -434,17 +450,11 @@ BULLETPROOF_LOG_LEVEL=INFO
 
 ## What's Next?
 
-**Tomorrow (Day 2):** Job control endpoints
-- POST /api/v1/jobs/{job_id}/cancel
-- POST /api/v1/jobs/{job_id}/retry
-- POST /api/v1/queue/clear
-- POST /api/v1/queue/pause
-- POST /api/v1/queue/resume
-
-**Day 3:** Configuration management
+**Tomorrow (Day 3):** Configuration management
 - GET /api/v1/config
 - PUT /api/v1/config
 - POST /api/v1/config/validate
+- GET /api/v1/profiles
 
 **Days 4-5:** Polish and testing
 - Enhanced WebSocket messages (job progress)
@@ -463,7 +473,7 @@ BULLETPROOF_LOG_LEVEL=INFO
 
 ---
 
-**Status:** Phase 3.1 Day 1 Complete! ✅  
-**Next Session:** Job control endpoints (Day 2)  
-**Time Spent:** ~2 hours  
-**Lines of Code:** ~800
+**Status:** Phase 3.1 Day 2 Complete! ✅  
+**Next Session:** Configuration management endpoints (Day 3)  
+**Time Spent:** ~3 hours  
+**Lines of Code:** ~1,000

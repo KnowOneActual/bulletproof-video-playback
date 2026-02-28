@@ -4,6 +4,26 @@ All notable changes to bulletproof-video-playback are documented in this file.
 
 ## [Unreleased]
 
+### 🚀 Phase 3.1 - Web Dashboard API (Day 2 Complete - 2026-02-27)
+
+#### Added
+- **Job Control API Endpoints**:
+  - `POST /api/v1/queue/pause` - Pause transcode queue processing
+  - `POST /api/v1/queue/resume` - Resume transcode queue processing
+  - `POST /api/v1/queue/clear` - Clear all pending jobs from the queue
+  - `POST /api/v1/jobs/{job_id}/cancel` - Cancel a pending job
+  - `POST /api/v1/jobs/{job_id}/retry` - Retry a failed or completed job
+
+- **Queue Enhancements**:
+  - Added `CANCELLED` state to `JobStatus`.
+  - Cancelled jobs are correctly moved to history and tracked in status responses.
+  - Implemented logic in `MonitorService` to support queue pausing.
+
+#### Fixed
+- **MonitorService Queuing Bug**:
+  - Fixed an issue where stable files were detected and matched to a rule, but the job was never added to the `TranscodeQueue`.
+  - Jobs are now correctly generated and enqueued.
+
 ### 🚀 Phase 3.1 - Web Dashboard API (Day 1 Complete - 2026-02-10)
 
 #### Added

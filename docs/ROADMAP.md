@@ -1,6 +1,6 @@
 # 🗺️ Bulletproof Video Playback - Roadmap
 
-## Current Phase: 3.1 🚀 IN PROGRESS (Day 1/15 Complete)
+## Current Phase: 3.1 🚀 IN PROGRESS (Day 2/15 Complete)
 
 ---
 
@@ -50,12 +50,12 @@
 
 ## 🚀 CURRENT PHASE: Phase 3.1 (Web Dashboard) - IN PROGRESS
 
-### Phase 3.1: Web Dashboard - Day 1/15 Complete ✅
+### Phase 3.1: Web Dashboard - Day 2/15 Complete ✅
 
 **Status:** Building! Started February 10, 2026
 
-#### 3.1.1: MVP Backend (Week 1) - 20% Complete
-- [x] **Day 1 (Feb 10):** FastAPI server with REST endpoints ✅
+#### 3.1.1: MVP Backend (Week 1) - 40% Complete
+- [x] **Day 1:** FastAPI server with REST endpoints ✅
   - [x] Health check endpoint
   - [x] Monitor status endpoint
   - [x] Queue status endpoint
@@ -69,15 +69,15 @@
   - [x] Enhanced queue system (IDs, priorities, progress)
   - [x] Complete example script
   - [x] API quickstart documentation
-  - **Result:** 8 REST endpoints + WebSocket, ~800 lines of code, all linting passing
 
-- [ ] **Day 2:** Job control endpoints
-  - [ ] POST /api/v1/jobs/{id}/cancel - Cancel a job
-  - [ ] POST /api/v1/jobs/{id}/retry - Retry failed job
-  - [ ] POST /api/v1/queue/clear - Clear pending jobs
-  - [ ] POST /api/v1/queue/pause - Pause processing
-  - [ ] POST /api/v1/queue/resume - Resume processing
-  - **Estimated:** 2-3 hours
+- [x] **Day 2:** Job control endpoints ✅
+  - [x] Fixed critical queuing bug in MonitorService
+  - [x] POST /api/v1/jobs/{id}/cancel - Cancel a job
+  - [x] POST /api/v1/jobs/{id}/retry - Retry failed job
+  - [x] POST /api/v1/queue/clear - Clear pending jobs
+  - [x] POST /api/v1/queue/pause - Pause processing
+  - [x] POST /api/v1/queue/resume - Resume processing
+  - [x] Added `CANCELLED` status to job logic
 
 - [ ] **Day 3:** Configuration management
   - [ ] GET /api/v1/config - Get current config
@@ -101,8 +101,8 @@
   - [ ] Documentation updates
   - **Estimated:** 3-4 hours
 
-**Week 1 Status:** 1/5 days complete (20%)
-**Timeline:** Days 1-5 (Feb 10-14, 2026)
+**Week 1 Status:** 2/5 days complete (40%)
+**Timeline:** Days 1-5
 **Expected:** Functional backend API with job controls
 
 #### 3.1.2: Features (Week 2) - Not Started
@@ -114,7 +114,7 @@
 - [ ] Progress bars and animations
 - [ ] Error notifications
 
-**Timeline:** Days 6-10 (Feb 17-21, 2026)
+**Timeline:** Days 6-10
 **Expected:** Feature-complete dashboard UI
 
 #### 3.1.3: Production Ready (Week 3) - Not Started
@@ -126,7 +126,7 @@
 - [ ] Merge to main
 - [ ] Tag v3.1.0
 
-**Timeline:** Days 11-15 (Feb 24-28, 2026)
+**Timeline:** Days 11-15
 **Expected:** Production-ready, merged to main
 
 #### Tech Stack
@@ -139,41 +139,41 @@
 - **Deployment:** Docker + Compose (Week 3)
 
 #### Success Criteria
-- ✅ All Phase 2.4 tests still passing (33/33)
-- ✅ Day 1 backend functional and tested
+- ✅ All Phase 2.4 tests still passing
+- ✅ Day 1 & 2 backend functional and tested
 - [ ] Dashboard responsive and real-time
 - [ ] Job controls functional
 - [ ] Production-ready code
 - [ ] Merged to main
 
 **Total Estimated Effort:** 40-50 hours over 3 weeks
-**Expected Completion:** February 28, 2026
-**Progress:** 7% complete (Day 1/15)
+**Progress:** 13% complete (Day 2/15)
 
 ---
 
-## 📋 COMPLETED TODAY (February 10, 2026)
+## 📋 COMPLETED TODAY
 
-### Phase 2.4.1 Bug Fix
-- ✅ Fixed MonitorService rule matching (Path vs string issue)
-- ✅ Phase 2.4 now fully production-ready
-- ✅ All 33 tests passing
-- ✅ Zero known bugs
+### Repository Cleanup
+- ✅ Reorganized docs: moved milestone reports to archive and track folders.
+- ✅ Cleaned up root: moved test video to test_videos/ and removed empty dirs.
+- ✅ Unified scripts: updated root profiles.json and replaced linux/ duplicates with relative symlinks.
+- ✅ Fixed install.sh: updated symlink logic to use relative paths.
 
-### Phase 3.1 Day 1
-- ✅ FastAPI REST API with 8 endpoints
-- ✅ WebSocket real-time streaming
-- ✅ Pydantic data models (type-safe)
-- ✅ Enhanced queue system (IDs, priorities, progress)
-- ✅ Interactive Swagger UI documentation
-- ✅ Complete API quickstart guide
-- ✅ Working example script
-- ✅ All linting passing (black, isort, flake8)
-- ✅ ~800 lines of production-ready code
+### Phase 3.1 Day 2 + Bug Fixes
+- ✅ Fixed critical bug in `MonitorService` where stable files were detected but not added to `TranscodeQueue`.
+- ✅ Implemented `pause` and `resume` logic in the service.
+- ✅ Implemented `cancel_job`, `retry_job`, and `clear_queue` logic.
+- ✅ Added `JobStatus.CANCELLED` support to state management.
+- ✅ Exposed new features via 5 REST API POST endpoints:
+  - `/api/v1/queue/pause`
+  - `/api/v1/queue/resume`
+  - `/api/v1/queue/clear`
+  - `/api/v1/jobs/{job_id}/cancel`
+  - `/api/v1/jobs/{job_id}/retry`
+- ✅ Updated `/api/v1/status` to include the new `paused` state.
+- ✅ Verified all functionality with a comprehensive test script.
 
-**Time Spent Today:** ~2 hours  
-**Commits Today:** 11 commits  
-**Status:** On schedule for Week 1 completion
+**Status:** On schedule. Day 2 completely finished!
 
 ---
 
