@@ -46,10 +46,6 @@ dev = [
     "mypy>=1.0",
 ]
 
-tui = [
-    "textual>=0.20.0",
-]
-
 [project.urls]
 Repository = "https://github.com/KnowOneActual/bulletproof-video-playback"
 "Bug Tracker" = "https://github.com/KnowOneActual/bulletproof-video-playback/issues"
@@ -58,7 +54,7 @@ Repository = "https://github.com/KnowOneActual/bulletproof-video-playback"
 bulletproof = "bulletproof.cli:cli"
 
 [tool.setuptools]
-packages = ["bulletproof", "bulletproof.core", "bulletproof.cli", "bulletproof.cli.commands", "bulletproof.tui", "bulletproof.utils", "tests"]
+packages = ["bulletproof", "bulletproof.core", "bulletproof.cli", "bulletproof.cli.commands", "bulletproof.utils", "tests"]
 
 [tool.ruff]
 line-length = 100

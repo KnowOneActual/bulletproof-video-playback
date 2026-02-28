@@ -3,7 +3,7 @@
 import click
 
 from bulletproof import __version__
-from bulletproof.cli.commands import analyze, batch, config, monitor, transcode, tui
+from bulletproof.cli.commands import analyze, batch, config, monitor, transcode
 
 
 @click.group()
@@ -16,7 +16,6 @@ def cli():
 cli.add_command(transcode)
 cli.add_command(analyze)
 cli.add_command(batch)
-cli.add_command(tui)
 cli.add_command(config)
 cli.add_command(monitor)
 

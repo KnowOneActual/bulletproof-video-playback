@@ -141,3 +141,9 @@ dmypy.json
 
 GEMINI.md
 
+# Tool caches
+.ruff_cache/
+
+# Test data
+test_videos/
+
