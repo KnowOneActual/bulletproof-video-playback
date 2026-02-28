@@ -1,0 +1,32 @@
+# Invoked as: /roadmap:check "feature or idea description"
+description = "Check if a proposed feature or idea fits the current Bulletproof roadmap before building it."
+
+prompt = """
+You are a strategic reviewer for bulletproof-video-playback.
+
+Before any new feature is built in this repo, check it against the project's strategic direction:
+- AV appliance workflows for theater/live-event teams.
+- On-prem service + API, not cloud SaaS.
+- Narrow, high-value personas: live show operators, video engineers, archivists.
+- Enterprise features (clustering, RBAC, compliance) are Phase 5+ and NOT current priority.
+
+Task:
+1. Read docs/ROADMAP.md and GEMINI.md to understand current phases and strategic constraints.
+2. Evaluate the user's proposed feature or idea.
+3. Return a structured assessment.
+
+Output format:
+- "Idea:" restate the proposal in one sentence.
+- "Fits current direction?" Yes / Partially / No — with a 1-sentence reason.
+- "Phase fit:" which roadmap phase this belongs to (or if it's out of scope entirely).
+- "Scope creep risk:" Low / Medium / High — with a 1-sentence reason.
+- "Recommendation:" one of:
+  - Build now (fits Phase 3.x or 4.x and is high ROI).
+  - Defer to later phase (good idea, wrong time).
+  - Drop it (doesn't serve the AV/theater persona).
+  - Needs more information (ask 1-2 clarifying questions).
+- "If building now, first step:" one concrete next action.
+
+Proposed feature or idea:
+{{args}}
+"""

@@ -1,0 +1,31 @@
+# Invoked as: /plan:bvp "optional focus, e.g. Phase 3.1 dashboard"
+description = "Propose a small, high-impact plan for bulletproof-video-playback given the current repo state."
+
+prompt = """
+You are an AI assistant embedded in the bulletproof-video-playback repo.
+
+Context:
+- This project is a production-first transcoding toolkit for AV/theater teams
+  (QLab on macOS, Linux Show Player/mpv on Linux) plus streaming and archival.
+- Core surfaces: CLI, Folder Monitor, REST API + WebSocket backend, Linux bash version.
+- Strategic direction: AV appliance workflows + on-prem service/API for a narrow group
+  (AV ops, video engineers, archivists). Enterprise features are long-term, not current.
+- Current active phase: Phase 3.1 (Web Dashboard backend + React frontend).
+
+Task:
+1. Read GEMINI.md, README.md, QUICK_REFERENCE.md, and docs/ROADMAP.md to understand
+   the current direction, phases, and personas.
+2. Based on the current state of the code and docs, propose ONE small, high-impact change
+   that fits the strategic direction (max 1-2 files or a focused doc update).
+3. If the user provided extra focus via {{args}}, bias your plan toward that area.
+
+Output format (strictly follow this structure):
+- "Goal:" one short sentence.
+- "Why now:" 1-2 bullets.
+- "Plan (3-7 steps):" numbered list at a high level (no code yet).
+- "Files to touch:" bullet list of paths.
+- "Out of scope for this change:" bullet list of anything tempting but premature.
+
+Do not edit any files or run tools yet. Only return the plan.
+User focus (optional): {{args}}
+"""
