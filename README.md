@@ -471,7 +471,7 @@ ruff format .
 
 ### Modern Python Tooling (Ruff)
 
-We have switched our entire linting and formatting stack to **[Ruff](https://github.com/astral-sh/ruff)**. 
+Switched the entire linting and formatting stack to **[Ruff](https://github.com/astral-sh/ruff)**. 
 - **Speed:** 10-100x faster than previous tools (Black, isort, flake8).
 - **Efficiency:** Unified configuration in `pyproject.toml`.
 - **Consistency:** All-in-one tool for linting, formatting, and import sorting.
