@@ -97,6 +97,7 @@ class MonitorStatusResponse(BaseModel):
     """Monitor service status response."""
 
     running: bool
+    paused: bool = False
     watch_directory: str
     output_directory: str
     poll_interval: int
@@ -109,6 +110,7 @@ class MonitorStatusResponse(BaseModel):
         json_schema_extra = {
             "example": {
                 "running": True,
+                "paused": False,
                 "watch_directory": "/incoming",
                 "output_directory": "/output",
                 "poll_interval": 5,

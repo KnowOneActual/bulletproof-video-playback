@@ -71,6 +71,7 @@ async def get_status():
 
     return MonitorStatusResponse(
         running=status["running"],
+        paused=status.get("paused", False),
         watch_directory=status["watch_directory"],
         output_directory=status["output_directory"],
         poll_interval=status["poll_interval"],
@@ -83,6 +84,60 @@ async def get_status():
             [f for f in monitor_status.get("files", []) if f.get("status") == "processing"]
         ),
     )
+
+
+@router.post("/queue/pause", tags=["Queue"])
+async def pause_queue():
+    """Pause transcode queue processing."""
+    service = get_monitor_service()
+    service.pause()
+    return {"message": "Queue paused"}
+
+
+@router.post("/queue/resume", tags=["Queue"])
+async def resume_queue():
+    """Resume transcode queue processing."""
+    service = get_monitor_service()
+    service.resume()
+    return {"message": "Queue resumed"}
+
+
+@router.post("/queue/clear", tags=["Queue"])
+async def clear_queue():
+    """Clear all pending jobs from the queue."""
+    service = get_monitor_service()
+    service.clear_queue()
+    return {"message": "Queue cleared"}
+
+
+@router.post("/jobs/{job_id}/cancel", tags=["Jobs"])
+async def cancel_job(job_id: str):
+    """Cancel a pending job."""
+    service = get_monitor_service()
+    success = service.cancel_job(job_id)
+
+    if not success:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Job '{job_id}' could not be cancelled (not found or not pending)",
+        )
+
+    return {"message": f"Job '{job_id}' cancelled"}
+
+
+@router.post("/jobs/{job_id}/retry", tags=["Jobs"])
+async def retry_job(job_id: str):
+    """Retry a failed or completed job."""
+    service = get_monitor_service()
+    success = service.retry_job(job_id)
+
+    if not success:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Job '{job_id}' not found",
+        )
+
+    return {"message": f"Job '{job_id}' retried"}
 
 
 @router.get("/queue", response_model=QueueStatusResponse, tags=["Queue"])

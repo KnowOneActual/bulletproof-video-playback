@@ -90,6 +90,7 @@ class MonitorService:
 
         # State tracking
         self._running = False
+        self._paused = False
         self._stop_event = asyncio.Event()
         self.logger.info(f"MonitorService initialized for {config.watch_directory}")
 
@@ -199,7 +200,13 @@ class MonitorService:
             # Create and queue job
             self.monitor.mark_processing(file_info)
 
-            self.logger.info(f"Queued: {file_info.path.name} → {profile_name} → {output_file.name}")
+            # Fix: Actually add to queue!
+            priority = rule.get("priority", 100)
+            job = self.queue.add_from_file(file_info, output_file, profile_name, priority)
+
+            self.logger.info(
+                f"Queued: {file_info.path.name} → {profile_name} → {output_file.name} (ID: {job.id})"
+            )
 
         except Exception as e:
             self.logger.error(f"Error creating job for {file_info.path.name}: {e}", exc_info=True)
@@ -207,6 +214,10 @@ class MonitorService:
 
     async def _process_queue(self) -> None:
         """Process next job in queue."""
+        # Don't process if paused
+        if self._paused:
+            return
+
         job = self.queue.get_pending()
         if not job:
             return
@@ -227,6 +238,8 @@ class MonitorService:
                 profile=profile,
             )
 
+            # Non-blocking execution (to allow progress updates later)
+            # For now keeping it simple as per original design
             success = transcode_job.execute()
 
             if success:
@@ -247,8 +260,70 @@ class MonitorService:
 
         except Exception as e:
             error_msg = str(e)
-            self.queue.mark_error(job, error_msg)
-            self.logger.error(f"Exception processing {job.input_file.name}: {e}", exc_info=True)
+            if job:
+                self.queue.mark_error(job, error_msg)
+            self.logger.error(f"Exception processing queue job: {e}", exc_info=True)
+
+    def pause(self) -> None:
+        """Pause processing queue."""
+        self._paused = True
+        self.logger.info("Service PAUSED (queue processing stopped)")
+
+    def resume(self) -> None:
+        """Resume processing queue."""
+        self._paused = False
+        self.logger.info("Service RESUMED (queue processing started)")
+
+    def cancel_job(self, job_id: str) -> bool:
+        """Cancel a pending job.
+
+        Args:
+            job_id: ID of job to cancel
+
+        Returns:
+            True if cancelled, False otherwise
+        """
+        job = self.queue.get_job(job_id)
+        if not job:
+            return False
+
+        if job.status == "pending":
+            self.queue.mark_cancelled(job)
+            self.logger.info(f"Cancelled job: {job_id}")
+            return True
+        return False
+
+    def retry_job(self, job_id: str) -> bool:
+        """Retry a failed or completed job.
+
+        Args:
+            job_id: ID of job to retry
+
+        Returns:
+            True if retried, False otherwise
+        """
+        old_job = self.queue.get_job(job_id)
+        if not old_job:
+            return False
+
+        # Create new job from old one
+        from bulletproof.core.queue import QueuedJob
+
+        new_job = QueuedJob(
+            input_file=old_job.input_file,
+            output_file=old_job.output_file,
+            profile_name=old_job.profile_name,
+            priority=old_job.priority,
+        )
+
+        self.queue.add(new_job)
+        self.logger.info(f"Retrying job {job_id} as {new_job.id}")
+        return True
+
+    def clear_queue(self) -> None:
+        """Clear all pending jobs from queue."""
+        self.queue.clear()
+        self.logger.info("Queue cleared")
 
     def _generate_output_path(self, input_file: Path, pattern: str, profile_name: str) -> Path:
         """Generate output file path from template.
@@ -286,6 +361,7 @@ class MonitorService:
         """
         return {
             "running": self._running,
+            "paused": self._paused,
             "watch_directory": str(self.config.watch_directory),
             "output_directory": str(self.config.output_directory),
             "poll_interval": self.config.poll_interval,

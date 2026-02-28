@@ -19,6 +19,7 @@ class JobStatus(str, Enum):
     COMPLETE = "complete"
     ERROR = "error"
     SKIPPED = "skipped"
+    CANCELLED = "cancelled"
 
 
 @dataclass
@@ -213,6 +214,19 @@ class TranscodeQueue:
             self._jobs.remove(job)
         self._save()
 
+    def mark_cancelled(self, job: QueuedJob) -> None:
+        """Mark job as cancelled.
+
+        Args:
+            job: QueuedJob to cancel
+        """
+        job.status = JobStatus.CANCELLED
+        job.completed_at = datetime.now().isoformat()
+        self._history.append(job)
+        if job in self._jobs:
+            self._jobs.remove(job)
+        self._save()
+
     def remove(self, job: QueuedJob) -> None:
         """Remove job from queue.
 
@@ -240,6 +254,7 @@ class TranscodeQueue:
             "total_jobs": len(self._jobs) + len(self._history),
             "complete": sum(1 for j in self._history if j.status == JobStatus.COMPLETE),
             "error": sum(1 for j in self._history if j.status == JobStatus.ERROR),
+            "cancelled": sum(1 for j in self._history if j.status == JobStatus.CANCELLED),
             "total_processed": len(self._history),
         }
 
