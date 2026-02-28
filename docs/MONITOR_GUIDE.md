@@ -11,7 +11,7 @@ Perfect for: live events, streaming, broadcast, archive prep, batch processing, 
 ### 1. Generate a Configuration File
 
 ```bash
-bulletproof monitor generate-config \
+bvp monitor generate-config \
   --output monitor.yaml \
   --watch /incoming \
   --profile live-qlab
@@ -41,7 +41,7 @@ rules:
 ### 3. Start Monitoring
 
 ```bash
-bulletproof monitor start --config monitor.yaml
+bvp monitor start --config monitor.yaml
 ```
 
 Drop videos in `/incoming` and they'll automatically transcode to `/output`!
@@ -138,10 +138,10 @@ Available variables:
 ### Start Monitoring
 
 ```bash
-bulletproof monitor start --config monitor.yaml
+bvp monitor start --config monitor.yaml
 
 # Override config settings
-bulletproof monitor start \
+bvp monitor start \
   --config monitor.yaml \
   --watch /different/input \
   --output /different/output \
@@ -159,7 +159,7 @@ bulletproof monitor start \
 ### Check Queue Status
 
 ```bash
-bulletproof monitor status --queue queue.json
+bvp monitor status --queue queue.json
 ```
 
 Shows:
@@ -172,7 +172,7 @@ Shows:
 ### Clear Queue
 
 ```bash
-bulletproof monitor clear-queue --queue queue.json
+bvp monitor clear-queue --queue queue.json
 ```
 
 Prompts for confirmation before clearing.
@@ -180,7 +180,7 @@ Prompts for confirmation before clearing.
 ### Generate Config Template
 
 ```bash
-bulletproof monitor generate-config \
+bvp monitor generate-config \
   --output monitor.yaml \
   --watch /input \
   --profile live-qlab
@@ -328,7 +328,7 @@ If `persist_path` is set:
 
 3. Enable DEBUG logging:
    ```bash
-   bulletproof monitor start --config monitor.yaml --log-level DEBUG
+   bvp monitor start --config monitor.yaml --log-level DEBUG
    ```
 
 4. Files might not be stable yet (wait 2+ poll cycles)
@@ -342,7 +342,7 @@ If `persist_path` is set:
 
 2. Check profile exists:
    ```bash
-   bulletproof config list
+   bvp config list
    ```
 
 3. Check logs:
@@ -420,16 +420,16 @@ Use different watch directories:
 
 Run separate monitor services:
 ```bash
-bulletproof monitor start --config live.yaml &
-bulletproof monitor start --config archive.yaml &
-bulletproof monitor start --config web.yaml &
+bvp monitor start --config live.yaml &
+bvp monitor start --config archive.yaml &
+bvp monitor start --config web.yaml &
 ```
 
 ### 5. Monitor the Monitor
 
 Set up cron job to check status:
 ```bash
-0 8 * * * bulletproof monitor status --queue /var/lib/bulletproof/queue.json
+0 8 * * * bvp monitor status --queue /var/lib/bulletproof/queue.json
 ```
 
 ---
@@ -471,8 +471,8 @@ After=network.target
 [Service]
 Type=simple
 User=video
-WorkingDirectory=/var/lib/bulletproof
-ExecStart=/usr/local/bin/bulletproof monitor start --config /etc/bulletproof/monitor.yaml
+WorkingDirectory=/var/lib/bvp
+ExecStart=/usr/local/bin/bvp monitor start --config /etc/bulletproof/monitor.yaml
 Restart=on-failure
 RestartSec=10
 

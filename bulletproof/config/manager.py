@@ -8,7 +8,7 @@ from typing import Any, Optional
 class ConfigManager:
     """Manage user configuration stored in ~/.bulletproof/config.json."""
 
-    CONFIG_DIR = Path.home() / ".bulletproof"
+    CONFIG_DIR = Path.home() / ".bvp"
     CONFIG_FILE = CONFIG_DIR / "config.json"
 
     DEFAULT_CONFIG = {

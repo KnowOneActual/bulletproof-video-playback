@@ -16,11 +16,11 @@ def analyze(input_file: str):
 
     \b
     # Analyze a video before deciding which profile to use:
-    bulletproof analyze myVideo.mov
+    bvp analyze myVideo.mov
 
     \b
     # Check if video is already H.264 or needs conversion:
-    bulletproof analyze theater_original.mov
+    bvp analyze theater_original.mov
     """
     input_path = Path(input_file)
 

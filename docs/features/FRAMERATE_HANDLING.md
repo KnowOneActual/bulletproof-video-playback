@@ -226,7 +226,7 @@ If users request frame rate control, consider adding:
 
 ```bash
 # Optional override for special cases
-bulletproof transcode input.mov --profile live-qlab --force-framerate 30
+bvp transcode input.mov --profile live-qlab --force-framerate 30
 ```
 
 **Implementation guidance:**
@@ -236,10 +236,10 @@ bulletproof transcode input.mov --profile live-qlab --force-framerate 30
 
 ### Frame Rate Analysis Tool
 
-Consider adding to `bulletproof analyze`:
+Consider adding to `bvp analyze`:
 
 ```bash
-bulletproof analyze video.mov
+bvp analyze video.mov
 
 Output:
   Frame Rate: 29.97 fps (30000/1001)
@@ -278,15 +278,15 @@ Output:
 # Check what ffprobe detects
 ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of default=noprint_wrappers=1:nokey=1 input.mov
 
-# Test with bulletproof analyze
-bulletproof analyze input.mov
+# Test with bvp analyze
+bvp analyze input.mov
 ```
 
 ### Verify Frame Rate Preservation
 
 ```bash
 # Transcode with source preservation
-bulletproof transcode input.mov --profile live-qlab -o output.mov
+bvp transcode input.mov --profile live-qlab -o output.mov
 
 # Verify output matches input
 ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of default=noprint_wrappers=1:nokey=1 output.mov

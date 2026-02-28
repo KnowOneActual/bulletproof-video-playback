@@ -183,13 +183,13 @@ When Phase 3.1 is done:
 
 You're going from:
 ```
-bulletproof monitor start --config monitor.yaml
+bvp monitor start --config monitor.yaml
 # Runs headlessly, logs to terminal
 ```
 
 To:
 ```
-bulletproof dashboard --port 8000
+bvp dashboard --port 8000
 # Visit http://localhost:8000
 # See everything in real-time
 # Control everything from UI

@@ -108,7 +108,7 @@ ln -s "${ROOT_DIR}/scripts/list-profiles.sh" "scripts/list-profiles.sh"
 
 # Or use Python version (recommended)
 pip install bulletproof-video-playback
-python3 -m bulletproof
+python3 -m bvp
 ```
 
 ### Linux User Landing on Repo

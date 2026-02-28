@@ -1,4 +1,4 @@
-"""FastAPI server for bulletproof video playback dashboard."""
+"""FastAPI server for bvp video playback dashboard."""
 
 import asyncio
 import logging
@@ -25,7 +25,7 @@ _service_task: Optional[asyncio.Task] = None
 async def lifespan(app: FastAPI):
     """Manage application lifespan (startup/shutdown)."""
     # Startup
-    logger.info("Starting bulletproof dashboard API...")
+    logger.info("Starting bvp dashboard API...")
 
     # Service will be set externally via set_service()
     # or can be initialized here if config is available
@@ -33,7 +33,7 @@ async def lifespan(app: FastAPI):
     yield
 
     # Shutdown
-    logger.info("Shutting down bulletproof dashboard API...")
+    logger.info("Shutting down bvp dashboard API...")
     if _service:
         _service.stop()
     if _service_task:

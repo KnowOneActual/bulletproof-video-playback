@@ -66,16 +66,16 @@ def start(
     Examples:
 
         # Start with config file
-        bulletproof monitor start --config monitor.yaml
+        bvp monitor start --config monitor.yaml
 
         # Override watch directory
-        bulletproof monitor start --config monitor.yaml --watch /videos/incoming
+        bvp monitor start --config monitor.yaml --watch /videos/incoming
 
         # Override multiple settings
-        bulletproof monitor start -c monitor.yaml -w /input -o /output -p 10
+        bvp monitor start -c monitor.yaml -w /input -o /output -p 10
 
         # Run with debug logging
-        bulletproof monitor start -c monitor.yaml -l DEBUG
+        bvp monitor start -c monitor.yaml -l DEBUG
     """
     config_path = Path(config)
 
@@ -160,10 +160,10 @@ def status(queue: str, verbose: bool):
     Examples:
 
         # Quick status
-        bulletproof monitor status --queue queue.json
+        bvp monitor status --queue queue.json
 
         # Detailed status with job list
-        bulletproof monitor status --queue queue.json --verbose
+        bvp monitor status --queue queue.json --verbose
     """
     queue_path = Path(queue)
 
@@ -249,7 +249,7 @@ def clear_queue(queue: str):
     Processing jobs will complete before the queue is cleared.
 
     Example:
-        bulletproof monitor clear-queue --queue queue.json
+        bvp monitor clear-queue --queue queue.json
     """
     queue_path = Path(queue)
 
@@ -304,13 +304,13 @@ def generate_config(output: str, watch: str, profile: str, format: str):
     Examples:
 
         # Generate YAML config
-        bulletproof monitor generate-config -o monitor.yaml -w /incoming
+        bvp monitor generate-config -o monitor.yaml -w /incoming
 
         # Generate JSON config
-        bulletproof monitor generate-config -o monitor.json -w /videos -f json
+        bvp monitor generate-config -o monitor.json -w /videos -f json
 
         # Use specific profile
-        bulletproof monitor generate-config -o config.yaml -w /input -p stream-hd
+        bvp monitor generate-config -o config.yaml -w /input -p stream-hd
     """
     output_path = Path(output)
 
@@ -318,7 +318,7 @@ def generate_config(output: str, watch: str, profile: str, format: str):
         ConfigLoader.generate_example(output_path, format=format.lower())
         click.echo(f"✅ Config generated: {output_path}")
         click.echo("\n📝 Edit the file and then run:")
-        click.echo(f"   bulletproof monitor start --config {output_path}")
+        click.echo(f"   bvp monitor start --config {output_path}")
     except ConfigError as e:
         click.echo(f"❌ {e}", err=True)
         sys.exit(1)

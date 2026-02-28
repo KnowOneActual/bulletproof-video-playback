@@ -6,7 +6,7 @@
 
 ## Overview
 
-This is a **Linux-native** implementation of bulletproof video playback, designed for users who:
+This is a **Linux-native** implementation of bvp video playback, designed for users who:
 - Can't install Python on machines they don't own
 - Need a lightweight transcoding workflow without dependencies
 - Want battle-tested ffmpeg profiles optimized for live playback and streaming

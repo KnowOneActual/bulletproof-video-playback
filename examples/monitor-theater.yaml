@@ -135,19 +135,19 @@ rules:
 # USAGE
 #
 # Generate this config:
-#   bulletproof monitor generate-config --output theater.yaml --watch /incoming
+#   bvp monitor generate-config --output theater.yaml --watch /incoming
 #
 # Start monitoring:
-#   bulletproof monitor start --config theater.yaml
+#   bvp monitor start --config theater.yaml
 #
 # Override settings from command line:
-#   bulletproof monitor start --config theater.yaml --watch /different/incoming
+#   bvp monitor start --config theater.yaml --watch /different/incoming
 #
 # Check queue status:
-#   bulletproof monitor status --queue /var/lib/bulletproof/queue.json
+#   bvp monitor status --queue /var/lib/bulletproof/queue.json
 #
 # Clear queue (if needed):
-#   bulletproof monitor clear-queue --queue /var/lib/bulletproof/queue.json
+#   bvp monitor clear-queue --queue /var/lib/bulletproof/queue.json
 
 # See full documentation:
 #   docs/MONITOR_GUIDE.md

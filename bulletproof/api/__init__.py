@@ -1,4 +1,4 @@
-"""Web API for bulletproof video playback monitoring."""
+"""Web API for bvp video playback monitoring."""
 
 from bulletproof.api.server import create_app
 

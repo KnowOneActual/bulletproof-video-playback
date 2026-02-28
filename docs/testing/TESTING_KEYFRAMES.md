@@ -104,7 +104,7 @@ You can also test manually:
 
 ```bash
 # Transcode with live-qlab profile
-bulletproof transcode input.mov --profile live-qlab --output output.mov
+bvp transcode input.mov --profile live-qlab --output output.mov
 
 # Check keyframes in output
 ffprobe -select_streams v -show_frames output.mov | grep "pict_type=I"
@@ -113,7 +113,7 @@ ffprobe -select_streams v -show_frames output.mov | grep "pict_type=I"
 ### Test with TUI
 
 ```bash
-bulletproof tui
+bvp tui
 # Select your video and live-qlab profile
 # Watch for "Keyframe Interval: 5.0s" message during transcode
 ```
@@ -122,10 +122,10 @@ bulletproof tui
 
 ```bash
 # Create config
-bulletproof monitor generate-config --output test_monitor.yaml --watch ./input
+bvp monitor generate-config --output test_monitor.yaml --watch ./input
 
 # Start monitoring
-bulletproof monitor start --config test_monitor.yaml
+bvp monitor start --config test_monitor.yaml
 
 # Drop video in ./input folder
 # Check output for keyframes
@@ -178,7 +178,7 @@ mediainfo --Details=1 output.mov | grep "keyframe"
 python test_keyframes.py input.mov
 
 # Manually test streaming profile (2s keyframes)
-bulletproof transcode input.mov --profile stream-hd --output stream_test.mp4
+bvp transcode input.mov --profile stream-hd --output stream_test.mp4
 ffprobe -select_streams v -show_entries frame=pict_type,pts_time \
   -of csv stream_test.mp4 2>/dev/null | grep "I,"
 ```
@@ -189,7 +189,7 @@ ffprobe -select_streams v -show_entries frame=pict_type,pts_time \
 
 1. **Convert your show video**:
    ```bash
-   bulletproof transcode show_video.mov --profile live-qlab --output show_qlab.mov
+   bvp transcode show_video.mov --profile live-qlab --output show_qlab.mov
    ```
 
 2. **Import both to QLab**:
@@ -208,7 +208,7 @@ ffprobe -select_streams v -show_entries frame=pict_type,pts_time \
 
 ## Troubleshooting
 
-### Issue: Test script fails to import bulletproof
+### Issue: Test script fails to import bvp
 
 **Solution:**
 ```bash

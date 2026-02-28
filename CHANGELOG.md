@@ -1,14 +1,23 @@
 # Changelog
 
 All notable changes to bulletproof-video-playback are documented in this file.
+## [3.0.0] - 2026-02-28
 
-## [Unreleased]
+### ⚡️ CLI Command Renamed: `bulletproof` → `bvp`
 
-### 🧹 Repository Cleanup & Organization (2026-02-28)
+#### ⚠️ Breaking Changes
+- **CLI Rename**: The main command-line interface has been renamed from `bulletproof` to `bvp` for easier typing and better ergonomics.
+  - *Old:* `bulletproof transcode input.mov`
+  - *New:* `bvp transcode input.mov`
+- **TUI Removal**: The deprecated Terminal User Interface has been completely removed.
+- **Dependency Changes**: `textual` is no longer a dependency.
+
+### 🧹 Repository Cleanup & Organization
 
 #### Removed
 - **TUI (Terminal User Interface)**:
-  - Removed `bulletproof tui` command.
+  - Removed `bvp tui` command.
+...
   - Deleted `bulletproof/tui` and `bulletproof/tui_textual` modules.
   - Removed `textual` dependency from `pyproject.toml`.
   - Deleted `docs/TUI_DEPRECATION.md` (no longer needed as a standalone guide).
@@ -121,7 +130,7 @@ All notable changes to bulletproof-video-playback are documented in this file.
 - **Commit**: `11d451bf`
 
 #### What Was Broken
-- CLI command `bulletproof monitor start --config` would crash
+- CLI command `bvp monitor start --config` would crash
 - Files in watch directory wouldn't match any rules
 - No jobs would be queued for processing
 
@@ -402,7 +411,7 @@ All notable changes to bulletproof-video-playback are documented in this file.
 - All tests passing: ✅ 32/32
 
 #### CLI Integration
-- `bulletproof monitor` - Start the folder monitor
+- `bvp monitor` - Start the folder monitor
 - `--config` - Specify configuration file
 - `--dry-run` - Test configuration without processing
 - Full integration with existing transcoding profiles
@@ -549,10 +558,10 @@ All notable changes to bulletproof-video-playback are documented in this file.
   - Ctrl+C support with automatic cleanup
   - Same-folder output defaults
 - **CLI (Command-Line Interface)**:
-  - `bulletproof transcode` - Single file transcoding
-  - `bulletproof analyze` - Video file analysis
-  - `bulletproof batch` - Batch directory processing
-  - `bulletproof tui` - Launch interactive TUI
+  - `bvp transcode` - Single file transcoding
+  - `bvp analyze` - Video file analysis
+  - `bvp batch` - Batch directory processing
+  - `bvp tui` - Launch interactive TUI
 - **Python API**:
   - `TranscodeJob` class for programmatic use
   - `list_profiles()` - Get all available profiles

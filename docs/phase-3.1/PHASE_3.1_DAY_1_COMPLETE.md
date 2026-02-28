@@ -113,7 +113,7 @@ pip install fastapi uvicorn[standard] websockets pydantic
 ### 2. Run the Server
 ```bash
 # Generate config if needed
-bulletproof monitor generate-config --output monitor.yaml --watch ./incoming
+bvp monitor generate-config --output monitor.yaml --watch ./incoming
 
 # Start dashboard
 python examples/dashboard_example.py --config monitor.yaml

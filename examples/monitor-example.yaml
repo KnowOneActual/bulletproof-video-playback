@@ -1,5 +1,5 @@
-# Example configuration for bulletproof folder monitor
-# Usage: bulletproof monitor start --config examples/monitor-example.yaml
+# Example configuration for bvp folder monitor
+# Usage: bvp monitor start --config examples/monitor-example.yaml
 
 # Required: Directory to watch for video files
 watch_directory: ./incoming

@@ -13,7 +13,7 @@
 ### Bug: RuleEngine Pattern Matching Failure
 
 **Problem:**
-- CLI command `bulletproof monitor start --config` would crash
+- CLI command `bvp monitor start --config` would crash
 - `MonitorService._create_job_for_file()` was passing `Path` object to `RuleEngine.match()`
 - `RuleEngine.match()` expects `filename: str` (basename only)
 - Pattern matching (glob/regex/exact) would fail
@@ -57,22 +57,22 @@ Phase 2.4 Folder Monitor is fully functional:
 
 ### 1. Generate Configuration
 ```bash
-bulletproof monitor generate-config --output monitor.yaml --watch ./incoming
+bvp monitor generate-config --output monitor.yaml --watch ./incoming
 ```
 
 ### 2. Start Monitoring
 ```bash
-bulletproof monitor start --config monitor.yaml
+bvp monitor start --config monitor.yaml
 ```
 
 ### 3. Check Status
 ```bash
-bulletproof monitor status --queue queue.json
+bvp monitor status --queue queue.json
 ```
 
 ### 4. Clear Queue
 ```bash
-bulletproof monitor clear-queue --queue queue.json
+bvp monitor clear-queue --queue queue.json
 ```
 
 ---

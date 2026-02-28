@@ -13,7 +13,7 @@
 ✅ Tests pass (32 tests) ✓
 ✅ CLI subcommands (status, clear-queue) ✓
 ✅ Config generation ✓
-✅ CLI: bulletproof monitor start --config ✓ (FIXED Feb 10, 2026)
+✅ CLI: bvp monitor start --config ✓ (FIXED Feb 10, 2026)
 ```
 
 ## ✅ **RECENTLY FIXED (Feb 27, 2026)**

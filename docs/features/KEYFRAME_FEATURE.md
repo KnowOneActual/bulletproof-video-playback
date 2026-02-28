@@ -68,13 +68,13 @@ No changes needed! Just use any profile:
 
 ```bash
 # TUI (interactive)
-bulletproof tui
+bvp tui
 
 # CLI
-bulletproof transcode input.mov --profile live-qlab
+bvp transcode input.mov --profile live-qlab
 
 # Folder monitor
-bulletproof monitor start --config monitor.yaml
+bvp monitor start --config monitor.yaml
 ```
 
 During transcoding, you'll see:
@@ -120,8 +120,8 @@ To verify keyframes in your output:
 # Check keyframe intervals
 ffprobe -select_streams v -show_frames output.mov | grep key_frame=1
 
-# Or use bulletproof analyze
-bulletproof analyze output.mov
+# Or use bvp analyze
+bvp analyze output.mov
 ```
 
 ## Implementation Details

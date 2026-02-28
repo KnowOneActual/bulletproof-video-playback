@@ -70,7 +70,7 @@ Edit this file to customize profiles or add new ones.
 pip install bulletproof-video-playback
 
 # Or use from source
-python3 -m bulletproof
+python3 -m bvp
 ```
 
 ---

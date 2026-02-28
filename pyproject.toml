@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bulletproof-video-playback"
-version = "2.6.0"
+version = "3.0.0"
 description = "Professional video transcoding for theater, streaming, and archival"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -51,10 +51,10 @@ Repository = "https://github.com/KnowOneActual/bulletproof-video-playback"
 "Bug Tracker" = "https://github.com/KnowOneActual/bulletproof-video-playback/issues"
 
 [project.scripts]
-bulletproof = "bulletproof.cli:cli"
+bvp = "bulletproof.cli:cli"
 
 [tool.setuptools]
-packages = ["bulletproof", "bulletproof.core", "bulletproof.cli", "bulletproof.cli.commands", "bulletproof.utils", "tests"]
+packages = ["bvp", "bulletproof.core", "bulletproof.cli", "bulletproof.cli.commands", "bulletproof.utils", "tests"]
 
 [tool.ruff]
 line-length = 100
@@ -75,7 +75,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["bulletproof"]
+known-first-party = ["bvp"]
 
 [tool.mypy]
 python_version = "3.9"

@@ -1,7 +1,7 @@
 """Configuration command implementation.
 
 NOTE: This command is deprecated in favor of YAML config files.
-Use 'bulletproof monitor generate-config' for folder monitoring.
+Use 'bvp monitor generate-config' for folder monitoring.
 This is kept for backward compatibility with simple transcode workflow.
 """
 
@@ -13,7 +13,7 @@ import click
 from bulletproof.core import list_profiles
 
 # Simple config file manager (replaces old ConfigManager)
-CONFIG_FILE = Path.home() / ".bulletproof" / "config.json"
+CONFIG_FILE = Path.home() / ".bvp" / "config.json"
 
 
 def _load_config():
@@ -44,12 +44,12 @@ def _save_config(config):
 
 @click.group()
 def config():
-    """Manage bulletproof configuration.
+    """Manage bvp configuration.
 
     Configuration is stored in ~/.bulletproof/config.json
 
     NOTE: For folder monitoring, use YAML config files:
-      bulletproof monitor generate-config -o monitor.yaml -w ./incoming
+      bvp monitor generate-config -o monitor.yaml -w ./incoming
     """
 
 
@@ -62,11 +62,11 @@ def set_default_profile(profile: str):
 
     \b
     # Set QLab as your default:
-    bulletproof config set-default-profile live-qlab
+    bvp config set-default-profile live-qlab
 
     \b
     # Set streaming as your default:
-    bulletproof config set-default-profile stream-hd
+    bvp config set-default-profile stream-hd
     """
     cfg = _load_config()
     cfg["default_profile"] = profile
@@ -83,11 +83,11 @@ def set_output_dir(output_dir: Path):
 
     \b
     # Set output folder:
-    bulletproof config set-output-dir ~/Videos/processed
+    bvp config set-output-dir ~/Videos/processed
 
     \b
     # Set to external drive:
-    bulletproof config set-output-dir /Volumes/archive/videos
+    bvp config set-output-dir /Volumes/archive/videos
     """
     output_dir.mkdir(parents=True, exist_ok=True)
     cfg = _load_config()
@@ -105,11 +105,11 @@ def set_preset(preset: str):
 
     \b
     # For time-sensitive live playback:
-    bulletproof config set-preset fast
+    bvp config set-preset fast
 
     \b
     # For maximum quality:
-    bulletproof config set-preset slow
+    bvp config set-preset slow
     """
     cfg = _load_config()
     cfg["speed_preset"] = preset
@@ -125,7 +125,7 @@ def show_config():
 
     \b
     # View your settings:
-    bulletproof config show
+    bvp config show
     """
     cfg = _load_config()
     click.echo("\nCurrent Configuration:")
@@ -138,7 +138,7 @@ def show_config():
         click.echo(f"  {key:25} {value}")
     click.echo()
     click.echo("\nFor folder monitoring, use YAML config files:")
-    click.echo("  bulletproof monitor generate-config -o monitor.yaml -w ./incoming")
+    click.echo("  bvp monitor generate-config -o monitor.yaml -w ./incoming")
     click.echo()
 
 
@@ -152,7 +152,7 @@ def reset():
 
     \b
     # Reset to factory defaults:
-    bulletproof config reset
+    bvp config reset
     """
     if click.confirm("Are you sure? This will reset all your configuration to defaults."):
         if CONFIG_FILE.exists():

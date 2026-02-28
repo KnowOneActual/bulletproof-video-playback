@@ -46,16 +46,16 @@ All profiles support customizable **keyframe intervals** for professional GOP ma
 **Examples:**
 ```bash
 # QLab live playback (5-second keyframes)
-bulletproof transcode input.mov --profile live-qlab
+bvp transcode input.mov --profile live-qlab
 
 # Linux live events with mpv (5-second keyframes)
-bulletproof transcode input.mov --profile live-linux-hevc-mkv
+bvp transcode input.mov --profile live-linux-hevc-mkv
 
 # Streaming (2-second keyframes for web players)
-bulletproof transcode input.mov --profile stream-hd
+bvp transcode input.mov --profile stream-hd
 
 # Custom keyframe interval (every 3 seconds)
-bulletproof transcode input.mov --profile standard-playback --keyframe-interval 3.0
+bvp transcode input.mov --profile standard-playback --keyframe-interval 3.0
 ```
 
 👉 **Full guide:** [docs/features/KEYFRAME_FEATURE.md](./docs/features/KEYFRAME_FEATURE.md)
@@ -68,10 +68,10 @@ Watch a folder for videos and automatically transcode them:
 
 ```bash
 # Generate config
-bulletproof monitor generate-config --output monitor.yaml --watch /incoming
+bvp monitor generate-config --output monitor.yaml --watch /incoming
 
 # Start monitoring
-bulletproof monitor start --config monitor.yaml
+bvp monitor start --config monitor.yaml
 
 # Drop videos in /incoming
 # They auto-transcode to /output based on your rules!
@@ -187,25 +187,25 @@ Fast and scriptable:
 
 ```bash
 # List available profiles
-bulletproof transcode --list-profiles
+bvp transcode --list-profiles
 
 # Transcode with a profile
-bulletproof transcode input.mov --profile live-qlab --output output.mov
+bvp transcode input.mov --profile live-qlab --output output.mov
 
 # Linux live events with MKV
-bulletproof transcode input.mov --profile live-linux-hevc-mkv --output output.mkv
+bvp transcode input.mov --profile live-linux-hevc-mkv --output output.mkv
 
 # With custom keyframe interval (NEW v2.5.0)
-bulletproof transcode input.mov --profile live-qlab --keyframe-interval 3.0
+bvp transcode input.mov --profile live-qlab --keyframe-interval 3.0
 
 # With speed preset (for time-sensitive deadlines)
-bulletproof transcode input.mov --profile live-qlab --preset fast
+bvp transcode input.mov --profile live-qlab --preset fast
 
 # Analyze video before transcoding
-bulletproof analyze input.mov
+bvp analyze input.mov
 
 # Batch process directory
-bulletproof batch ./videos --profile standard-playback --output-dir ./output
+bvp batch ./videos --profile standard-playback --output-dir ./output
 ```
 
 ### Folder Monitor (Automated Processing)
@@ -214,17 +214,17 @@ Watch a folder and transcode automatically:
 
 ```bash
 # Generate a sample config
-bulletproof monitor generate-config --output monitor.yaml --watch /incoming
+bvp monitor generate-config --output monitor.yaml --watch /incoming
 
 # Edit monitor.yaml (or use as-is)
 # Start monitoring
-bulletproof monitor start --config monitor.yaml
+bvp monitor start --config monitor.yaml
 
 # Drop videos in /incoming folder
 # They auto-transcode based on your rules!
 
 # Check status anytime
-bulletproof monitor status --queue queue.json
+bvp monitor status --queue queue.json
 ```
 
 **Example config for Linux live events:**
@@ -277,13 +277,13 @@ curl http://localhost:8080/api/v1/queue | jq
 
 ```bash
 # Set your default profile (saved to ~/.bulletproof/config.json)
-bulletproof config set-default-profile live-qlab
+bvp config set-default-profile live-qlab
 
 # Set your default output folder
-bulletproof config set-output-dir ~/Videos/processed
+bvp config set-output-dir ~/Videos/processed
 
 # View current config
-bulletproof config show
+bvp config show
 ```
 
 ### Linux Bash Version
@@ -374,10 +374,10 @@ else:
 **Usage example:**
 ```bash
 # Convert ProRes to Linux-friendly MKV for live playback
-bulletproof transcode prores_input.mov --profile live-linux-hevc-mkv
+bvp transcode prores_input.mov --profile live-linux-hevc-mkv
 
 # High-quality archival alternative to ProRes
-bulletproof transcode prores_input.mov --profile archival-linux-mkv
+bvp transcode prores_input.mov --profile archival-linux-mkv
 
 # Test playback with GPU acceleration (Linux)
 mpv --hwdec=auto output.mkv
@@ -397,7 +397,7 @@ Keyframes (I-frames) are reference points in video that enable instant seeking. 
 **Custom intervals:**
 ```bash
 # Override any profile's keyframe interval
-bulletproof transcode input.mov --profile standard-playback --keyframe-interval 3.0
+bvp transcode input.mov --profile standard-playback --keyframe-interval 3.0
 ```
 
 **Guidelines:**
@@ -416,13 +416,13 @@ Control encode time vs quality:
 
 ```bash
 # For time-sensitive live playback (encode faster, slight quality loss)
-bulletproof transcode input.mov --profile live-qlab --preset fast
+bvp transcode input.mov --profile live-qlab --preset fast
 
 # Balanced (default)
-bulletproof transcode input.mov --profile live-qlab --preset normal
+bvp transcode input.mov --profile live-qlab --preset normal
 
 # Maximum quality (encode slower)
-bulletproof transcode input.mov --profile live-qlab --preset slow
+bvp transcode input.mov --profile live-qlab --preset slow
 ```
 
 ## Output Naming
@@ -460,7 +460,7 @@ pip install -e ".[dev]"
 pytest -v
 
 # Run with coverage
-pytest --cov=bulletproof tests/
+pytest --cov=bvp tests/
 
 # Linting and formatting
 ruff check .

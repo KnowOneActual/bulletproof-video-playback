@@ -2,7 +2,7 @@
 
 ## What We Built Today
 
-A production-ready **REST API + WebSocket** backend for the bulletproof dashboard! 🚀
+A production-ready **REST API + WebSocket** backend for the bvp dashboard! 🚀
 
 **Date:** February 27, 2026  
 **Phase:** 3.1 - Week 1, Day 2  
@@ -52,7 +52,7 @@ pip install fastapi uvicorn[standard] websockets pydantic
 
 ```bash
 # Generate a monitor config if you don't have one
-bulletproof monitor generate-config --output monitor.yaml --watch ./incoming
+bvp monitor generate-config --output monitor.yaml --watch ./incoming
 
 # Run the dashboard
 python examples/dashboard_example.py --config monitor.yaml

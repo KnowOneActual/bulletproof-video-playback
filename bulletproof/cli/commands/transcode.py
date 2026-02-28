@@ -49,27 +49,27 @@ def transcode(
 
     \b
     # Prepare video for QLab (ProRes Proxy, QLab recommended):
-    bulletproof transcode video.mov --profile live-qlab
+    bvp transcode video.mov --profile live-qlab
 
     \b
     # Prepare video for streaming (H.265, 1080p, small file size):
-    bulletproof transcode video.mov --profile stream-hd --output stream_version.mp4
+    bvp transcode video.mov --profile stream-hd --output stream_version.mp4
 
     \b
     # Fast encode for time-sensitive live playback:
-    bulletproof transcode video.mov --profile live-qlab --preset fast
+    bvp transcode video.mov --profile live-qlab --preset fast
 
     \b
     # Prepare video for general playback (H.264, works everywhere):
-    bulletproof transcode video.mov --profile standard-playback
+    bvp transcode video.mov --profile standard-playback
 
     \b
     # Archive with maximum quality (ProRes HQ, lossless, slow):
-    bulletproof transcode video.mov --profile archival --preset slow
+    bvp transcode video.mov --profile archival --preset slow
 
     \b
     # List all available profiles:
-    bulletproof transcode --list-profiles
+    bvp transcode --list-profiles
     """
     if list_profiles_flag:
         profiles = list_profiles()

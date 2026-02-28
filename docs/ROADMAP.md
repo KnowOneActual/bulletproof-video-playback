@@ -8,7 +8,7 @@
 
 Short- to medium-term, Bulletproof is optimizing for:
 
-- **AV appliance workflows:** A "bulletproof playback prep box" for theaters and AV teams, built around profiles, folder monitoring, and a minimal but powerful dashboard.
+- **AV appliance workflows:** A "bvp playback prep box" for theaters and AV teams, built around profiles, folder monitoring, and a minimal but powerful dashboard.
 - **On-prem service + API:** A stable, scriptable queue and monitoring layer that other tools can integrate with via REST/WebSocket.
 - **Narrow, high-value personas:** Live show operators, video engineers, and archivists—not generic consumer video conversion.
 
@@ -22,7 +22,7 @@ Enterprise features (clustering, RBAC, compliance, etc.) remain future explorati
 - [x] Profile system (ProRes, H.264, H.265, custom speeds)
 - [x] FFmpeg integration with progress parsing
 - [x] Speed presets (fast/normal/slow with preset adjustment)
-- [x] CLI command: `bulletproof transcode`
+- [x] CLI command: `bvp transcode`
 - [x] Comprehensive profile library
 
 ### Phase 2: UI & Automation Layers
@@ -49,7 +49,7 @@ Enterprise features (clustering, RBAC, compliance, etc.) remain future explorati
 #### Phase 2.4: MonitorService & CLI Integration ✅
 - [x] MonitorService orchestration (combine monitor + queue + rules)
 - [x] Configuration system (YAML config with sensible defaults)
-- [x] CLI integration (`bulletproof monitor --config config.yaml`)
+- [x] CLI integration (`bvp monitor --config config.yaml`)
 - [x] Comprehensive testing (33/33 tests passing)
 - [x] Error handling and recovery
 - [x] Bug fix: Rule matching (Path vs string)

@@ -20,15 +20,15 @@
 
 ```bash
 # Set your defaults once
-bulletproof config set-default-profile live-qlab  # macOS
+bvp config set-default-profile live-qlab  # macOS
 # Or for Linux:
-bulletproof config set-default-profile live-linux-hevc-mkv
+bvp config set-default-profile live-linux-hevc-mkv
 
-bulletproof config set-output-dir ~/Videos/processed
-bulletproof config set-preset normal
+bvp config set-output-dir ~/Videos/processed
+bvp config set-preset normal
 
 # Verify
-bulletproof config show
+bvp config show
 ```
 
 ---
@@ -38,51 +38,51 @@ bulletproof config show
 ### 1. CLI (Fastest - Recommended)
 ```bash
 # List all profiles
-bulletproof transcode --list-profiles
+bvp transcode --list-profiles
 
 # Transcode with defaults
-bulletproof transcode input.mov
+bvp transcode input.mov
 
 # Transcode with specific profile
-bulletproof transcode input.mov --profile live-qlab --output output.mov
+bvp transcode input.mov --profile live-qlab --output output.mov
 
 # Linux live events with MKV (NEW v2.6.0)
-bulletproof transcode input.mov --profile live-linux-hevc-mkv --output output.mkv
+bvp transcode input.mov --profile live-linux-hevc-mkv --output output.mkv
 
 # With custom keyframe interval (NEW v2.5.0)
-bulletproof transcode input.mov --profile live-qlab --keyframe-interval 3.0
+bvp transcode input.mov --profile live-qlab --keyframe-interval 3.0
 
 # Fast encode for time-sensitive playback
-bulletproof transcode input.mov --preset fast
+bvp transcode input.mov --preset fast
 
 # Analyze video before transcoding
-bulletproof analyze input.mov
+bvp analyze input.mov
 
 # Batch process folder
-bulletproof batch ./videos --profile live-qlab --output-dir ./output
+bvp batch ./videos --profile live-qlab --output-dir ./output
 ```
 
 ### 2. Folder Monitor (Automation)
 ```bash
 # Generate config
-bulletproof monitor generate-config --output monitor.yaml --watch /incoming
+bvp monitor generate-config --output monitor.yaml --watch /incoming
 
 # Start watching
-bulletproof monitor start --config monitor.yaml
+bvp monitor start --config monitor.yaml
 
 # Check status
-bulletproof monitor status --queue queue.json
+bvp monitor status --queue queue.json
 
 # Clear queue
-bulletproof monitor clear-queue --queue queue.json
+bvp monitor clear-queue --queue queue.json
 ```
 
 ### 3. ~~TUI (Interactive)~~ - DEPRECATED
 ```bash
-bulletproof tui  # Shows deprecation warning
+bvp tui  # Shows deprecation warning
 ```
 
-⚠️ **Migration:** Use `bulletproof transcode` CLI or `bulletproof monitor` instead.  
+⚠️ **Migration:** Use `bvp transcode` CLI or `bvp monitor` instead.  
 👉 **Full guide:** [docs/TUI_DEPRECATION.md](./docs/TUI_DEPRECATION.md)
 
 ### Python API (Scripting)
@@ -117,19 +117,19 @@ if job.execute():
 
 ```bash
 # Set default profile (saves clicking every time)
-bulletproof config set-default-profile live-qlab
+bvp config set-default-profile live-qlab
 
 # Set default output folder
-bulletproof config set-output-dir ~/Videos/processed
+bvp config set-output-dir ~/Videos/processed
 
 # Set speed preset (fast/normal/slow)
-bulletproof config set-preset normal
+bvp config set-preset normal
 
 # View current config
-bulletproof config show
+bvp config show
 
 # Reset to factory defaults
-bulletproof config reset
+bvp config reset
 ```
 
 **Config location:** `~/.bulletproof/config.json`
@@ -163,7 +163,7 @@ I-frames that enable instant video seeking. More keyframes = smoother scrubbing.
 
 **Override any profile:**
 ```bash
-bulletproof transcode input.mov --profile standard-playback --keyframe-interval 3.0
+bvp transcode input.mov --profile standard-playback --keyframe-interval 3.0
 ```
 
 👉 **Full guide:** [docs/features/KEYFRAME_FEATURE.md](./docs/features/KEYFRAME_FEATURE.md)
@@ -192,13 +192,13 @@ Control encode time vs quality:
 
 ```bash
 # Fast (5-20% faster, slight quality loss)
-bulletproof transcode input.mov --preset fast
+bvp transcode input.mov --preset fast
 
 # Normal (default, balanced)
-bulletproof transcode input.mov --preset normal
+bvp transcode input.mov --preset normal
 
 # Slow (5-15% slower, maximum quality)
-bulletproof transcode input.mov --preset slow
+bvp transcode input.mov --preset slow
 ```
 
 ---
@@ -208,7 +208,7 @@ bulletproof transcode input.mov --preset slow
 ### Basic Setup
 ```bash
 # 1. Generate config
-bulletproof monitor generate-config -o monitor.yaml -w /incoming
+bvp monitor generate-config -o monitor.yaml -w /incoming
 
 # 2. Edit monitor.yaml
 watch_directory: /incoming
@@ -224,22 +224,22 @@ rules:
     output_pattern: "{filename_no_ext}_live.mkv"
 
 # 3. Start monitoring
-bulletproof monitor start --config monitor.yaml
+bvp monitor start --config monitor.yaml
 ```
 
 ### Monitor Commands
 ```bash
 # Start watching folder
-bulletproof monitor start --config monitor.yaml
+bvp monitor start --config monitor.yaml
 
 # Check queue status
-bulletproof monitor status --queue queue.json --verbose
+bvp monitor status --queue queue.json --verbose
 
 # Clear queue (asks for confirmation)
-bulletproof monitor clear-queue --queue queue.json
+bvp monitor clear-queue --queue queue.json
 
 # Generate sample config
-bulletproof monitor generate-config -o monitor.yaml -w /incoming
+bvp monitor generate-config -o monitor.yaml -w /incoming
 ```
 
 ---
@@ -251,11 +251,11 @@ These workflows target common AV/theater scenarios: QLab rigs, Linux Show Player
 ### Workflow 1: Live Playback (QLab on macOS)
 ```bash
 # First time setup
-bulletproof config set-default-profile live-qlab
-bulletproof config set-output-dir ~/Videos/QLab
+bvp config set-default-profile live-qlab
+bvp config set-output-dir ~/Videos/QLab
 
 # Then just:
-bulletproof transcode video.mov
+bvp transcode video.mov
 # → Saves to ~/Videos/QLab/video__processed__live-qlab.mov
 # → 5-second keyframes for instant scrubbing
 ```
@@ -263,11 +263,11 @@ bulletproof transcode video.mov
 ### Workflow 2: Linux Live Events (NEW v2.6.0)
 ```bash
 # Setup for Linux Show Player
-bulletproof config set-default-profile live-linux-hevc-mkv
-bulletproof config set-output-dir ~/Videos/LiveEvents
+bvp config set-default-profile live-linux-hevc-mkv
+bvp config set-output-dir ~/Videos/LiveEvents
 
 # Convert ProRes to Linux MKV
-bulletproof transcode prores_input.mov
+bvp transcode prores_input.mov
 # → H.265 MKV with GPU acceleration support
 # → 5-second keyframes for cue system scrubbing
 
@@ -278,7 +278,7 @@ mpv --hwdec=auto output.mkv
 ### Workflow 3: ProRes Replacement on Linux (NEW v2.6.0)
 ```bash
 # High-quality archival on Linux
-bulletproof transcode prores_422.mov --profile archival-linux-mkv
+bvp transcode prores_422.mov --profile archival-linux-mkv
 # → 10-bit H.265 MKV
 # → Visually lossless (CRF 18)
 # → 60-80% smaller than ProRes
@@ -288,11 +288,11 @@ bulletproof transcode prores_422.mov --profile archival-linux-mkv
 ### Workflow 4: Automated Hot Folder
 ```bash
 # Setup once
-bulletproof monitor generate-config -o monitor.yaml -w /dropbox
+bvp monitor generate-config -o monitor.yaml -w /dropbox
 # Edit monitor.yaml with your rules
 
 # Run continuously
-bulletproof monitor start --config monitor.yaml
+bvp monitor start --config monitor.yaml
 
 # Drop videos in /dropbox → auto-transcode!
 ```
@@ -300,21 +300,21 @@ bulletproof monitor start --config monitor.yaml
 ### Workflow 5: Frame-Accurate Editing
 ```bash
 # 1-second keyframes for precise editing
-bulletproof transcode input.mov --profile standard-playback --keyframe-interval 1.0
+bvp transcode input.mov --profile standard-playback --keyframe-interval 1.0
 # → Perfect for Premiere, DaVinci Resolve, Final Cut
 ```
 
 ### Workflow 6: HLS/DASH Streaming
 ```bash
 # 2-second keyframes for responsive web seeking
-bulletproof transcode input.mov --profile stream-hd
+bvp transcode input.mov --profile stream-hd
 # → Optimized for web players and adaptive streaming
 ```
 
 ### Workflow 7: Time-Sensitive Deadline
 ```bash
 # Need fast encode for tonight's show?
-bulletproof transcode video.mov --preset fast
+bvp transcode video.mov --preset fast
 # → ~30% faster encoding
 ```
 
@@ -327,7 +327,7 @@ bulletproof transcode video.mov --preset fast
 pytest -v
 
 # Run with coverage
-pytest --cov=bulletproof tests/ -v
+pytest --cov=bvp tests/ -v
 
 # Linting
 ruff check .
@@ -379,33 +379,33 @@ pip install bulletproof-video-playback
 pip install -e ".[dev]"
 
 # Set defaults (one time)
-bulletproof config set-default-profile live-qlab  # macOS
-bulletproof config set-default-profile live-linux-hevc-mkv  # Linux
-bulletproof config set-output-dir ~/Videos/processed
+bvp config set-default-profile live-qlab  # macOS
+bvp config set-default-profile live-linux-hevc-mkv  # Linux
+bvp config set-output-dir ~/Videos/processed
 
 # Check version
-bulletproof --version
+bvp --version
 
 # List profiles
-bulletproof transcode --list-profiles
+bvp transcode --list-profiles
 
 # Transcode (simple)
-bulletproof transcode video.mov
+bvp transcode video.mov
 
 # Transcode (with keyframes)
-bulletproof transcode video.mov --profile live-qlab --keyframe-interval 5.0
+bvp transcode video.mov --profile live-qlab --keyframe-interval 5.0
 
 # Linux MKV (NEW v2.6.0)
-bulletproof transcode prores.mov --profile live-linux-hevc-mkv
+bvp transcode prores.mov --profile live-linux-hevc-mkv
 
 # Analyze video
-bulletproof analyze video.mov
+bvp analyze video.mov
 
 # Start folder monitor
-bulletproof monitor start --config monitor.yaml
+bvp monitor start --config monitor.yaml
 
 # View config
-bulletproof config show
+bvp config show
 
 # Testing
 pytest -v
@@ -456,9 +456,9 @@ ruff format .
 |-------|----------|
 | "ffmpeg not found" | Install: `brew install ffmpeg` or `apt install ffmpeg` |
 | Config not loading | Check: `cat ~/.bulletproof/config.json` |
-| TUI not working | It's deprecated. Use `bulletproof transcode` instead |
+| TUI not working | It's deprecated. Use `bvp transcode` instead |
 | Tests failing | Run: `pytest -v` for details |
-| Want to reset config | Run: `bulletproof config reset` |
+| Want to reset config | Run: `bvp config reset` |
 | Import errors | Ensure venv: `source .venv/bin/activate` |
 | Scrubbing still slow? | Use `--keyframe-interval 2.0` for more keyframes |
 | Monitor not detecting | Check permissions and `poll_interval` in config |

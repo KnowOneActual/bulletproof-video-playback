@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Example: Run the bulletproof dashboard with monitor service.
+"""Example: Run the bvp dashboard with monitor service.
 
 This demonstrates how to start the web dashboard with an active
 monitor service.
@@ -21,7 +21,7 @@ from bulletproof.config.loader import ConfigLoader
 def main():
     """Run the dashboard."""
     parser = argparse.ArgumentParser(
-        description="Run bulletproof dashboard",
+        description="Run bvp dashboard",
     )
     parser.add_argument(
         "--config",
