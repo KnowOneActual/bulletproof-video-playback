@@ -25,7 +25,7 @@ def _load_config():
             "speed_preset": "normal",
         }
     try:
-        with open(CONFIG_FILE, "r") as f:
+        with open(CONFIG_FILE) as f:
             return json.load(f)
     except Exception:
         return {

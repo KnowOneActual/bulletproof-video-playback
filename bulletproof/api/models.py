@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -69,7 +69,7 @@ class QueueStatusResponse(BaseModel):
     complete_jobs: int
     error_jobs: int
     current_job: Optional[JobResponse] = None
-    jobs: List[JobResponse] = Field(default_factory=list)
+    jobs: list[JobResponse] = Field(default_factory=list)
 
     class Config:
         json_schema_extra = {
@@ -151,7 +151,7 @@ class HistoryResponse(BaseModel):
     total_processed: int
     successful: int
     failed: int
-    jobs: List[JobResponse] = Field(default_factory=list)
+    jobs: list[JobResponse] = Field(default_factory=list)
 
     class Config:
         json_schema_extra = {
@@ -169,7 +169,7 @@ class WebSocketMessage(BaseModel):
 
     type: str  # "status", "job_update", "error", "ping"
     timestamp: str
-    data: Dict[str, Any] = Field(default_factory=dict)
+    data: dict[str, Any] = Field(default_factory=dict)
 
     class Config:
         json_schema_extra = {

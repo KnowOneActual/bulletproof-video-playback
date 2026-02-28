@@ -462,13 +462,31 @@ pytest -v
 # Run with coverage
 pytest --cov=bulletproof tests/
 
-# Linting
-black bulletproof tests
-isort bulletproof tests
-flake8 bulletproof tests
+# Linting and formatting
+ruff check .
+ruff format .
 ```
 
-## Development
+## Development & Tooling
+
+### Modern Python Tooling (Ruff)
+
+We have switched our entire linting and formatting stack to **[Ruff](https://github.com/astral-sh/ruff)**. 
+- **Speed:** 10-100x faster than previous tools (Black, isort, flake8).
+- **Efficiency:** Unified configuration in `pyproject.toml`.
+- **Consistency:** All-in-one tool for linting, formatting, and import sorting.
+
+**Ruff Commands:**
+```bash
+# Check all files
+ruff check .
+
+# Fix auto-fixable issues
+ruff check . --fix
+
+# Format all files
+ruff format .
+```
 
 ### Adding a New Profile
 
@@ -585,8 +603,8 @@ Contributions welcome! Please:
 2. Create a feature branch
 3. Add tests for new functionality
 4. Ensure tests pass: `pytest -v`
-5. Format code: `black bulletproof tests && isort bulletproof tests`
-6. Run linting: `flake8 bulletproof tests`
+5. Format code: `ruff format .`
+6. Run linting: `ruff check .`
 7. Submit a pull request
 
 ---

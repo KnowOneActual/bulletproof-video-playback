@@ -74,4 +74,4 @@ def batch(input_dir: str, profile: str, extension: str, output_dir: str):
 
     except ValueError as e:
         click.echo(f"Error: {e}", err=True)
-        raise click.Exit(1)
+        raise click.Exit(1) from e

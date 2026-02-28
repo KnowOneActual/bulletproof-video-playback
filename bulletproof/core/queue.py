@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 from bulletproof.core.monitor import FileInfo
 
@@ -90,8 +90,8 @@ class TranscodeQueue:
             persist_path: Optional path to persist queue state to JSON
         """
         self.persist_path = Path(persist_path) if persist_path else None
-        self._jobs: List[QueuedJob] = []
-        self._history: List[QueuedJob] = []
+        self._jobs: list[QueuedJob] = []
+        self._history: list[QueuedJob] = []
 
         # Load persisted queue if path provided
         if self.persist_path and self.persist_path.exists():
@@ -295,13 +295,13 @@ class TranscodeQueue:
         try:
             with open(self.persist_path, "w") as f:
                 json.dump(data, f, indent=2)
-        except (IOError, OSError) as e:
+        except OSError as e:
             print(f"Error saving queue to {self.persist_path}: {e}")
 
     def _load(self) -> None:
         """Load queue from JSON file."""
         try:
-            with open(self.persist_path, "r") as f:
+            with open(self.persist_path) as f:
                 data = json.load(f)
 
             # Load queued jobs
@@ -311,5 +311,5 @@ class TranscodeQueue:
             # Load history
             for job_data in data.get("history", []):
                 self._history.append(QueuedJob.from_dict(job_data))
-        except (IOError, OSError, json.JSONDecodeError) as e:
+        except (OSError, json.JSONDecodeError) as e:
             print(f"Error loading queue from {self.persist_path}: {e}")

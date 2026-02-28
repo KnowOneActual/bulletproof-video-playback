@@ -9,13 +9,12 @@ Usage:
 """
 
 import argparse
-import asyncio
 import logging
 from pathlib import Path
 
 import uvicorn
 
-from bulletproof.api.server import create_app, set_service, start_service_background
+from bulletproof.api.server import create_app, start_service_background
 from bulletproof.config.loader import ConfigLoader
 
 

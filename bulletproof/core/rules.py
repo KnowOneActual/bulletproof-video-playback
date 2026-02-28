@@ -4,7 +4,7 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Optional, Union
 
 
 class PatternType(str, Enum):
@@ -98,7 +98,7 @@ class Rule:
 class RuleEngine:
     """Rule-based file matching and profile assignment."""
 
-    def __init__(self, rules: Optional[List[Union[Rule, Dict[str, Any]]]] = None):
+    def __init__(self, rules: Optional[list[Union[Rule, dict[str, Any]]]] = None):
         """Initialize rule engine.
 
         Args:
@@ -166,7 +166,7 @@ class RuleEngine:
         rule = self.find_matching_rule(filename)
         return rule.profile if rule else None
 
-    def match(self, filename: str) -> Optional[Dict[str, Any]]:
+    def match(self, filename: str) -> Optional[dict[str, Any]]:
         """Match filename against rules and return matching rule as dict.
 
         Args:

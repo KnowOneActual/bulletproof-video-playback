@@ -1,7 +1,7 @@
 """Configuration loader for folder monitor."""
 
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from bulletproof.core.config import MonitorConfig
 from bulletproof.services.monitor_service import MonitorService, MonitorServiceConfig
@@ -44,7 +44,7 @@ class ConfigLoader:
         except ConfigError:
             raise
         except Exception as e:
-            raise ConfigError(f"Failed to load config from {config_path}: {e}")
+            raise ConfigError(f"Failed to load config from {config_path}: {e}") from e
 
     @staticmethod
     def validate(config: MonitorConfig) -> None:
@@ -69,7 +69,9 @@ class ConfigLoader:
             test_file.touch()
             test_file.unlink()
         except Exception as e:
-            raise ConfigError(f"Output directory not writable: {config.output_directory}: {e}")
+            raise ConfigError(
+                f"Output directory not writable: {config.output_directory}: {e}"
+            ) from e
 
         for i, rule in enumerate(config.rules):
             if not rule.pattern:
@@ -129,12 +131,12 @@ class ConfigLoader:
             return service
 
         except Exception as e:
-            raise ConfigError(f"Failed to create MonitorService: {e}")
+            raise ConfigError(f"Failed to create MonitorService: {e}") from e
 
     @staticmethod
     def load_and_create(
         config_path: Path,
-        overrides: Optional[Dict[str, Any]] = None,
+        overrides: Optional[dict[str, Any]] = None,
     ) -> MonitorService:
         """Load config file and create MonitorService in one step.
 
@@ -215,8 +217,10 @@ class ConfigLoader:
 
                     with open(output_path, "w") as f:
                         yaml.dump(example_data, f, default_flow_style=False, sort_keys=False)
-                except ImportError:
-                    raise ConfigError("PyYAML not installed. Use format='json' or install PyYAML")
+                except ImportError as e:
+                    raise ConfigError(
+                        "PyYAML not installed. Use format='json' or install PyYAML"
+                    ) from e
             elif format.lower() == "json":
                 import json
 
@@ -227,4 +231,4 @@ class ConfigLoader:
 
             print(f"Example config saved to: {output_path}")
         except Exception as e:
-            raise ConfigError(f"Failed to generate example config: {e}")
+            raise ConfigError(f"Failed to generate example config: {e}") from e

@@ -327,9 +327,8 @@ pytest -v
 pytest --cov=bulletproof tests/ -v
 
 # Linting
-black bulletproof tests
-isort bulletproof tests  
-flake8 bulletproof tests
+ruff check .
+ruff format .
 ```
 
 ---
@@ -409,9 +408,8 @@ bulletproof config show
 pytest -v
 
 # Linting
-black bulletproof tests
-isort bulletproof tests
-flake8 bulletproof tests
+ruff check .
+ruff format .
 ```
 
 ---
@@ -443,7 +441,7 @@ flake8 bulletproof tests
 - Migrate to CLI or wait for Web Dashboard
 
 ✅ **CI/CD Improvements**
-- All linting checks passing (Black, isort, flake8)
+- All linting checks passing (ruff)
 - Multi-Python version support (3.9-3.12)
 - 100-character line length standardization
 

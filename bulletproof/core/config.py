@@ -3,7 +3,7 @@
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 try:
     import yaml
@@ -21,7 +21,7 @@ class MonitorConfig:
 
     watch_directory: Path
     output_directory: Path
-    rules: List[Rule] = field(default_factory=list)
+    rules: list[Rule] = field(default_factory=list)
     poll_interval: int = 5  # seconds
     persist_path: Optional[Path] = None  # queue.json location
     delete_input: bool = True  # Delete input after successful transcode
@@ -94,7 +94,7 @@ class MonitorConfig:
         if not path.exists():
             raise FileNotFoundError(f"Config file not found: {path}")
 
-        with open(path, "r") as f:
+        with open(path) as f:
             data = yaml.safe_load(f)
 
         return cls._from_dict(data, config_dir=path.parent)
@@ -113,13 +113,13 @@ class MonitorConfig:
         if not path.exists():
             raise FileNotFoundError(f"Config file not found: {path}")
 
-        with open(path, "r") as f:
+        with open(path) as f:
             data = json.load(f)
 
         return cls._from_dict(data, config_dir=path.parent)
 
     @classmethod
-    def _from_dict(cls, data: Dict[str, Any], config_dir: Path = Path(".")) -> "MonitorConfig":
+    def _from_dict(cls, data: dict[str, Any], config_dir: Path = Path(".")) -> "MonitorConfig":
         """Create from dictionary (handles both YAML and JSON).
 
         Args:

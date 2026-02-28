@@ -4,7 +4,7 @@ import hashlib
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Callable, Optional, Set
+from typing import Callable, Optional
 
 # Common video file extensions
 VIDEO_EXTENSIONS = {
@@ -57,7 +57,7 @@ class FolderMonitor:
     def __init__(
         self,
         watch_path: Path,
-        extensions: Optional[Set[str]] = None,
+        extensions: Optional[set[str]] = None,
         on_file_detected: Optional[Callable[[FileInfo], None]] = None,
     ):
         """Initialize folder monitor.
@@ -78,7 +78,7 @@ class FolderMonitor:
 
         # Track known files to avoid duplicate detection
         self._known_files: dict[str, FileInfo] = {}  # hash -> FileInfo
-        self._stable_files: Set[str] = set()  # hashes of stable (not changing) files
+        self._stable_files: set[str] = set()  # hashes of stable (not changing) files
 
     def scan(self) -> list[FileInfo]:
         """Scan directory for video files.
@@ -207,7 +207,9 @@ class FolderMonitor:
                     "status": (
                         "processed"
                         if info.processed
-                        else "processing" if info.processing else "pending"
+                        else "processing"
+                        if info.processing
+                        else "pending"
                     ),
                     "detected_at": info.detected_at.isoformat(),
                 }

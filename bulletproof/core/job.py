@@ -6,7 +6,7 @@ import subprocess
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal, Optional
 
 from bulletproof.core.profile import TranscodeProfile
 
@@ -309,7 +309,7 @@ class TranscodeJob:
             print(f"\n✗ Error: {self.error_message}")
             return False
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         data = asdict(self)
         data["input_file"] = str(self.input_file)

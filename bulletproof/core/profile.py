@@ -2,7 +2,7 @@
 
 import json
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -24,7 +24,7 @@ class TranscodeProfile:
     keyframe_interval: Optional[float] = None  # Seconds between keyframes (None = source)
     force_keyframes: bool = False  # Strictly enforce keyframe interval
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return asdict(self)
 
@@ -180,7 +180,9 @@ BUILT_IN_PROFILES = {
         scale=None,
         audio_codec="pcm_s24le",  # Uncompressed 24-bit audio
         audio_bitrate="0",
-        description="H.265 10-bit MKV for Linux archival (ProRes 422 replacement, visually lossless)",
+        description=(
+            "H.265 10-bit MKV for Linux archival (ProRes 422 replacement, visually lossless)"
+        ),
         extension="mkv",
         keyframe_interval=None,  # Preserve source keyframes for archival
         force_keyframes=False,
@@ -195,6 +197,6 @@ def get_profile(name: str) -> TranscodeProfile:
     return BUILT_IN_PROFILES[name]
 
 
-def list_profiles() -> Dict[str, TranscodeProfile]:
+def list_profiles() -> dict[str, TranscodeProfile]:
     """List all available profiles."""
     return BUILT_IN_PROFILES.copy()

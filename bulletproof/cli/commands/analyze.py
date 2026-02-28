@@ -68,7 +68,7 @@ def analyze(input_file: str):
 
     except subprocess.CalledProcessError as e:
         click.echo(f"Error analyzing file: {e.stderr}", err=True)
-        raise click.Exit(1)
+        raise click.Exit(1) from e
     except Exception as e:
         click.echo(f"Error: {e}", err=True)
-        raise click.Exit(1)
+        raise click.Exit(1) from e

@@ -169,7 +169,7 @@ def status(queue: str, verbose: bool):
 
     # Load queue
     try:
-        with open(queue_path, "r") as f:
+        with open(queue_path) as f:
             data = json.load(f)
     except FileNotFoundError:
         click.echo(f"❌ Queue file not found: {queue_path}", err=True)
@@ -223,7 +223,7 @@ def status(queue: str, verbose: bool):
 
         if history:
             click.echo("\n📜 Recent History:")
-            for i, job in enumerate(history[-10:], 1):  # Last 10
+            for _i, job in enumerate(history[-10:], 1):  # Last 10
                 input_file = Path(job.get("input_file", "unknown")).name
                 profile = job.get("profile_name", "unknown")
                 status_val = job.get("status", "unknown")

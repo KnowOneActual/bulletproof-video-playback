@@ -4,7 +4,7 @@ import asyncio
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from bulletproof.core.job import TranscodeJob
 from bulletproof.core.monitor import FileInfo, FolderMonitor
@@ -24,7 +24,7 @@ class MonitorServiceConfig:
         self,
         watch_directory: Path,
         output_directory: Path,
-        rules: list[Dict[str, Any]],
+        rules: list[dict[str, Any]],
         poll_interval: int = 5,
         delete_input: bool = True,
         persist_path: Optional[Path] = None,
@@ -205,7 +205,8 @@ class MonitorService:
             job = self.queue.add_from_file(file_info, output_file, profile_name, priority)
 
             self.logger.info(
-                f"Queued: {file_info.path.name} → {profile_name} → {output_file.name} (ID: {job.id})"
+                f"Queued: {file_info.path.name} → {profile_name} "
+                f"→ {output_file.name} (ID: {job.id})"
             )
 
         except Exception as e:
@@ -353,7 +354,7 @@ class MonitorService:
         self.logger.info("Stop requested")
         self._stop_event.set()
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get current service status.
 
         Returns:
@@ -370,7 +371,7 @@ class MonitorService:
             "queue": self.queue.get_status(),
         }
 
-    def get_history(self, limit: int = 10) -> list[Dict[str, Any]]:
+    def get_history(self, limit: int = 10) -> list[dict[str, Any]]:
         """Get recent processing history.
 
         Args:

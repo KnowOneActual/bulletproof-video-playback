@@ -2,7 +2,7 @@
 
 import json
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 
 class ConfigManager:
@@ -24,20 +24,20 @@ class ConfigManager:
         cls.CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
     @classmethod
-    def load(cls) -> Dict[str, Any]:
+    def load(cls) -> dict[str, Any]:
         """Load configuration from file, or return defaults if not found."""
         if cls.CONFIG_FILE.exists():
             try:
-                with open(cls.CONFIG_FILE, "r") as f:
+                with open(cls.CONFIG_FILE) as f:
                     config = json.load(f)
                     # Merge with defaults to handle missing keys
                     return {**cls.DEFAULT_CONFIG, **config}
-            except (json.JSONDecodeError, IOError):
+            except (OSError, json.JSONDecodeError):
                 return cls.DEFAULT_CONFIG.copy()
         return cls.DEFAULT_CONFIG.copy()
 
     @classmethod
-    def save(cls, config: Dict[str, Any]) -> None:
+    def save(cls, config: dict[str, Any]) -> None:
         """Save configuration to file."""
         cls.ensure_config_dir()
         with open(cls.CONFIG_FILE, "w") as f:
@@ -90,7 +90,7 @@ class ConfigManager:
         cls.set("speed_preset", preset)
 
     @classmethod
-    def show_config(cls) -> Dict[str, Any]:
+    def show_config(cls) -> dict[str, Any]:
         """Show current configuration."""
         return cls.load()
 
