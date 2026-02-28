@@ -138,12 +138,12 @@ dmypy.json
 *.wmv
 *.avi
 
-
-GEMINI.md
-
 # Tool caches
 .ruff_cache/
 
 # Test data
 test_videos/
 
+# AI Tooling (Local Only)
+GEMINI.md
+.gemini/

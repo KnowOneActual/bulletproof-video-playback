@@ -4,6 +4,24 @@ All notable changes to bulletproof-video-playback are documented in this file.
 
 ## [Unreleased]
 
+### 🧹 Repository Cleanup & Organization (2026-02-28)
+
+#### Removed
+- **TUI (Terminal User Interface)**:
+  - Removed `bulletproof tui` command.
+  - Deleted `bulletproof/tui` and `bulletproof/tui_textual` modules.
+  - Removed `textual` dependency from `pyproject.toml`.
+  - Deleted `docs/TUI_DEPRECATION.md` (no longer needed as a standalone guide).
+- **Redundant Config**:
+  - Deleted `setup.cfg` (settings consolidated in `pyproject.toml`).
+- **Internal Tooling Tracking**:
+  - Removed `GEMINI.md` and `.gemini/` directory from Git tracking (now local-only via `.gitignore`).
+
+#### Fixed
+- **.gitignore**:
+  - Updated to properly ignore `.ruff_cache/`, `test_videos/`, and local AI tooling files.
+  - Standardized structure and comments.
+
 ### 🚀 Phase 3.1 - Web Dashboard API (Day 2 Complete - 2026-02-27)
 
 #### Added
