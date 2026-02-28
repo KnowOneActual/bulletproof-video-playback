@@ -11,7 +11,7 @@ Video transcoding for live playback, streaming, and archival. Uses ffmpeg under 
 
 **NEW:** **MKV Profiles for Linux** - H.265 MKV profiles optimized for Linux live event workflows with mpv and Linux Show Player. ProRes 422 replacement with 10-bit color depth support.
 
-**NEW:** **Folder Monitoring** - Automatically transcode videos based on filename patterns. Drop videos in a folder, watch them auto-process. Perfect for live events, streaming, broadcast, and batch workflows.
+**NEW:** **Folder Monitoring** - Automatically transcode videos based on filename patterns. Drop videos into a folder, and they'll auto-process. Perfect for live events, streaming, broadcast, and batch workflows.
 
 **COMING SOON:** **Web Dashboard** - Phase 3.1 in progress! Real-time monitoring via REST API + WebSocket. See [ROADMAP.md](./docs/ROADMAP.md) for details.
 
@@ -132,7 +132,7 @@ bulletproof monitor start --config monitor.yaml
 ✅ **Folder Monitoring** - Watch directories, auto-transcode based on patterns  
 ✅ **Crash Recovery** - Queue persists to JSON, survives restarts  
 ✅ **Real-Time Progress Tracking** - See live progress bar during transcoding  
-✅ **9 Transcoding Profiles** - Prebuilt profiles for live playback, streaming, archival  
+✅ **9 Transcoding Profiles** - Prebuilt profiles for live playback, streaming, and archival  
 ✅ **CLI + Folder Monitor** - Command-line and automation interfaces  
 ✅ **Smart Output Naming** - Auto-correct extensions, includes processing marker  
 ✅ **Safety Features** - Prevents overwrites, auto-cleans incomplete files  
@@ -551,7 +551,7 @@ tests/                # Test suite (33 tests passing)
 |-------|----------|
 | "ffmpeg not found" | Install ffmpeg: `brew install ffmpeg` or `apt install ffmpeg` |
 | No progress bar | Video lacks duration metadata. Transcode is still running. |
-| Transcode takes long | Normal for large files. Check progress bar for speed estimate. |
+| Transcode takes long | Normal for large files. Check the progress bar for speed estimate. |
 | Want to cancel? | Press Ctrl+C - incomplete file is auto-deleted |
 | Import errors | Ensure venv is active and you ran `pip install -e ".[dev]"` |
 | Linux issues | See [`linux/QUICK_START.md`](./linux/QUICK_START.md) |
@@ -583,7 +583,7 @@ Beau Bremer ([@KnowOneActual](https://github.com/KnowOneActual))
 
 > "What does this system need?" → Use that codec + keyframe strategy
 
-Instead of debating codecs, bulletproof asks the question:
+Instead of debating codecs, Bulletproof asks the question:
 - Live playback on Mac? → ProRes/H.264 with 5s keyframes
 - Live playback on Linux? → H.265 MKV with 5s keyframes (NEW!)
 - Streaming? → H.265 with 2s keyframes for HLS/DASH
