@@ -4,7 +4,8 @@
 
 **Your GitHub Repo:** https://github.com/KnowOneActual/bulletproof-video-playback
 
-**What It Does:**
+**What It Does (Who It’s For):**
+- For AV and theater teams who need reliable, fast-scrubbing playback on macOS and Linux.
 - Transcode videos for live playback (QLab/Linux Show Player) + streaming + archival
 - **NEW v2.6.0:** MKV profiles for Linux live events (GPU accelerated)
 - **NEW v2.5.0:** Professional keyframe control for frame-accurate seeking
@@ -243,7 +244,9 @@ bulletproof monitor generate-config -o monitor.yaml -w /incoming
 
 ---
 
-## 🎯 Real-World Workflows
+## 🎯 Core AV & Theater Workflows
+
+These workflows target common AV/theater scenarios: QLab rigs, Linux Show Player/mpv, archival on show machines, and hot-folder ingest.
 
 ### Workflow 1: Live Playback (QLab on macOS)
 ```bash
@@ -464,19 +467,11 @@ ruff format .
 
 ---
 
-## 🚀 Next Steps
-
-1. ✅ **v2.6.0 Complete** - MKV profiles for Linux
-2. ✅ **v2.5.0 Complete** - Keyframe control + TUI deprecation
-3. 🔴 **v3.0.0** - Remove TUI completely
-4. 🟢 **Phase 3.1** - Web Dashboard with real-time monitoring
-5. 🔵 **Future** - GPU acceleration, concurrent processing, Docker
-
----
-
 ## 💡 Philosophy
 
 > "What does this system need?" → Use that codec + keyframe strategy
+
+The north star: **no show embarrassments.** Every profile and feature is a prepackaged answer to a specific AV workflow, not a generic "video conversion" option.
 
 Instead of debating:
 - QLab on Mac? → ProRes Proxy + 5s keyframes

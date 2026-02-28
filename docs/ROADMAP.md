@@ -4,6 +4,18 @@
 
 ---
 
+## 🎯 Strategic Direction
+
+Short- to medium-term, Bulletproof is optimizing for:
+
+- **AV appliance workflows:** A "bulletproof playback prep box" for theaters and AV teams, built around profiles, folder monitoring, and a minimal but powerful dashboard.
+- **On-prem service + API:** A stable, scriptable queue and monitoring layer that other tools can integrate with via REST/WebSocket.
+- **Narrow, high-value personas:** Live show operators, video engineers, and archivists—not generic consumer video conversion.
+
+Enterprise features (clustering, RBAC, compliance, etc.) remain future exploration, only to be pulled forward if real-world demand shows up.
+
+---
+
 ## ✅ COMPLETED PHASES
 
 ### Phase 1: Core Transcode Engine
@@ -53,6 +65,17 @@
 ### Phase 3.1: Web Dashboard - Day 2/15 Complete ✅
 
 **Status:** Building! Started February 10, 2026
+
+#### 3.1.0 Dashboard MVP Definition
+
+The first web dashboard release focuses on a thin, lovable slice:
+
+- Queue list with job status and basic details.
+- Global monitor status (running/paused) and queue health.
+- Essential job controls: cancel, retry, pause/resume processing.
+- Real-time updates via WebSocket.
+
+No complex charts, advanced analytics, or full config editor in v3.1.0—those will only ship after real AV workflows prove out the basics.
 
 #### 3.1.1: MVP Backend (Week 1) - 40% Complete
 - [x] **Day 1:** FastAPI server with REST endpoints ✅
@@ -174,6 +197,19 @@
 - ✅ Verified all functionality with a comprehensive test script.
 
 **Status:** On schedule. Day 2 completely finished!
+
+---
+
+## Phase 3.1 Decision Gate
+
+After v3.1.0 is running in at least one real rehearsal/show environment, we will:
+
+- Review actual pain points from AV teams.
+- Decide whether to:
+  - Double-down on the "AV appliance" direction (Phase 3.2–4.x), or
+  - Generalize more into a broader on-prem transcoding platform.
+
+This gate prevents premature investment into heavy enterprise features before the core AV workflows are battle-tested.
 
 ---
 
