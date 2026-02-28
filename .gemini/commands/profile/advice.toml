@@ -1,0 +1,27 @@
+# Invoked as: /profile:advice "use case + source details"
+description = "Recommend a Bulletproof transcoding profile and keyframe interval for a specific AV/theater workflow."
+
+prompt = """
+You are helping an AV/theater tech choose the right Bulletproof profile and keyframe
+interval based on a specific workflow.
+
+First, read README.md and QUICK_REFERENCE.md to recall:
+- The 9 built-in profiles (live-qlab, live-linux-hevc-mkv, archival-linux-mkv, stream-hd, etc.).
+- Default keyframe intervals and when to override them.
+- Platform differences: macOS/QLab vs Linux Show Player/mpv vs streaming/archival.
+
+Given the following user description and (if available) source file specs, recommend:
+1. The best profile name.
+2. A keyframe interval (in seconds), explicitly saying whether to keep default or override.
+3. A short rationale in plain AV-tech language, focusing on reliability and scrubbing.
+4. A concrete CLI command using `bulletproof transcode` that they can copy-paste and run.
+5. One potential gotcha or thing to double-check before the show.
+
+Rules:
+- Prioritize live-show reliability and operator confidence over theoretical purity.
+- If the description is ambiguous, ask 1-2 clarifying questions at the end before giving a recommendation.
+- Keep the response short — AV techs are often under time pressure.
+
+User description and/or source details:
+{{args}}
+"""
