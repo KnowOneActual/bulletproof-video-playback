@@ -96,7 +96,7 @@ class MonitorService:
 
     def _setup_logging(self) -> None:
         """Set up logging."""
-        self.logger = logging.getLogger("bulletproof.monitor")
+        self.logger = logging.getLogger("bvp.monitor")
         self.logger.setLevel(getattr(logging, self.config.log_level))
 
         # Console handler

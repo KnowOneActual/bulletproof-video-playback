@@ -46,7 +46,7 @@ def _save_config(config):
 def config():
     """Manage bvp configuration.
 
-    Configuration is stored in ~/.bulletproof/config.json
+    Configuration is stored in ~/.bvp/config.json
 
     NOTE: For folder monitoring, use YAML config files:
       bvp monitor generate-config -o monitor.yaml -w ./incoming

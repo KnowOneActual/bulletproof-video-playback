@@ -276,7 +276,7 @@ curl http://localhost:8080/api/v1/queue | jq
 ### Config Management
 
 ```bash
-# Set your default profile (saved to ~/.bulletproof/config.json)
+# Set your default profile (saved to ~/.bvp/config.json)
 bvp config set-default-profile live-qlab
 
 # Set your default output folder

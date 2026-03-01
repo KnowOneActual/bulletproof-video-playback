@@ -429,7 +429,7 @@ bvp monitor start --config web.yaml &
 
 Set up cron job to check status:
 ```bash
-0 8 * * * bvp monitor status --queue /var/lib/bulletproof/queue.json
+0 8 * * * bvp monitor status --queue /var/lib/bvp/queue.json
 ```
 
 ---
@@ -461,7 +461,7 @@ delete_input: true        # Essential to manage disk
 
 ## Integration with Systemd
 
-Create `/etc/systemd/system/bulletproof-monitor.service`:
+Create `/etc/systemd/system/bvp-monitor.service`:
 
 ```ini
 [Unit]
@@ -482,14 +482,14 @@ WantedBy=multi-user.target
 
 Start:
 ```bash
-sudo systemctl start bulletproof-monitor
-sudo systemctl enable bulletproof-monitor
+sudo systemctl start bvp-monitor
+sudo systemctl enable bvp-monitor
 ```
 
 Check status:
 ```bash
-sudo systemctl status bulletproof-monitor
-sudo journalctl -u bulletproof-monitor -f
+sudo systemctl status bvp-monitor
+sudo journalctl -u bvp-monitor -f
 ```
 
 ---

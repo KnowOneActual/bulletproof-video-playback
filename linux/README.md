@@ -670,7 +670,7 @@ docker run -v /path/to/videos:/videos bvp-linux /app/scripts/transcode.sh /video
 | Installation | `pip install bulletproof-video-playback` | Copy scripts + chmod +x |
 | Profiles | Python-defined | JSON catalog |
 | TUI (Interactive) | Yes (click-based) | No (CLI only, but simple) |
-| Config | ~/.bulletproof/config.json | ~/.bvp-linux/config.json |
+| Config | ~/.bvp/config.json | ~/.bvp-linux/config.json |
 | Customization | Edit Python files | Edit JSON + Bash scripts |
 | Output | Real-time progress bar | FFmpeg progress (--verbose) |
 

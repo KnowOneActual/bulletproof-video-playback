@@ -30,11 +30,11 @@ log_level: INFO
   # Logging verbosity: DEBUG, INFO, WARNING, ERROR
   # Use DEBUG to troubleshoot issues
 
-log_file: /var/log/bulletproof-monitor.log
+log_file: /var/log/bvp-monitor.log
   # Optional: log to file (in addition to console)
   # Comment out to disable file logging
 
-persist_path: /var/lib/bulletproof/queue.json
+persist_path: /var/lib/bvp/queue.json
   # Optional: persist queue state to survive crashes
   # Comment out to disable persistence
   # If enabled, queue will resume from where it left off
@@ -144,10 +144,10 @@ rules:
 #   bvp monitor start --config live.yaml --watch /different/incoming
 #
 # Check queue status:
-#   bvp monitor status --queue /var/lib/bulletproof/queue.json
+#   bvp monitor status --queue /var/lib/bvp/queue.json
 #
 # Clear queue (if needed):
-#   bvp monitor clear-queue --queue /var/lib/bulletproof/queue.json
+#   bvp monitor clear-queue --queue /var/lib/bvp/queue.json
 
 # See full documentation:
 #   docs/MONITOR_GUIDE.md

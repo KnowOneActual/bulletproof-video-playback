@@ -132,7 +132,7 @@ bvp config show
 bvp config reset
 ```
 
-**Config location:** `~/.bulletproof/config.json`
+**Config location:** `~/.bvp/config.json`
 
 ---
 
@@ -455,7 +455,7 @@ ruff format .
 | Issue | Solution |
 |-------|----------|
 | "ffmpeg not found" | Install: `brew install ffmpeg` or `apt install ffmpeg` |
-| Config not loading | Check: `cat ~/.bulletproof/config.json` |
+| Config not loading | Check: `cat ~/.bvp/config.json` |
 | TUI not working | It's deprecated. Use `bvp transcode` instead |
 | Tests failing | Run: `pytest -v` for details |
 | Want to reset config | Run: `bvp config reset` |
