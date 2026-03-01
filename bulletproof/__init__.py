@@ -1,6 +1,6 @@
 """bulletproof-video-playback: Professional video transcoding for theater & streaming."""
 
-__version__ = "0.1.0"
+__version__ = "3.0.0"
 __author__ = "Beau Bremer"
 __email__ = "dev@knowoneactual.com"
 

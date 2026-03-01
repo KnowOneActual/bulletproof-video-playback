@@ -54,7 +54,7 @@ Repository = "https://github.com/KnowOneActual/bulletproof-video-playback"
 bvp = "bulletproof.cli:cli"
 
 [tool.setuptools]
-packages = ["bvp", "bulletproof.core", "bulletproof.cli", "bulletproof.cli.commands", "bulletproof.utils", "tests"]
+packages = ["bulletproof", "bulletproof.core", "bulletproof.cli", "bulletproof.cli.commands", "bulletproof.utils", "tests"]
 
 [tool.ruff]
 line-length = 100
@@ -75,7 +75,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["bvp"]
+known-first-party = ["bulletproof"]
 
 [tool.mypy]
 python_version = "3.9"
