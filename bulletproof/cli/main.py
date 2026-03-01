@@ -2,7 +2,7 @@
 
 import click
 
-from bvp import __version__
+from bulletproof import __version__
 from bulletproof.cli.commands import analyze, batch, config, monitor, transcode
 
 

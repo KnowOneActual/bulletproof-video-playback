@@ -9,6 +9,9 @@ All notable changes to bulletproof-video-playback are documented in this file.
 - **CLI Rename**: The main command-line interface has been renamed from `bulletproof` to `bvp` for easier typing and better ergonomics.
   - *Old:* `bulletproof transcode input.mov`
   - *New:* `bvp transcode input.mov`
+- **Config Directory Rename**: Local configuration directories have been renamed to match the new command:
+  - `~/.bulletproof` → `~/.bvp`
+  - `~/.bulletproof-linux` → `~/.bvp-linux`
 - **TUI Removal**: The deprecated Terminal User Interface has been completely removed.
 - **Dependency Changes**: `textual` is no longer a dependency.
 

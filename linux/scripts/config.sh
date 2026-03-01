@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# config.sh - Manage bulletproof-linux configuration (default profile, output directory)
+# config.sh - Manage bvp-linux configuration (default profile, output directory)
 # Usage: ./config.sh [show|set-profile <profile>|set-output-dir <dir>|reset]
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG_DIR="${HOME}/.bulletproof-linux"
+CONFIG_DIR="${HOME}/.bvp-linux"
 CONFIG_FILE="${CONFIG_DIR}/config.json"
 PROFILES_FILE="${SCRIPT_DIR}/../profiles.json"
 
@@ -22,7 +22,7 @@ initialize_config() {
   "default_profile": "standard-playback",
   "default_output_dir": "",
   "created_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-  "notes": "Configuration for bulletproof-linux video transcoding tools"
+  "notes": "Configuration for bvp-linux video transcoding tools"
 }
 EOF
         echo "Initialized config: $CONFIG_FILE"

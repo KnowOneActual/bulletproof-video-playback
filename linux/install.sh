@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# install.sh - Setup bulletproof-linux transcoding tools
+# install.sh - Setup bvp-linux transcoding tools
 # This script checks dependencies, makes scripts executable, and creates config directory
 
 set -euo pipefail
@@ -143,7 +143,7 @@ fi
 echo ""
 
 # Create config directory
-CONFIG_DIR="${HOME}/.bulletproof-linux"
+CONFIG_DIR="${HOME}/.bvp-linux"
 echo "Setting up configuration..."
 if [[ ! -d "$CONFIG_DIR" ]]; then
     mkdir -p "$CONFIG_DIR"

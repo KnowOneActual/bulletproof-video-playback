@@ -146,7 +146,7 @@ esac
 #### `config.sh` (Configuration Management)
 
 **Responsibilities:**
-- Initialize `~/.bulletproof-linux/config.json`
+- Initialize `~/.bvp-linux/config.json`
 - Get/set default profile
 - Get/set default output directory
 - Reset to defaults

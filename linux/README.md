@@ -80,7 +80,7 @@ Make scripts available globally:
 ```bash
 # Copy scripts to a directory in your PATH
 cp /path/to/bulletproof-video-playback/linux/scripts/*.sh ~/.local/bin/
-cp /path/to/bulletproof-video-playback/linux/profiles.json ~/.bulletproof-linux/
+cp /path/to/bulletproof-video-playback/linux/profiles.json ~/.bvp-linux/
 
 # Or symlink for easy updates
 ln -s /path/to/bulletproof-video-playback/linux/scripts/*.sh ~/.local/bin/
@@ -220,7 +220,7 @@ Next steps:
 ./config.sh reset
 ```
 
-Configuration is stored in `~/.bulletproof-linux/config.json`.
+Configuration is stored in `~/.bvp-linux/config.json`.
 
 ---
 
@@ -654,8 +654,8 @@ CMD ["/app/scripts/list-profiles.sh"]
 
 Build and run:
 ```bash
-docker build -t bulletproof-linux .
-docker run -v /path/to/videos:/videos bulletproof-linux /app/scripts/transcode.sh /videos/input.mov --profile live-h264-linux
+docker build -t bvp-linux .
+docker run -v /path/to/videos:/videos bvp-linux /app/scripts/transcode.sh /videos/input.mov --profile live-h264-linux
 ```
 
 ---
@@ -670,7 +670,7 @@ docker run -v /path/to/videos:/videos bulletproof-linux /app/scripts/transcode.s
 | Installation | `pip install bulletproof-video-playback` | Copy scripts + chmod +x |
 | Profiles | Python-defined | JSON catalog |
 | TUI (Interactive) | Yes (click-based) | No (CLI only, but simple) |
-| Config | ~/.bulletproof/config.json | ~/.bulletproof-linux/config.json |
+| Config | ~/.bulletproof/config.json | ~/.bvp-linux/config.json |
 | Customization | Edit Python files | Edit JSON + Bash scripts |
 | Output | Real-time progress bar | FFmpeg progress (--verbose) |
 
