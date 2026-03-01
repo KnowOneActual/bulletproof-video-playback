@@ -5,6 +5,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/version-2.5.0-green.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/releases)
 
+> [!NOTE]
+> BVP is still in active design and development. I’m using this project as a great opportunity to learn and improve my workflow, so things might change quickly and sometimes even break. I'm currently refactoring based on the feedback I've received. If you're trying it out, please be patient with some rough edges and occasional instability for now. Feel free to reach out with any issues or comments (good or bad ;)).
+
 Video transcoding for live playback, streaming, and archival. Uses ffmpeg under the hood with nine prebuilt profiles optimized for different use cases.
 
 **NEW v2.5.0:** **Professional Keyframe Control** - Customize GOP (Group of Pictures) intervals for frame-accurate seeking in QLab, video editors, and streaming workflows.
