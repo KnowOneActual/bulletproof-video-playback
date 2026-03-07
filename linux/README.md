@@ -664,12 +664,11 @@ docker run -v /path/to/videos:/videos bvp-linux /app/scripts/transcode.sh /video
 
 | Feature | macOS (Python) | Linux (Bash) |
 |---------|----------------|---------------|
-| Language | Python 3.9+ | Bash (no Python) |
+| Language | Python 3.10+ | Bash (no Python) |
 | Dependencies | Python, ffmpeg, ffprobe | ffmpeg, ffprobe, jq |
 | ProRes Support | Full (macOS native) | Optional (if ffmpeg has libprores) |
 | Installation | `pip install bulletproof-video-playback` | Copy scripts + chmod +x |
 | Profiles | Python-defined | JSON catalog |
-| TUI (Interactive) | Yes (click-based) | No (CLI only, but simple) |
 | Config | ~/.bvp/config.json | ~/.bvp-linux/config.json |
 | Customization | Edit Python files | Edit JSON + Bash scripts |
 | Output | Real-time progress bar | FFmpeg progress (--verbose) |

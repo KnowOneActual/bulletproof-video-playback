@@ -205,7 +205,7 @@ bulletproof-video-playback/
 ├── bulletproof/                   # Python macOS/cross-platform
 │   ├── core/
 │   ├── cli/
-│   └── tui/
+│   └── utils/
 ├── linux/                         # Linux-native bash scripts
 │   ├── README.md
 │   ├── QUICK_START.md
@@ -405,7 +405,7 @@ A: Yes, as optional convenience. Maintains portability while simplifying depende
 
 1. **GPU acceleration** (NVIDIA NVENC, AMD AMF) - optional profiles
 2. **Hardware-specific presets** (RPi, Jetson, etc.)
-3. **Interactive TUI** - If demand exists, write a simple bash TUI
+3. **Web Dashboard** - Provide instructions on using the API server on Linux
 4. **systemd service** - Background transcoding daemon
 5. **Docker image** - Pre-built container with all dependencies
 6. **Package distribution** - AUR, Copr, PPAs

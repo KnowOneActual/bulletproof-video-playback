@@ -61,7 +61,6 @@ Edit this file to customize profiles or add new ones.
 
 ### macOS Users
 👉 **See the main [README.md](../README.md)** for Python version with:
-- Interactive TUI menu
 - Full feature set
 - macOS-native ProRes support
 
@@ -107,7 +106,6 @@ Use **WSL2** with Linux Bash scripts, or **Python version** on Windows native.
 | Feature | macOS (Python) | Linux (Bash) |
 |---------|----------------|---------------|
 | **Installation** | `pip install` | `bash install.sh` |
-| **Interactive UI** | Yes (TUI menu) | No (CLI only) |
 | **Python required** | Yes | No |
 | **ProRes support** | Native | Optional |
 | **Single file transcode** | Yes | Yes |

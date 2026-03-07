@@ -12,7 +12,6 @@
 - **NEW:** Folder monitoring for automated batch processing
 - 9 optimized profiles with smart keyframe intervals
 - CLI + Folder Monitor + Python API
-- ⚠️ **TUI DEPRECATED** (removal in v3.0.0)
 
 ---
 
@@ -76,14 +75,6 @@ bvp monitor status --queue queue.json
 # Clear queue
 bvp monitor clear-queue --queue queue.json
 ```
-
-### 3. ~~TUI (Interactive)~~ - DEPRECATED
-```bash
-bvp tui  # Shows deprecation warning
-```
-
-⚠️ **Migration:** Use `bvp transcode` CLI or `bvp monitor` instead.  
-👉 **Full guide:** [docs/TUI_DEPRECATION.md](./docs/TUI_DEPRECATION.md)
 
 ### Python API (Scripting)
 ```python
@@ -358,14 +349,12 @@ bulletproof/
 │       ├── batch.py        # Batch processing
 │       ├── monitor.py      # Folder monitoring
 │       └── config.py       # Config management
-├── tui/                # DEPRECATED (removal in v3.0.0)
 └── utils/
 
 docs/
 ├── features/           # Feature documentation
 ├── testing/            # Testing guides
-├── phase-3.1/          # Web Dashboard planning
-└── TUI_DEPRECATION.md  # TUI migration guide
+└── phase-3.1/          # Web Dashboard planning
 ```
 
 ---
@@ -438,14 +427,9 @@ ruff format .
 - Queue persistence and crash recovery
 - Real-time status monitoring
 
-🚧 **TUI Deprecated**
-- Shows warning on startup
-- Will be removed in v3.0.0
-- Migrate to CLI or wait for Web Dashboard
-
 ✅ **CI/CD Improvements**
 - All linting checks passing (ruff)
-- Multi-Python version support (3.9-3.12)
+- Multi-Python version support (3.10-3.12)
 - 100-character line length standardization
 
 ---
@@ -456,7 +440,6 @@ ruff format .
 |-------|----------|
 | "ffmpeg not found" | Install: `brew install ffmpeg` or `apt install ffmpeg` |
 | Config not loading | Check: `cat ~/.bvp/config.json` |
-| TUI not working | It's deprecated. Use `bvp transcode` instead |
 | Tests failing | Run: `pytest -v` for details |
 | Want to reset config | Run: `bvp config reset` |
 | Import errors | Ensure venv: `source .venv/bin/activate` |
