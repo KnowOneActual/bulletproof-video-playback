@@ -1,10 +1,13 @@
 """File system monitoring for video transcode workflows."""
 
 import hashlib
+import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Callable, Optional
+
+logger = logging.getLogger("bvp.monitor")
 
 # Common video file extensions
 VIDEO_EXTENSIONS = {
@@ -131,7 +134,7 @@ class FolderMonitor:
 
         except (OSError, PermissionError) as e:
             # Directory may be inaccessible
-            print(f"Error scanning directory {self.watch_path}: {e}")
+            logger.error(f"Directory scan failed: path={self.watch_path} error={e}")
 
         return detected
 

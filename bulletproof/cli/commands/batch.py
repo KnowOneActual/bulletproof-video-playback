@@ -60,17 +60,17 @@ def batch(input_dir: str, profile: str, extension: str, output_dir: str):
 
             try:
                 job = TranscodeJob(input_file, output_file, prof)
-                if job.execute():
-                    click.echo(f"  ✓ Complete: {output_file.name}")
+                if job.sync_execute(show_progress=False):
+                    click.echo(f"  Status: SUCCESS (output={output_file.name})")
                     successful += 1
                 else:
-                    click.echo(f"  ✗ Failed: {job.error_message}")
+                    click.echo(f"  Status: FAILED (error={job.error_message})")
                     failed += 1
             except Exception as e:
-                click.echo(f"  ✗ Error: {e}")
+                click.echo(f"  Status: ERROR (error={e})")
                 failed += 1
 
-        click.echo(f"\nBatch complete: {successful} successful, {failed} failed")
+        click.echo(f"\nBatch processing complete. successful={successful} failed={failed}")
 
     except ValueError as e:
         click.echo(f"Error: {e}", err=True)

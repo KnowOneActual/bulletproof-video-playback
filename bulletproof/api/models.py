@@ -42,6 +42,23 @@ class JobResponse(BaseModel):
     error_message: Optional[str] = None
     progress: float = 0.0
 
+    @classmethod
+    def from_queued_job(cls, job: Any) -> "JobResponse":
+        """Create an API JobResponse from a core QueuedJob object."""
+        return cls(
+            id=job.id,
+            input_file=str(job.input_file),
+            output_file=str(job.output_file),
+            profile_name=job.profile_name,
+            status=JobStatus(job.status),
+            priority=job.priority,
+            created_at=job.created_at,
+            started_at=job.started_at,
+            completed_at=job.completed_at,
+            error_message=job.error_message,
+            progress=job.progress,
+        )
+
     class Config:
         json_schema_extra = {
             "example": {
@@ -127,22 +144,45 @@ class RuleResponse(BaseModel):
 
     pattern: str
     profile: str
-    output_pattern: str
-    pattern_type: str
-    priority: int
-    delete_input: bool
+    output_pattern: str = "{filename}"
+    pattern_type: str = "glob"
+    priority: int = 100
+    delete_input: bool = True
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "pattern": "*_live.mov",
-                "profile": "live-qlab",
-                "output_pattern": "{filename_no_ext}_qlab.mov",
-                "pattern_type": "glob",
-                "priority": 100,
-                "delete_input": True,
-            }
-        }
+
+class ConfigResponse(BaseModel):
+    """Full monitor configuration response."""
+
+    watch_directory: str
+    output_directory: str
+    poll_interval: int
+    delete_input: bool
+    log_level: str
+    log_file: Optional[str] = None
+    persist_path: Optional[str] = None
+    rules: list[RuleResponse] = Field(default_factory=list)
+
+
+class ConfigUpdate(BaseModel):
+    """Configuration update request."""
+
+    poll_interval: Optional[int] = None
+    delete_input: Optional[bool] = None
+    log_level: Optional[str] = None
+    rules: Optional[list[RuleResponse]] = None
+
+
+class ProfileResponse(BaseModel):
+    """Transcode profile details response."""
+
+    name: str
+    description: str
+    codec: str
+    extension: str
+    pixel_format: Optional[str] = None
+    frame_rate: Optional[float] = None
+    scale: Optional[str] = None
+    keyframe_interval: Optional[float] = None
 
 
 class HistoryResponse(BaseModel):

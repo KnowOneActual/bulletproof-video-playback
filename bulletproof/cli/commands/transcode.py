@@ -104,12 +104,12 @@ def transcode(
         click.echo("\nStarting transcode...")
 
         job = TranscodeJob(input_path, output_path, prof, speed_preset=preset)
-        success = job.execute()
+        success = job.sync_execute()
 
         if success:
-            click.echo(f"\n✓ Transcode complete: {output_path}")
+            click.echo(f"Transcode successful: {output_path}")
         else:
-            click.echo(f"\n✗ Transcode failed: {job.error_message}", err=True)
+            click.echo(f"Transcode failed: {job.error_message}", err=True)
             raise click.Exit(1)
 
     except ValueError as e:

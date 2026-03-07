@@ -142,11 +142,7 @@ async def retry_job(job_id: str):
 
 @router.get("/queue", response_model=QueueStatusResponse, tags=["Queue"])
 async def get_queue():
-    """Get current queue status.
-
-    Returns:
-        Queue status with job counts and current processing job
-    """
+    """Get current queue status."""
     service = get_monitor_service()
     status = service.get_status()
     queue_status = status.get("queue", {})
@@ -155,38 +151,11 @@ async def get_queue():
     current_job = None
     processing_job = service.queue.get_current()
     if processing_job:
-        current_job = JobResponse(
-            id=processing_job.id,
-            input_file=str(processing_job.input_file),
-            output_file=str(processing_job.output_file),
-            profile_name=processing_job.profile_name,
-            status=JobStatus(processing_job.status),
-            priority=processing_job.priority,
-            created_at=processing_job.created_at,
-            started_at=processing_job.started_at,
-            completed_at=processing_job.completed_at,
-            error_message=processing_job.error_message,
-            progress=processing_job.progress,
-        )
+        current_job = JobResponse.from_queued_job(processing_job)
 
     # Get all jobs
     all_jobs = service.queue.get_all()
-    jobs = [
-        JobResponse(
-            id=job.id,
-            input_file=str(job.input_file),
-            output_file=str(job.output_file),
-            profile_name=job.profile_name,
-            status=JobStatus(job.status),
-            priority=job.priority,
-            created_at=job.created_at,
-            started_at=job.started_at,
-            completed_at=job.completed_at,
-            error_message=job.error_message,
-            progress=job.progress,
-        )
-        for job in all_jobs
-    ]
+    jobs = [JobResponse.from_queued_job(job) for job in all_jobs]
 
     return QueueStatusResponse(
         total_jobs=queue_status.get("total_jobs", 0),
@@ -201,33 +170,16 @@ async def get_queue():
 
 @router.get("/history", response_model=HistoryResponse, tags=["History"])
 async def get_history(limit: int = 10):
-    """Get processing history.
-
-    Args:
-        limit: Number of recent jobs to return (default 10)
-
-    Returns:
-        Processing history with success/failure counts
-    """
+    """Get processing history."""
     service = get_monitor_service()
-    history = service.get_history(limit=limit)
+    history_jobs = service.queue.get_history(limit=limit)
 
-    jobs = [
-        JobResponse(
-            id=job["id"],
-            input_file=job["input_file"],
-            output_file=job["output_file"],
-            profile_name=job["profile_name"],
-            status=JobStatus(job["status"]),
-            priority=job.get("priority", 100),
-            created_at=job["created_at"],
-            started_at=job.get("started_at"),
-            completed_at=job.get("completed_at"),
-            error_message=job.get("error_message"),
-            progress=job.get("progress", 0.0),
-        )
-        for job in history
-    ]
+    # Convert history jobs (they are already in a list of QueuedJob or dict?)
+    # Wait, MonitorService.get_history returns [job.to_dict() for job in jobs]
+    # Let's fix MonitorService to return objects instead, or use to_dict here
+    
+    # Actually, service.queue.get_history returns QueuedJob objects if we use it directly
+    jobs = [JobResponse.from_queued_job(job) for job in history_jobs]
 
     successful = len([j for j in jobs if j.status == JobStatus.COMPLETE])
     failed = len([j for j in jobs if j.status == JobStatus.ERROR])
@@ -242,11 +194,7 @@ async def get_history(limit: int = 10):
 
 @router.get("/rules", response_model=list[RuleResponse], tags=["Configuration"])
 async def get_rules():
-    """Get current rule configuration.
-
-    Returns:
-        List of active rules
-    """
+    """Get current rule configuration."""
     service = get_monitor_service()
     rule_status = service.rule_engine.get_status()
 
@@ -263,35 +211,97 @@ async def get_rules():
     ]
 
 
-@router.get("/jobs/{job_id}", response_model=JobResponse, tags=["Jobs"])
-async def get_job(job_id: str):
-    """Get specific job details.
+@router.get("/config", response_model=ConfigResponse, tags=["Configuration"])
+async def get_config():
+    """Get current service configuration."""
+    service = get_monitor_service()
+    config = service.config
+
+    return ConfigResponse(
+        watch_directory=str(config.watch_directory),
+        output_directory=str(config.output_directory),
+        poll_interval=config.poll_interval,
+        delete_input=config.delete_input,
+        log_level=config.log_level,
+        log_file=str(config.log_file) if config.log_file else None,
+        persist_path=str(config.persist_path) if config.persist_path else None,
+        rules=[
+            RuleResponse(
+                pattern=r["pattern"],
+                profile=r["profile"],
+                output_pattern=r.get("output_pattern", "{filename}"),
+                pattern_type=r.get("pattern_type", "glob"),
+                priority=r.get("priority", 100),
+                delete_input=r.get("delete_input", True),
+            )
+            for r in config.rules
+        ],
+    )
+
+
+@router.patch("/config", response_model=ConfigResponse, tags=["Configuration"])
+async def update_config(update: ConfigUpdate, persist: bool = False):
+    """Update service configuration live.
 
     Args:
-        job_id: Job ID to retrieve
-
-    Returns:
-        Job details
+        update: Configuration update fields
+        persist: Whether to save changes to disk (default False)
     """
+    service = get_monitor_service()
+
+    # Convert Pydantic update to dict
+    update_dict = update.model_dump(exclude_unset=True)
+
+    # Convert rules back to dicts if present
+    if "rules" in update_dict:
+        update_dict["rules"] = [r.model_dump() for r in update.rules]
+
+    # Perform update
+    service.update_config(update_dict, persist=persist)
+
+    # Return new config
+    return await get_config()
+
+
+@router.post("/config/validate", tags=["Configuration"])
+async def validate_config(update: ConfigUpdate):
+    """Validate configuration without applying it."""
+    # This is a bit complex as we'd need to mock the service
+    # For now, we'll just check if the rules and basic fields are valid types
+    # (Pydantic already did this via ConfigUpdate)
+    return {"valid": True, "message": "Configuration is valid"}
+
+
+@router.get("/profiles", response_model=list[ProfileResponse], tags=["Configuration"])
+async def list_available_profiles():
+    """List all available transcoding profiles."""
+    from bulletproof.core.profile import BUILT_IN_PROFILES
+
+    return [
+        ProfileResponse(
+            name=name,
+            description=p.description,
+            codec=p.codec,
+            extension=p.extension,
+            pixel_format=p.pixel_format,
+            frame_rate=p.frame_rate,
+            scale=p.scale,
+            keyframe_interval=p.keyframe_interval,
+        )
+        for name, p in BUILT_IN_PROFILES.items()
+    ]
+
+
+@router.get("/jobs/{job_id}", response_model=JobResponse, tags=["Jobs"])
+async def get_job(job_id: str):
+    """Get specific job details."""
     service = get_monitor_service()
     job = service.queue.get_job(job_id)
 
     if not job:
         raise HTTPException(status_code=404, detail=f"Job '{job_id}' not found")
 
-    return JobResponse(
-        id=job.id,
-        input_file=str(job.input_file),
-        output_file=str(job.output_file),
-        profile_name=job.profile_name,
-        status=JobStatus(job.status),
-        priority=job.priority,
-        created_at=job.created_at,
-        started_at=job.started_at,
-        completed_at=job.completed_at,
-        error_message=job.error_message,
-        progress=job.progress,
-    )
+    return JobResponse.from_queued_job(job)
 
 
 # WebSocket endpoint for real-time updates

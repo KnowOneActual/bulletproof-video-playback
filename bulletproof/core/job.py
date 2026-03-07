@@ -1,12 +1,13 @@
 """Transcode job execution and management."""
 
+import asyncio
 import json
 import re
-import subprocess
+import shlex
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Literal, Optional
+from typing import Any, Callable, Literal, Optional
 
 from bulletproof.core.profile import TranscodeProfile
 
@@ -40,8 +41,8 @@ class TranscodeJob:
         if self.speed_preset not in ["fast", "normal", "slow"]:
             raise ValueError(f"Invalid speed_preset: {self.speed_preset}")
 
-    def _get_duration(self) -> Optional[float]:
-        """Get video duration in seconds using ffprobe."""
+    async def _get_duration(self) -> Optional[float]:
+        """Get video duration in seconds using ffprobe (async)."""
         try:
             cmd = [
                 "ffprobe",
@@ -50,18 +51,23 @@ class TranscodeJob:
                 "-show_entries",
                 "format=duration",
                 "-of",
-                "default=noprint_wrappers=1:nokey=1:noprint_wrappers=1",
+                "default=noprint_wrappers=1:nokey=1",
                 str(self.input_file),
             ]
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
-            if result.returncode == 0:
-                return float(result.stdout.strip())
-        except (subprocess.TimeoutExpired, ValueError, FileNotFoundError):
+            process = await asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            stdout, _ = await process.communicate()
+            if process.returncode == 0:
+                return float(stdout.decode().strip())
+        except (ValueError, FileNotFoundError, OSError):
             pass
         return None
 
-    def _get_framerate(self) -> Optional[float]:
-        """Get video framerate using ffprobe."""
+    async def _get_framerate(self) -> Optional[float]:
+        """Get video framerate using ffprobe (async)."""
         try:
             cmd = [
                 "ffprobe",
@@ -75,19 +81,24 @@ class TranscodeJob:
                 "default=noprint_wrappers=1:nokey=1",
                 str(self.input_file),
             ]
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
-            if result.returncode == 0:
+            process = await asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            stdout, _ = await process.communicate()
+            if process.returncode == 0:
                 # Parse fraction (e.g., "30000/1001" or "24/1")
-                fps_str = result.stdout.strip()
+                fps_str = stdout.decode().strip()
                 if "/" in fps_str:
                     num, denom = fps_str.split("/")
                     return float(num) / float(denom)
                 return float(fps_str)
         except (
-            subprocess.TimeoutExpired,
             ValueError,
             FileNotFoundError,
             ZeroDivisionError,
+            OSError,
         ):
             pass
         return None
@@ -109,7 +120,7 @@ class TranscodeJob:
             return preset_map[self.speed_preset][codec_preset]
         return codec_preset
 
-    def _build_ffmpeg_command(self) -> list:
+    async def _build_ffmpeg_command(self) -> list[str]:
         """Build ffmpeg command from profile with speed adjustments."""
         cmd = [
             "ffmpeg",
@@ -140,7 +151,6 @@ class TranscodeJob:
             cmd.extend(["-preset", adjusted_preset])
 
             # Use CRF mode if quality is set and no bitrate limit
-            # CRF mode: quality value (0-51, lower = better quality)
             if self.profile.quality and not self.profile.max_bitrate:
                 cmd.extend(["-crf", str(self.profile.quality)])
             elif self.profile.max_bitrate:
@@ -153,7 +163,7 @@ class TranscodeJob:
         # Keyframe interval settings
         if self.profile.keyframe_interval is not None:
             # Get source framerate (or use target framerate if specified)
-            fps = self.profile.frame_rate if self.profile.frame_rate else self._get_framerate()
+            fps = self.profile.frame_rate if self.profile.frame_rate else await self._get_framerate()
 
             if fps:
                 # Calculate GOP size: framerate × interval in seconds
@@ -195,31 +205,16 @@ class TranscodeJob:
         if self.profile.extension in ["mp4", "mkv"]:
             cmd.extend(["-movflags", "+faststart"])
 
-        # Output file (quiet stderr to avoid clutter)
+        # Output file
         cmd.extend(["-y", "-loglevel", "error", str(self.output_file)])
 
         return cmd
 
-    def _print_progress_bar(self, current: int, total: int, prefix: str = "", decimals: int = 1):
-        """Print a simple progress bar to terminal."""
-        if total <= 0:
-            return
-
-        percent = 100 * (current / float(total))
-        filled_length = int(50 * current // total)
-        bar = "█" * filled_length + "░" * (50 - filled_length)
-
-        print(
-            f"\r{prefix} |{bar}| {percent:.1f}% ({current}/{total})",
-            end="",
-            flush=True,
-        )
-
-    def execute(self, show_progress: bool = True) -> bool:
-        """Execute the transcode job with real-time progress.
+    async def execute(self, progress_callback: Optional[Callable[[float], None]] = None) -> bool:
+        """Execute the transcode job asynchronously.
 
         Args:
-            show_progress: Show progress bar during transcoding
+            progress_callback: Optional callback receiving progress (0.0-100.0)
 
         Returns:
             True if successful, False otherwise
@@ -229,85 +224,100 @@ class TranscodeJob:
             self.started_at = datetime.now().isoformat()
 
             # Get duration for progress calculation
-            duration_seconds = self._get_duration()
-
-            cmd = self._build_ffmpeg_command()
-
-            if show_progress and duration_seconds:
-                print(f"\nTranscoding: {self.input_file.name}")
-                print(f"Duration: {duration_seconds / 60:.1f} minutes")
-                print(f"Speed Preset: {self.speed_preset}")
-
-                # Show keyframe info if configured
-                if self.profile.keyframe_interval:
-                    interval = self.profile.keyframe_interval
-                    print(f"Keyframe Interval: {interval}s (easy scrubbing enabled)")
-                print()
+            duration_seconds = await self._get_duration()
+            cmd = await self._build_ffmpeg_command()
 
             # Run ffmpeg with live progress parsing
-            process = subprocess.Popen(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                bufsize=1,
+            process = await asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
             )
 
             # Parse progress from ffmpeg output
             time_pattern = re.compile(r"out_time_ms=(\d+)")
 
-            for line in process.stdout:
-                if show_progress and duration_seconds:
-                    # Try to extract time progress
-                    time_match = time_pattern.search(line)
+            while True:
+                line = await process.stdout.readline()
+                if not line:
+                    break
+
+                line_str = line.decode().strip()
+                if duration_seconds:
+                    time_match = time_pattern.search(line_str)
                     if time_match:
                         time_ms = int(time_match.group(1))
                         elapsed_seconds = time_ms / 1_000_000
-                        progress = min(100, (elapsed_seconds / duration_seconds) * 100)
-                        self.progress = progress
-                        self._print_progress_bar(
-                            int(elapsed_seconds),
-                            int(duration_seconds),
-                            prefix="Progress:",
-                        )
+                        self.progress = min(100.0, (elapsed_seconds / duration_seconds) * 100.0)
+                        if progress_callback:
+                            progress_callback(self.progress)
 
             # Wait for process to finish
-            process.wait()
+            return_code = await process.wait()
 
-            if process.returncode != 0:
-                stderr = process.stderr.read() if process.stderr else ""
-                raise subprocess.CalledProcessError(process.returncode, cmd, stderr=stderr)
-
-            if show_progress:
-                print("\n")  # New line after progress bar
+            if return_code != 0:
+                stderr = await process.stderr.read()
+                self.error_message = stderr.decode().strip() or f"FFmpeg exited with code {return_code}"
+                self.status = "error"
+                return False
 
             self.status = "complete"
             self.progress = 100.0
             self.completed_at = datetime.now().isoformat()
             return True
 
-        except subprocess.CalledProcessError as e:
-            self.status = "error"
-            self.error_message = e.stderr if isinstance(e.stderr, str) else str(e.stderr)
-            if "ffmpeg" in self.error_message.lower():
-                print(f"\n✗ FFmpeg error: {self.error_message[:200]}")
-            return False
-        except KeyboardInterrupt:
+        except asyncio.CancelledError:
             self.status = "cancelled"
-            self.error_message = "User cancelled transcode (Ctrl+C)"
-            print("\n\n✗ Transcode cancelled by user")
+            self.error_message = "Transcode cancelled"
+            # Attempt to kill process if still running
+            try:
+                process.terminate()
+                await process.wait()
+            except Exception:
+                pass
             # Cleanup incomplete output file
             if self.output_file.exists():
                 try:
                     self.output_file.unlink()
                 except Exception:
                     pass
-            return False
+            raise
         except Exception as e:
             self.status = "error"
             self.error_message = str(e)
-            print(f"\n✗ Error: {self.error_message}")
             return False
+
+    def sync_execute(self, show_progress: bool = True) -> bool:
+        """Synchronous wrapper for execute().
+
+        Args:
+            show_progress: Whether to print a progress bar to stdout
+
+        Returns:
+            True if successful, False otherwise
+        """
+
+        def _print_bar(p: float):
+            filled = int(50 * p // 100)
+            bar = "█" * filled + "░" * (50 - filled)
+            print(f"\rProgress: |{bar}| {p:.1f}%", end="", flush=True)
+
+        if show_progress:
+            print(f"Transcoding: {self.input_file.name}")
+            callback = _print_bar
+        else:
+            callback = None
+
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+        success = loop.run_until_complete(self.execute(progress_callback=callback))
+        if show_progress:
+            print("\n")
+        return success
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""

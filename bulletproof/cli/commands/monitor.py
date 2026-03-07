@@ -94,35 +94,35 @@ def start(
     try:
         service = ConfigLoader.load_and_create(config_path, overrides=overrides)
     except ConfigError as e:
-        click.echo(f"❌ Configuration error: {e}", err=True)
+        click.echo(f"Configuration error: {e}", err=True)
         sys.exit(1)
     except ImportError as e:
         if "yaml" in str(e).lower():
             click.echo(
-                "❌ PyYAML not installed. Install with: pip install pyyaml",
+                "Dependency missing: PyYAML is required for YAML configuration. Install with: pip install pyyaml",
                 err=True,
             )
         else:
-            click.echo(f"❌ Import error: {e}", err=True)
+            click.echo(f"Import error: {e}", err=True)
         sys.exit(1)
     except Exception as e:
-        click.echo(f"❌ Failed to load config: {e}", err=True)
+        click.echo(f"Initialization failure: {e}", err=True)
         sys.exit(1)
 
     # Print startup info
-    click.echo("🚀 Starting Bulletproof Monitor")
-    click.echo(f"   Watch:    {service.config.watch_directory}")
-    click.echo(f"   Output:   {service.config.output_directory}")
-    click.echo(f"   Interval: {service.config.poll_interval}s")
-    click.echo(f"   Rules:    {len(service.config.rules)}")
-    click.echo(f"   Log:      {service.config.log_level}")
+    click.echo("Bulletproof Monitor initializing...")
+    click.echo(f"Watch Directory:  {service.config.watch_directory}")
+    click.echo(f"Output Directory: {service.config.output_directory}")
+    click.echo(f"Poll Interval:    {service.config.poll_interval}s")
+    click.echo(f"Active Rules:     {len(service.config.rules)}")
+    click.echo(f"Log Level:        {service.config.log_level}")
     if service.config.persist_path:
-        click.echo(f"   Queue:    {service.config.persist_path}")
-    click.echo("\n⏱️  Monitoring started. Press Ctrl+C to stop.\n")
+        click.echo(f"Queue Persistence: {service.config.persist_path}")
+    click.echo("\nMonitor active. Press Ctrl+C to terminate.\n")
 
     # Handle signals for graceful shutdown
     def signal_handler(sig, frame):
-        click.echo("\n⏸️  Shutting down gracefully...")
+        click.echo("\nTermination signal received. Shutting down gracefully...")
         service.stop()
 
     signal.signal(signal.SIGINT, signal_handler)

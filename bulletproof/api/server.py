@@ -25,7 +25,7 @@ _service_task: Optional[asyncio.Task] = None
 async def lifespan(app: FastAPI):
     """Manage application lifespan (startup/shutdown)."""
     # Startup
-    logger.info("Starting bvp dashboard API...")
+    logger.info("API server initializing. version=3.1.0")
 
     # Service will be set externally via set_service()
     # or can be initialized here if config is available
@@ -33,7 +33,7 @@ async def lifespan(app: FastAPI):
     yield
 
     # Shutdown
-    logger.info("Shutting down bvp dashboard API...")
+    logger.info("API server shutting down")
     if _service:
         _service.stop()
     if _service_task:
@@ -112,7 +112,7 @@ def set_service(app: FastAPI, service: MonitorService):
     _service = service
     _service._start_time = datetime.now()
     set_monitor_service(service)
-    logger.info("MonitorService attached to API")
+    logger.info("MonitorService successfully attached to API")
 
 
 def start_service_background(service: MonitorService):
@@ -127,10 +127,10 @@ def start_service_background(service: MonitorService):
         try:
             await service.run()
         except Exception as e:
-            logger.error(f"Error running monitor service: {e}", exc_info=True)
+            logger.error(f"Background service execution failure: {e}", exc_info=True)
 
     _service_task = asyncio.create_task(run_service())
-    logger.info("MonitorService started in background")
+    logger.info("MonitorService initialized in background task")
 
 
 if __name__ == "__main__":
@@ -144,6 +144,7 @@ if __name__ == "__main__":
 
     app = create_app()
 
+    logger.info("Starting development server. port=8080 host=0.0.0.0")
     uvicorn.run(
         app,
         host="0.0.0.0",

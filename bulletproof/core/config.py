@@ -27,6 +27,7 @@ class MonitorConfig:
     delete_input: bool = True  # Delete input after successful transcode
     log_level: str = "INFO"
     log_file: Optional[Path] = None
+    _original_path: Optional[Path] = None
 
     def __post_init__(self):
         """Validate and normalize paths."""
@@ -38,6 +39,9 @@ class MonitorConfig:
 
         if self.persist_path:
             self.persist_path = Path(self.persist_path)
+
+        if self._original_path:
+            self._original_path = Path(self._original_path)
 
         # Validate
         if not self.watch_directory.exists():
@@ -80,24 +84,22 @@ class MonitorConfig:
 
         Returns:
             MonitorConfig instance
-
-        Raises:
-            ImportError: If PyYAML not installed
-            FileNotFoundError: If config file not found
         """
         if not HAS_YAML:
             raise ImportError(
                 "PyYAML is required for YAML config. Install with: pip install pyyaml"
             )
 
-        path = Path(path)
+        path = Path(path).resolve()
         if not path.exists():
             raise FileNotFoundError(f"Config file not found: {path}")
 
         with open(path) as f:
             data = yaml.safe_load(f)
 
-        return cls._from_dict(data, config_dir=path.parent)
+        config = cls._from_dict(data, config_dir=path.parent)
+        config._original_path = path
+        return config
 
     @classmethod
     def from_json(cls, path: Path) -> "MonitorConfig":
@@ -109,14 +111,16 @@ class MonitorConfig:
         Returns:
             MonitorConfig instance
         """
-        path = Path(path)
+        path = Path(path).resolve()
         if not path.exists():
             raise FileNotFoundError(f"Config file not found: {path}")
 
         with open(path) as f:
             data = json.load(f)
 
-        return cls._from_dict(data, config_dir=path.parent)
+        config = cls._from_dict(data, config_dir=path.parent)
+        config._original_path = path
+        return config
 
     @classmethod
     def _from_dict(cls, data: dict[str, Any], config_dir: Path = Path(".")) -> "MonitorConfig":
@@ -161,7 +165,7 @@ class MonitorConfig:
             rules.append(rule)
 
         # Create config
-        return cls(
+        config = cls(
             watch_directory=watch_dir,
             output_directory=output_dir,
             rules=rules,
@@ -170,7 +174,12 @@ class MonitorConfig:
             delete_input=data.get("delete_input", True),
             log_level=data.get("log_level", "INFO"),
             log_file=resolve_path(data.get("log_file")),
+            _original_path=config_dir / data.get("_filename", "") if data.get("_filename") else None
         )
+        
+        # If we didn't get a filename but we have a config_dir, and it's from from_yaml/json
+        # we'll handle setting it in those methods instead for clarity.
+        return config
 
     def save_yaml(self, path: Path) -> None:
         """Save configuration to YAML file.

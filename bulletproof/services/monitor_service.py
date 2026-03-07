@@ -69,7 +69,7 @@ class MonitorService:
     1. Scan watch directory for video files
     2. Match detected files to rules
     3. Create transcode jobs in queue
-    4. Process queue sequentially
+    4. Manage background transcode task
     5. Update file status
     6. Persist state and handle errors
     """
@@ -92,7 +92,9 @@ class MonitorService:
         self._running = False
         self._paused = False
         self._stop_event = asyncio.Event()
-        self.logger.info(f"MonitorService initialized for {config.watch_directory}")
+        self._current_task: Optional[asyncio.Task] = None
+        self._start_time = datetime.now()
+        self.logger.info(f"MonitorService initialized. watch_dir={config.watch_directory}")
 
     def _setup_logging(self) -> None:
         """Set up logging."""
@@ -125,10 +127,15 @@ class MonitorService:
         Continuously:
         1. Scans for new files
         2. Matches files to rules
-        3. Processes transcode queue
+        3. Manages transcode task
         """
         self._running = True
-        self.logger.info(f"Starting monitor service (poll interval: {self.config.poll_interval}s)")
+        self._start_time = datetime.now()
+        self.logger.info(
+            f"Service started. interval={self.config.poll_interval}s "
+            f"watch_dir={self.config.watch_directory} "
+            f"output_dir={self.config.output_directory}"
+        )
 
         try:
             while not self._stop_event.is_set():
@@ -136,8 +143,8 @@ class MonitorService:
                     # Scan for new files
                     await self._scan_and_queue()
 
-                    # Process queue
-                    await self._process_queue()
+                    # Check if we need to start or manage a transcode task
+                    await self._manage_transcode_task()
 
                     # Wait for next poll
                     try:
@@ -149,22 +156,29 @@ class MonitorService:
                         pass
 
                 except Exception as e:
-                    self.logger.error(f"Error in monitor loop: {e}", exc_info=True)
+                    self.logger.error(f"Core service loop error: {e}", exc_info=True)
                     # Don't exit on error, keep trying
                     await asyncio.sleep(1)
 
         except KeyboardInterrupt:
-            self.logger.info("KeyboardInterrupt received")
+            self.logger.info("Termination signal received (KeyboardInterrupt)")
         finally:
             self._running = False
-            self.logger.info("Monitor service stopped")
+            # Cleanup current task
+            if self._current_task and not self._current_task.done():
+                self._current_task.cancel()
+                try:
+                    await self._current_task
+                except asyncio.CancelledError:
+                    pass
+            self.logger.info("Monitor service terminated")
 
     async def _scan_and_queue(self) -> None:
         """Scan directory and create transcode jobs for new files."""
         try:
             detected = self.monitor.scan()
             if detected:
-                self.logger.debug(f"Detected {len(detected)} new file(s)")
+                self.logger.debug(f"Scan detected {len(detected)} candidate file(s)")
 
             # Get stable files ready for processing
             stable_files = self.monitor.get_stable_files()
@@ -172,7 +186,7 @@ class MonitorService:
                 await self._create_job_for_file(file_info)
 
         except Exception as e:
-            self.logger.error(f"Error scanning directory: {e}", exc_info=True)
+            self.logger.error(f"Directory scan failed: {e}", exc_info=True)
 
     async def _create_job_for_file(self, file_info: FileInfo) -> None:
         """Create transcode job for a detected file.
@@ -184,13 +198,13 @@ class MonitorService:
             # Match file to rule - pass filename string, not Path object
             rule = self.rule_engine.match(file_info.path.name)
             if not rule:
-                self.logger.warning(f"No rule matched for {file_info.path.name}")
+                self.logger.warning(f"No rule match found for: {file_info.path.name}")
                 return
 
             # Get profile
             profile_name = rule.get("profile")
             if profile_name not in BUILT_IN_PROFILES:
-                self.logger.error(f"Profile not found: {profile_name}")
+                self.logger.error(f"Invalid profile name in rule: {profile_name}")
                 return
 
             # Generate output path
@@ -200,36 +214,51 @@ class MonitorService:
             # Create and queue job
             self.monitor.mark_processing(file_info)
 
-            # Fix: Actually add to queue!
             priority = rule.get("priority", 100)
             job = self.queue.add_from_file(file_info, output_file, profile_name, priority)
 
             self.logger.info(
-                f"Queued: {file_info.path.name} → {profile_name} "
-                f"→ {output_file.name} (ID: {job.id})"
+                f"Job queued: id={job.id} input={file_info.path.name} "
+                f"profile={profile_name} output={output_file.name} "
+                f"priority={priority}"
             )
 
         except Exception as e:
-            self.logger.error(f"Error creating job for {file_info.path.name}: {e}", exc_info=True)
+            self.logger.error(f"Failed to create job for {file_info.path.name}: {e}", exc_info=True)
             self.monitor.mark_error(file_info)
 
-    async def _process_queue(self) -> None:
-        """Process next job in queue."""
-        # Don't process if paused
-        if self._paused:
+    async def _manage_transcode_task(self) -> None:
+        """Manage the background transcode task."""
+        # If task is running, check if it's done or if we should pause
+        if self._current_task:
+            if self._current_task.done():
+                # Task finished, clean up
+                try:
+                    await self._current_task
+                except Exception as e:
+                    self.logger.error(f"Worker task exception: {e}")
+                self._current_task = None
             return
 
-        job = self.queue.get_pending()
-        if not job:
-            return
+        # No task running, check if we should start one
+        if not self._paused:
+            job = self.queue.get_pending()
+            if job:
+                self._current_task = asyncio.create_task(self._execute_job(job))
 
+    async def _execute_job(self, job: Any) -> None:
+        """Worker function for executing a single job.
+
+        Args:
+            job: QueuedJob to execute
+        """
         try:
             # Mark as processing
             job = self.queue.get_next()
             if not job:
                 return
 
-            self.logger.info(f"Processing: {job.input_file.name} ({job.profile_name})")
+            self.logger.info(f"Worker started: id={job.id} input={job.input_file.name} profile={job.profile_name}")
 
             # Execute transcode
             profile = BUILT_IN_PROFILES[job.profile_name]
@@ -239,44 +268,52 @@ class MonitorService:
                 profile=profile,
             )
 
-            # Non-blocking execution (to allow progress updates later)
-            # For now keeping it simple as per original design
-            success = transcode_job.execute()
+            # Define progress callback to update queued job status
+            def update_progress(p: float):
+                job.progress = p
+
+            # Execute asynchronously
+            success = await transcode_job.execute(progress_callback=update_progress)
 
             if success:
                 self.queue.mark_complete(job)
-                self.logger.info(f"Completed: {job.output_file.name}")
+                self.logger.info(f"Worker completed: id={job.id} output={job.output_file.name}")
 
                 # Delete input if configured
                 if self.config.delete_input and job.input_file.exists():
                     try:
                         job.input_file.unlink()
-                        self.logger.debug(f"Deleted input: {job.input_file.name}")
+                        self.logger.debug(f"File deleted: {job.input_file.name}")
                     except Exception as e:
-                        self.logger.warning(f"Could not delete {job.input_file.name}: {e}")
+                        self.logger.warning(f"File deletion failed: {job.input_file.name}: {e}")
             else:
                 error_msg = transcode_job.error_message or "Unknown error"
                 self.queue.mark_error(job, error_msg)
-                self.logger.error(f"Failed: {job.input_file.name} - {error_msg}")
+                self.logger.error(f"Worker failed: id={job.id} input={job.input_file.name} error={error_msg}")
 
+        except asyncio.CancelledError:
+            self.logger.info(f"Worker cancelled: id={job.id} input={job.input_file.name}")
+            if job:
+                self.queue.mark_cancelled(job)
+            raise
         except Exception as e:
             error_msg = str(e)
             if job:
                 self.queue.mark_error(job, error_msg)
-            self.logger.error(f"Exception processing queue job: {e}", exc_info=True)
+            self.logger.error(f"Worker execution exception: id={job.id} error={e}", exc_info=True)
 
     def pause(self) -> None:
         """Pause processing queue."""
         self._paused = True
-        self.logger.info("Service PAUSED (queue processing stopped)")
+        self.logger.info("Service PAUSED: Job processing suspended")
 
     def resume(self) -> None:
         """Resume processing queue."""
         self._paused = False
-        self.logger.info("Service RESUMED (queue processing started)")
+        self.logger.info("Service RESUMED: Job processing restored")
 
     def cancel_job(self, job_id: str) -> bool:
-        """Cancel a pending job.
+        """Cancel a job.
 
         Args:
             job_id: ID of job to cancel
@@ -288,9 +325,15 @@ class MonitorService:
         if not job:
             return False
 
+        # If it's the current task, cancel the task
+        current_job = self.queue.get_current()
+        if current_job and current_job.id == job_id and self._current_task:
+            self._current_task.cancel()
+            return True
+
         if job.status == "pending":
             self.queue.mark_cancelled(job)
-            self.logger.info(f"Cancelled job: {job_id}")
+            self.logger.info(f"Job cancelled (pending): id={job_id}")
             return True
         return False
 
@@ -318,13 +361,13 @@ class MonitorService:
         )
 
         self.queue.add(new_job)
-        self.logger.info(f"Retrying job {job_id} as {new_job.id}")
+        self.logger.info(f"Job retry initiated: original_id={job_id} new_id={new_job.id}")
         return True
 
     def clear_queue(self) -> None:
         """Clear all pending jobs from queue."""
         self.queue.clear()
-        self.logger.info("Queue cleared")
+        self.logger.info("Queue cleared: All pending jobs removed")
 
     def _generate_output_path(self, input_file: Path, pattern: str, profile_name: str) -> Path:
         """Generate output file path from template.
@@ -351,7 +394,7 @@ class MonitorService:
 
     def stop(self) -> None:
         """Request service to stop gracefully."""
-        self.logger.info("Stop requested")
+        self.logger.info("Graceful stop requested")
         self._stop_event.set()
 
     def get_status(self) -> dict[str, Any]:
@@ -371,14 +414,72 @@ class MonitorService:
             "queue": self.queue.get_status(),
         }
 
-    def get_history(self, limit: int = 10) -> list[dict[str, Any]]:
+    def get_history(self, limit: int = 10) -> list[QueuedJob]:
         """Get recent processing history.
 
         Args:
             limit: Number of recent jobs to return
 
         Returns:
-            List of job dicts
+            List of QueuedJob objects
         """
-        jobs = self.queue.get_history(limit)
-        return [job.to_dict() for job in jobs]
+        return self.queue.get_history(limit)
+
+    def update_config(self, updates: dict[str, Any], persist: bool = False) -> None:
+        """Update service configuration live.
+
+        Args:
+            updates: Dict of config updates (rules, poll_interval, etc.)
+            persist: Whether to save changes to the original config file
+        """
+        from bulletproof.core.rules import Rule, PatternType
+
+        if "rules" in updates:
+            # Convert dicts to Rule objects for MonitorConfig
+            new_rules = []
+            for r in updates["rules"]:
+                if isinstance(r, dict):
+                    new_rules.append(Rule(
+                        pattern=r["pattern"],
+                        profile=r["profile"],
+                        output_pattern=r.get("output_pattern", "{filename}"),
+                        pattern_type=PatternType(r.get("pattern_type", "glob")),
+                        delete_input=r.get("delete_input", True),
+                        priority=r.get("priority", 100),
+                    ))
+                else:
+                    new_rules.append(r)
+            
+            # Update RuleEngine and Config
+            self.rule_engine = RuleEngine(new_rules)
+            self.config.rules = new_rules
+            self.logger.info(f"Configuration updated: rules_count={len(new_rules)}")
+
+        if "poll_interval" in updates:
+            self.config.poll_interval = int(updates["poll_interval"])
+            self.logger.info(f"Configuration updated: poll_interval={self.config.poll_interval}s")
+
+        if "delete_input" in updates:
+            self.config.delete_input = bool(updates["delete_input"])
+            self.logger.info(f"Configuration updated: delete_input={self.config.delete_input}")
+
+        if "log_level" in updates:
+            level = updates["log_level"].upper()
+            self.config.log_level = level
+            # Update logger and all handlers
+            self.logger.setLevel(getattr(logging, level))
+            for handler in self.logger.handlers:
+                handler.setLevel(getattr(logging, level))
+            self.logger.info(f"Configuration updated: log_level={level}")
+
+        # Persist to disk if requested and we have a config path
+        if persist and hasattr(self.config, "_original_path") and self.config._original_path:
+            try:
+                path = Path(self.config._original_path)
+                if path.suffix.lower() in [".yaml", ".yml"]:
+                    self.config.save_yaml(path)
+                elif path.suffix.lower() == ".json":
+                    self.config.save_json(path)
+                self.logger.info(f"Configuration persisted to disk: path={path}")
+            except Exception as e:
+                self.logger.error(f"Configuration persistence failed: {e}")

@@ -1,6 +1,7 @@
 """Transcode job queue with persistence."""
 
 import json
+import logging
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -9,6 +10,8 @@ from pathlib import Path
 from typing import Optional
 
 from bulletproof.core.monitor import FileInfo
+
+logger = logging.getLogger("bvp.queue")
 
 
 class JobStatus(str, Enum):
@@ -266,17 +269,17 @@ class TranscodeQueue:
         """
         return self._jobs.copy()
 
-    def get_history(self, limit: Optional[int] = None) -> list[dict]:
+    def get_history(self, limit: Optional[int] = None) -> list[QueuedJob]:
         """Get processing history.
 
         Args:
             limit: Maximum number of history items to return
 
         Returns:
-            List of processed job dicts
+            List of processed QueuedJob objects
         """
         history = self._history[-limit:] if limit else self._history
-        return [job.to_dict() for job in history]
+        return history.copy()
 
     def _save(self) -> None:
         """Persist queue to JSON file."""
@@ -296,7 +299,7 @@ class TranscodeQueue:
             with open(self.persist_path, "w") as f:
                 json.dump(data, f, indent=2)
         except OSError as e:
-            print(f"Error saving queue to {self.persist_path}: {e}")
+            logger.error(f"Queue persistence failed: path={self.persist_path} error={e}")
 
     def _load(self) -> None:
         """Load queue from JSON file."""
@@ -312,4 +315,4 @@ class TranscodeQueue:
             for job_data in data.get("history", []):
                 self._history.append(QueuedJob.from_dict(job_data))
         except (OSError, json.JSONDecodeError) as e:
-            print(f"Error loading queue from {self.persist_path}: {e}")
+            logger.error(f"Queue restoration failed: path={self.persist_path} error={e}")
