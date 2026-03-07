@@ -142,9 +142,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Start Bulletproof API server")
     parser.add_argument("--host", default="127.0.0.1", help="Host to bind (default: 127.0.0.1)")
     parser.add_argument("--port", type=int, default=8080, help="Port to bind (default: 8080)")
-    parser.add_argument(
-        "--log-level", default="info", help="Logging level (default: info)"
-    )
+    parser.add_argument("--log-level", default="info", help="Logging level (default: info)")
     args = parser.parse_args()
 
     logging.basicConfig(
