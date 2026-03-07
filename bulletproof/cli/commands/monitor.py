@@ -90,7 +90,7 @@ def start(
 
         # Run with debug logging
         bvp monitor start -c monitor.yaml -l DEBUG
-        
+
         # Override API host and port
         bvp monitor start -c monitor.yaml --api-host 0.0.0.0 --api-port 9000
     """
