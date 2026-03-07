@@ -7,7 +7,6 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 from bulletproof.core.monitor import FileInfo
 
@@ -37,9 +36,9 @@ class QueuedJob:
     priority: int = 100
     progress: float = 0.0
     created_at: str = ""
-    started_at: Optional[str] = None
-    completed_at: Optional[str] = None
-    error_message: Optional[str] = None
+    started_at: str | None = None
+    completed_at: str | None = None
+    error_message: str | None = None
 
     def __post_init__(self):
         """Set created_at if not provided."""
@@ -86,7 +85,7 @@ class QueuedJob:
 class TranscodeQueue:
     """In-memory queue with optional JSON persistence."""
 
-    def __init__(self, persist_path: Optional[Path] = None):
+    def __init__(self, persist_path: Path | None = None):
         """Initialize queue.
 
         Args:
@@ -132,7 +131,7 @@ class TranscodeQueue:
         self.add(job)
         return job
 
-    def get_pending(self) -> Optional[QueuedJob]:
+    def get_pending(self) -> QueuedJob | None:
         """Get next pending job without removing it.
 
         Returns:
@@ -145,7 +144,7 @@ class TranscodeQueue:
         pending.sort(key=lambda j: j.priority, reverse=True)
         return pending[0]
 
-    def get_current(self) -> Optional[QueuedJob]:
+    def get_current(self) -> QueuedJob | None:
         """Get currently processing job.
 
         Returns:
@@ -156,7 +155,7 @@ class TranscodeQueue:
                 return job
         return None
 
-    def get_next(self) -> Optional[QueuedJob]:
+    def get_next(self) -> QueuedJob | None:
         """Get and remove next pending job.
 
         Returns:
@@ -169,7 +168,7 @@ class TranscodeQueue:
             self._save()
         return job
 
-    def get_job(self, job_id: str) -> Optional[QueuedJob]:
+    def get_job(self, job_id: str) -> QueuedJob | None:
         """Get job by ID.
 
         Args:
@@ -269,7 +268,7 @@ class TranscodeQueue:
         """
         return self._jobs.copy()
 
-    def get_history(self, limit: Optional[int] = None) -> list[QueuedJob]:
+    def get_history(self, limit: int | None = None) -> list[QueuedJob]:
         """Get processing history.
 
         Args:

@@ -7,7 +7,7 @@ name = "bulletproof-video-playback"
 version = "3.0.0"
 description = "Professional video transcoding for theater, streaming, and archival"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
     {name = "Beau Bremer", email = "dev@knowoneactual.com"},
@@ -28,7 +28,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -60,7 +59,7 @@ packages = ["bulletproof", "bulletproof.core", "bulletproof.cli", "bulletproof.c
 
 [tool.ruff]
 line-length = 100
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = [
@@ -80,7 +79,7 @@ ignore = [
 known-first-party = ["bulletproof"]
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = false

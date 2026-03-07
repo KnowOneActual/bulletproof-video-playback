@@ -4,7 +4,7 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any
 
 
 class PatternType(str, Enum):
@@ -98,7 +98,7 @@ class Rule:
 class RuleEngine:
     """Rule-based file matching and profile assignment."""
 
-    def __init__(self, rules: Optional[list[Union[Rule, dict[str, Any]]]] = None):
+    def __init__(self, rules: list[Rule | dict[str, Any]] | None = None):
         """Initialize rule engine.
 
         Args:
@@ -140,7 +140,7 @@ class RuleEngine:
         self.rules.append(rule)
         self.rules.sort(key=lambda r: r.priority, reverse=True)
 
-    def find_matching_rule(self, filename: str) -> Optional[Rule]:
+    def find_matching_rule(self, filename: str) -> Rule | None:
         """Find first matching rule for filename.
 
         Args:
@@ -154,7 +154,7 @@ class RuleEngine:
                 return rule
         return None
 
-    def find_profile(self, filename: str) -> Optional[str]:
+    def find_profile(self, filename: str) -> str | None:
         """Find profile for filename.
 
         Args:
@@ -166,7 +166,7 @@ class RuleEngine:
         rule = self.find_matching_rule(filename)
         return rule.profile if rule else None
 
-    def match(self, filename: str) -> Optional[dict[str, Any]]:
+    def match(self, filename: str) -> dict[str, Any] | None:
         """Match filename against rules and return matching rule as dict.
 
         Args:
@@ -187,7 +187,7 @@ class RuleEngine:
             "priority": rule.priority,
         }
 
-    def get_output_path(self, input_path: Path, output_dir: Path) -> Optional[Path]:
+    def get_output_path(self, input_path: Path, output_dir: Path) -> Path | None:
         """Get output path for input file.
 
         Args:

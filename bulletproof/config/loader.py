@@ -1,7 +1,7 @@
 """Configuration loader for folder monitor."""
 
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from bulletproof.core.config import MonitorConfig
 from bulletproof.services.monitor_service import MonitorService, MonitorServiceConfig
@@ -138,7 +138,7 @@ class ConfigLoader:
     @staticmethod
     def load_and_create(
         config_path: Path,
-        overrides: Optional[dict[str, Any]] = None,
+        overrides: dict[str, Any] | None = None,
     ) -> MonitorService:
         """Load config file and create MonitorService in one step.
 

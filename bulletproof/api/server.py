@@ -5,7 +5,6 @@ import logging
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,8 +16,8 @@ from bulletproof.services.monitor_service import MonitorService
 logger = logging.getLogger(__name__)
 
 # Global service instance
-_service: Optional[MonitorService] = None
-_service_task: Optional[asyncio.Task] = None
+_service: MonitorService | None = None
+_service_task: asyncio.Task | None = None
 
 
 @asynccontextmanager
@@ -45,9 +44,9 @@ async def lifespan(app: FastAPI):
 
 
 def create_app(
-    monitor_service: Optional[MonitorService] = None,
+    monitor_service: MonitorService | None = None,
     enable_cors: bool = True,
-    static_dir: Optional[Path] = None,
+    static_dir: Path | None = None,
 ) -> FastAPI:
     """Create and configure FastAPI application.
 

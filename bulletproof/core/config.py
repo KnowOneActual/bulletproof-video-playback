@@ -3,7 +3,7 @@
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 try:
     import yaml
@@ -23,13 +23,13 @@ class MonitorConfig:
     output_directory: Path
     rules: list[Rule] = field(default_factory=list)
     poll_interval: int = 5  # seconds
-    persist_path: Optional[Path] = None  # queue.json location
+    persist_path: Path | None = None  # queue.json location
     delete_input: bool = True  # Delete input after successful transcode
     log_level: str = "INFO"
-    log_file: Optional[Path] = None
+    log_file: Path | None = None
     api_host: str = "127.0.0.1"
     api_port: int = 8080
-    _original_path: Optional[Path] = None
+    _original_path: Path | None = None
 
     def __post_init__(self):
         """Validate and normalize paths."""
@@ -139,7 +139,7 @@ class MonitorConfig:
         """
 
         # Resolve relative paths from config directory
-        def resolve_path(p: Optional[str]) -> Optional[Path]:
+        def resolve_path(p: str | None) -> Path | None:
             if not p:
                 return None
             p_obj = Path(p)

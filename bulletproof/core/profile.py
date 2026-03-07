@@ -2,7 +2,7 @@
 
 import json
 from dataclasses import asdict, dataclass
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -13,15 +13,15 @@ class TranscodeProfile:
     codec: str  # prores, h264, h265, vp9, etc.
     preset: str  # hq, lq, lt, proxy, etc. (codec-specific)
     quality: int  # 0-100 (quality percentage)
-    max_bitrate: Optional[str]  # e.g., "50M", None for lossless
-    frame_rate: Optional[float]  # e.g., 23.976, 30, None for source
-    pixel_format: Optional[str]  # e.g., yuv420p, none (preserve source)
-    scale: Optional[str]  # e.g., "1920:1080", None for source
+    max_bitrate: str | None  # e.g., "50M", None for lossless
+    frame_rate: float | None  # e.g., 23.976, 30, None for source
+    pixel_format: str | None  # e.g., yuv420p, none (preserve source)
+    scale: str | None  # e.g., "1920:1080", None for source
     audio_codec: str = "aac"
     audio_bitrate: str = "128k"
     description: str = ""
     extension: str = "mov"  # Default output extension
-    keyframe_interval: Optional[float] = None  # Seconds between keyframes (None = source)
+    keyframe_interval: float | None = None  # Seconds between keyframes (None = source)
     force_keyframes: bool = False  # Strictly enforce keyframe interval
 
     def to_dict(self) -> dict[str, Any]:

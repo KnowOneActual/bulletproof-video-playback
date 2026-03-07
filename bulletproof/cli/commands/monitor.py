@@ -5,7 +5,6 @@ import json
 import signal
 import sys
 from pathlib import Path
-from typing import Optional
 
 import click
 
@@ -65,12 +64,12 @@ def monitor():
 )
 def start(
     config: str,
-    watch: Optional[str],
-    output: Optional[str],
-    poll_interval: Optional[int],
-    log_level: Optional[str],
-    api_host: Optional[str],
-    api_port: Optional[int],
+    watch: str | None,
+    output: str | None,
+    poll_interval: int | None,
+    log_level: str | None,
+    api_host: str | None,
+    api_port: int | None,
 ):
     """Start monitoring a folder for new video files.
 

@@ -1,7 +1,7 @@
 # bulletproof-video-playback
 
 [![Tests](https://github.com/KnowOneActual/bulletproof-video-playback/actions/workflows/test.yml/badge.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/actions/workflows/test.yml)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/version-2.5.0-green.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/releases)
 
@@ -102,7 +102,7 @@ bvp monitor start --config monitor.yaml
 - **Python API** for integration
 - **Folder Monitor** with async processing
 - **REST API** for remote monitoring (NEW!)
-- Requires: Python 3.9+
+- Requires: Python 3.10+
 
 👉 See **Installation** section below
 
@@ -113,7 +113,7 @@ bvp monitor start --config monitor.yaml
 - **GPU hardware acceleration** support (VA-API/VDPAU/NVDEC)
 - **MKV container** for better seeking reliability in live cue systems
 - **5-second keyframes** for instant scrubbing in live event playback
-- Requires: Python 3.9+, ffmpeg
+- Requires: Python 3.10+, ffmpeg
 
 ### 🐧 **Linux / Pure Bash Version** (No Python required)
 
@@ -211,7 +211,7 @@ pytest -v
 ## Installation
 
 ### Requirements
-- Python 3.9+ (macOS/Python version)
+- Python 3.10+ (macOS/Python version)
 - ffmpeg (`brew install ffmpeg` on macOS, `apt install ffmpeg` on Linux)
 - ffprobe (usually included with ffmpeg)
 

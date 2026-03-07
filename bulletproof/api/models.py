@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -37,9 +37,9 @@ class JobResponse(BaseModel):
     status: JobStatus
     priority: int = 100
     created_at: str
-    started_at: Optional[str] = None
-    completed_at: Optional[str] = None
-    error_message: Optional[str] = None
+    started_at: str | None = None
+    completed_at: str | None = None
+    error_message: str | None = None
     progress: float = 0.0
 
     @classmethod
@@ -85,7 +85,7 @@ class QueueStatusResponse(BaseModel):
     processing_jobs: int
     complete_jobs: int
     error_jobs: int
-    current_job: Optional[JobResponse] = None
+    current_job: JobResponse | None = None
     jobs: list[JobResponse] = Field(default_factory=list)
 
     class Config:
@@ -158,18 +158,18 @@ class ConfigResponse(BaseModel):
     poll_interval: int
     delete_input: bool
     log_level: str
-    log_file: Optional[str] = None
-    persist_path: Optional[str] = None
+    log_file: str | None = None
+    persist_path: str | None = None
     rules: list[RuleResponse] = Field(default_factory=list)
 
 
 class ConfigUpdate(BaseModel):
     """Configuration update request."""
 
-    poll_interval: Optional[int] = None
-    delete_input: Optional[bool] = None
-    log_level: Optional[str] = None
-    rules: Optional[list[RuleResponse]] = None
+    poll_interval: int | None = None
+    delete_input: bool | None = None
+    log_level: str | None = None
+    rules: list[RuleResponse] | None = None
 
 
 class ProfileResponse(BaseModel):
@@ -179,10 +179,10 @@ class ProfileResponse(BaseModel):
     description: str
     codec: str
     extension: str
-    pixel_format: Optional[str] = None
-    frame_rate: Optional[float] = None
-    scale: Optional[str] = None
-    keyframe_interval: Optional[float] = None
+    pixel_format: str | None = None
+    frame_rate: float | None = None
+    scale: str | None = None
+    keyframe_interval: float | None = None
 
 
 class HistoryResponse(BaseModel):
@@ -229,7 +229,7 @@ class ErrorResponse(BaseModel):
     """Error response."""
 
     error: str
-    detail: Optional[str] = None
+    detail: str | None = None
     timestamp: str = Field(default_factory=lambda: datetime.now().isoformat())
 
     class Config:
@@ -248,7 +248,7 @@ class HealthResponse(BaseModel):
     status: str = "healthy"
     timestamp: str = Field(default_factory=lambda: datetime.now().isoformat())
     version: str = "3.1.0"
-    uptime_seconds: Optional[float] = None
+    uptime_seconds: float | None = None
 
     class Config:
         json_schema_extra = {

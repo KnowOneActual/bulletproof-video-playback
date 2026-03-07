@@ -4,7 +4,7 @@ import asyncio
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from bulletproof.core.job import TranscodeJob
 from bulletproof.core.monitor import FileInfo, FolderMonitor
@@ -27,9 +27,9 @@ class MonitorServiceConfig:
         rules: list[dict[str, Any]],
         poll_interval: int = 5,
         delete_input: bool = True,
-        persist_path: Optional[Path] = None,
+        persist_path: Path | None = None,
         log_level: str = "INFO",
-        log_file: Optional[Path] = None,
+        log_file: Path | None = None,
         api_host: str = "127.0.0.1",
         api_port: int = 8080,
     ):
@@ -98,7 +98,7 @@ class MonitorService:
         self._running = False
         self._paused = False
         self._stop_event = asyncio.Event()
-        self._current_task: Optional[asyncio.Task] = None
+        self._current_task: asyncio.Task | None = None
         self._start_time = datetime.now()
         self.logger.info(f"MonitorService initialized. watch_dir={config.watch_directory}")
 

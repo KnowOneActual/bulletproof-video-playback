@@ -2,7 +2,7 @@
 
 import json
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class ConfigManager:
@@ -67,7 +67,7 @@ class ConfigManager:
         cls.set("default_profile", profile_name)
 
     @classmethod
-    def get_default_output_dir(cls) -> Optional[Path]:
+    def get_default_output_dir(cls) -> Path | None:
         """Get user's default output directory."""
         dir_str = cls.get("default_output_dir")
         return Path(dir_str) if dir_str else None

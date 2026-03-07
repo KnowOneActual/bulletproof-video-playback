@@ -2,10 +2,10 @@
 
 import hashlib
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Callable, Optional
 
 logger = logging.getLogger("bvp.monitor")
 
@@ -60,8 +60,8 @@ class FolderMonitor:
     def __init__(
         self,
         watch_path: Path,
-        extensions: Optional[set[str]] = None,
-        on_file_detected: Optional[Callable[[FileInfo], None]] = None,
+        extensions: set[str] | None = None,
+        on_file_detected: Callable[[FileInfo], None] | None = None,
     ):
         """Initialize folder monitor.
 

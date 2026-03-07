@@ -3,10 +3,11 @@
 import asyncio
 import json
 import re
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable, Literal, Optional
+from typing import Any, Literal
 
 from bulletproof.core.profile import TranscodeProfile
 
@@ -22,9 +23,9 @@ class TranscodeJob:
     profile: TranscodeProfile
     speed_preset: SPEED_PRESET_TYPE = "normal"  # fast, normal, slow
     status: str = "pending"  # pending, running, complete, error
-    started_at: Optional[str] = None
-    completed_at: Optional[str] = None
-    error_message: Optional[str] = None
+    started_at: str | None = None
+    completed_at: str | None = None
+    error_message: str | None = None
     progress: float = 0.0  # 0-100
     current_frame: int = 0
     total_frames: int = 0
@@ -40,7 +41,7 @@ class TranscodeJob:
         if self.speed_preset not in ["fast", "normal", "slow"]:
             raise ValueError(f"Invalid speed_preset: {self.speed_preset}")
 
-    async def _get_duration(self) -> Optional[float]:
+    async def _get_duration(self) -> float | None:
         """Get video duration in seconds using ffprobe (async)."""
         try:
             cmd = [
@@ -65,7 +66,7 @@ class TranscodeJob:
             pass
         return None
 
-    async def _get_framerate(self) -> Optional[float]:
+    async def _get_framerate(self) -> float | None:
         """Get video framerate using ffprobe (async)."""
         try:
             cmd = [
@@ -211,7 +212,7 @@ class TranscodeJob:
 
         return cmd
 
-    async def execute(self, progress_callback: Optional[Callable[[float], None]] = None) -> bool:
+    async def execute(self, progress_callback: Callable[[float], None] | None = None) -> bool:
         """Execute the transcode job asynchronously.
 
         Args:
