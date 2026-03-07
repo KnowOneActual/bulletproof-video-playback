@@ -176,7 +176,7 @@ class MonitorConfig:
             log_file=resolve_path(data.get("log_file")),
             _original_path=config_dir / data.get("_filename", "") if data.get("_filename") else None
         )
-        
+
         # If we didn't get a filename but we have a config_dir, and it's from from_yaml/json
         # we'll handle setting it in those methods instead for clarity.
         return config

@@ -9,8 +9,8 @@ from typing import Any, Optional
 from bulletproof.core.job import TranscodeJob
 from bulletproof.core.monitor import FileInfo, FolderMonitor
 from bulletproof.core.profile import BUILT_IN_PROFILES
-from bulletproof.core.queue import TranscodeQueue
-from bulletproof.core.rules import RuleEngine
+from bulletproof.core.queue import QueuedJob, TranscodeQueue
+from bulletproof.core.rules import PatternType, Rule, RuleEngine
 
 
 class MonitorServiceError(Exception):
@@ -258,7 +258,10 @@ class MonitorService:
             if not job:
                 return
 
-            self.logger.info(f"Worker started: id={job.id} input={job.input_file.name} profile={job.profile_name}")
+            self.logger.info(
+                f"Worker started: id={job.id} "
+                f"input={job.input_file.name} profile={job.profile_name}"
+            )
 
             # Execute transcode
             profile = BUILT_IN_PROFILES[job.profile_name]
@@ -289,7 +292,9 @@ class MonitorService:
             else:
                 error_msg = transcode_job.error_message or "Unknown error"
                 self.queue.mark_error(job, error_msg)
-                self.logger.error(f"Worker failed: id={job.id} input={job.input_file.name} error={error_msg}")
+                self.logger.error(
+                    f"Worker failed: id={job.id} input={job.input_file.name} error={error_msg}"
+                )
 
         except asyncio.CancelledError:
             self.logger.info(f"Worker cancelled: id={job.id} input={job.input_file.name}")
@@ -432,8 +437,6 @@ class MonitorService:
             updates: Dict of config updates (rules, poll_interval, etc.)
             persist: Whether to save changes to the original config file
         """
-        from bulletproof.core.rules import Rule, PatternType
-
         if "rules" in updates:
             # Convert dicts to Rule objects for MonitorConfig
             new_rules = []
@@ -449,7 +452,7 @@ class MonitorService:
                     ))
                 else:
                     new_rules.append(r)
-            
+
             # Update RuleEngine and Config
             self.rule_engine = RuleEngine(new_rules)
             self.config.rules = new_rules

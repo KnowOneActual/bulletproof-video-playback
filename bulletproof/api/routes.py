@@ -6,11 +6,14 @@ from datetime import datetime
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
 from bulletproof.api.models import (
+    ConfigResponse,
+    ConfigUpdate,
     HealthResponse,
     HistoryResponse,
     JobResponse,
     JobStatus,
     MonitorStatusResponse,
+    ProfileResponse,
     QueueStatusResponse,
     RuleResponse,
     WebSocketMessage,
@@ -177,7 +180,7 @@ async def get_history(limit: int = 10):
     # Convert history jobs (they are already in a list of QueuedJob or dict?)
     # Wait, MonitorService.get_history returns [job.to_dict() for job in jobs]
     # Let's fix MonitorService to return objects instead, or use to_dict here
-    
+
     # Actually, service.queue.get_history returns QueuedJob objects if we use it directly
     jobs = [JobResponse.from_queued_job(job) for job in history_jobs]
 

@@ -3,7 +3,6 @@
 import asyncio
 import json
 import re
-import shlex
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
@@ -163,7 +162,11 @@ class TranscodeJob:
         # Keyframe interval settings
         if self.profile.keyframe_interval is not None:
             # Get source framerate (or use target framerate if specified)
-            fps = self.profile.frame_rate if self.profile.frame_rate else await self._get_framerate()
+            fps = (
+                self.profile.frame_rate
+                if self.profile.frame_rate
+                else await self._get_framerate()
+            )
 
             if fps:
                 # Calculate GOP size: framerate × interval in seconds
@@ -257,7 +260,9 @@ class TranscodeJob:
 
             if return_code != 0:
                 stderr = await process.stderr.read()
-                self.error_message = stderr.decode().strip() or f"FFmpeg exited with code {return_code}"
+                self.error_message = (
+                    stderr.decode().strip() or f"FFmpeg exited with code {return_code}"
+                )
                 self.status = "error"
                 return False
 

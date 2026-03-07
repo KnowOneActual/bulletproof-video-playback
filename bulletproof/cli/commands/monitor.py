@@ -99,7 +99,8 @@ def start(
     except ImportError as e:
         if "yaml" in str(e).lower():
             click.echo(
-                "Dependency missing: PyYAML is required for YAML configuration. Install with: pip install pyyaml",
+                "Dependency missing: PyYAML is required for YAML configuration. "
+                "Install with: pip install pyyaml",
                 err=True,
             )
         else:
