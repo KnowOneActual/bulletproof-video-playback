@@ -34,24 +34,32 @@ All notable changes to bulletproof-video-playback are documented in this file.
   - Updated to properly ignore `.ruff_cache/`, `test_videos/`, and local AI tooling files.
   - Standardized structure and comments.
 
-### [Unreleased] - Security Hardening (2026-03-07)
+### [Unreleased] - Security & Modernization (2026-03-07)
 
-#### 🛡️ Automated Security Pipeline
+#### 🛡️ Security Hardening
 - **Security CI/CD**: Added `.github/workflows/security.yml` implementing a multi-layered security audit on every push and PR:
     - **Secret Scanning**: Integrated `gitleaks` to detect accidentally committed credentials and tokens.
     - **Static Analysis (SAST)**: Integrated `bandit` to identify insecure Python coding patterns (e.g., shell injection, insecure bindings).
     - **Dependency Auditing (SCA)**: Integrated `pip-audit` to scan third-party packages for known vulnerabilities (CVEs).
-- **Local Security Tooling**: Added `bandit` and `pip-audit` to `dev` dependencies in `pyproject.toml` for localized auditing.
+- **API Server Hardening**:
+    - **Secure by Default**: Changed default API host from `0.0.0.0` (all interfaces) to `127.0.0.1` (localhost) to prevent unintentional network exposure.
+    - **Configurable Binding**: Added `--api-host` and `--api-port` options to CLI and configuration.
+- **Local Security Tooling**: Added `bandit` and `pip-audit` to `dev` dependencies.
+- **Security Logging**: Created `docs/SECURITY_LOG.md` to track audits and remediation history.
 
-#### 🔒 API Server Hardening
-- **Secure by Default**: Changed the default API server host from `0.0.0.0` (all interfaces) to `127.0.0.1` (localhost only) to prevent unintentional network exposure.
-- **Configurable Binding**:
-    - Added `api_host` and `api_port` to `MonitorConfig` and `MonitorServiceConfig`.
-    - Added `--api-host` and `--api-port` options to the `bvp monitor start` command.
-    - Updated `bulletproof/api/server.py` to support CLI-based host/port configuration.
+#### 🐍 Python 3.10+ Modernization
+- **Dropped Python 3.9**: Bumped minimum version to 3.10 following its EOL.
+- **Modern Typing**: Refactored entire codebase to use Python 3.10 syntax:
+    - Replaced `Optional[T]` with `T | None`.
+    - Replaced `Union[A, B]` with `A | B`.
+    - Adopted lowercase `list[]`, `dict[]`, etc., for type hints.
+- **CI/CD Cleanup**: Updated test matrices and security workflows to target modern Python versions (3.10-3.12).
 
-#### 📝 Documentation
-- **Security Log**: Created `docs/SECURITY_LOG.md` to track security audits, findings, and remediation history.
+#### 🧹 Documentation & TUI Cleanup
+- **Complete TUI Removal**: Scrubbed all remaining references to the deprecated Terminal User Interface from documentation, troubleshooting guides, and architecture diagrams.
+- **Documentation Refresh**:
+    - Updated `README.md` with new **Security**, **Quality Assurance**, and **Development Workflow** sections.
+    - Updated all version references and Python requirements across `QUICK_REFERENCE.md`, `scripts/README.md`, and Linux guides.
 
 ---
 
@@ -663,6 +671,12 @@ All notable changes to bulletproof-video-playback are documented in this file.
 ---
 
 ## Version History Summary
+
+### Unreleased - Security & Modernization (2026-03-07)
+- Automated Security CI/CD (Gitleaks, Bandit, pip-audit)
+- API server hardened (localhost by default)
+- Python 3.9 dropped; full codebase modernized to Python 3.10+
+- Complete documentation scrub (removed all TUI references)
 
 ### Unreleased - Phase 3.1 Web Dashboard API (Day 3 Complete - 2026-03-06)
 - Architectural Refactor: Truly async core and concurrent monitor service
