@@ -34,6 +34,31 @@ All notable changes to bulletproof-video-playback are documented in this file.
   - Updated to properly ignore `.ruff_cache/`, `test_videos/`, and local AI tooling files.
   - Standardized structure and comments.
 
+### 🚀 Phase 3.1 - Web Dashboard API (Day 3 Complete - 2026-03-06)
+
+#### 🛠️ Architectural Refactor: Truly Async Transcoding
+- **Async Transcode Core**: Refactored `TranscodeJob` to use `asyncio.create_subprocess_exec` for non-blocking execution.
+- **Concurrent Monitoring**: Updated `MonitorService` to manage transcoding in background tasks, ensuring 100% responsiveness for file scanning and job control even during heavy processing.
+- **Progress Streaming Support**: Implemented async progress callbacks for real-time updates without blocking the event loop.
+- **Slop Removal**: Eliminated all `print()` statements from core libraries in favor of proper `logging` calls.
+
+#### ⚙️ Configuration Management API
+- **Live Updates**: Implemented `PATCH /api/v1/config` to allow updating rules, poll intervals, and log levels live without service restarts.
+- **Persistence**: Added support for persisting live configuration changes back to the original YAML/JSON file.
+- **Profile Discovery**: Added `GET /api/v1/profiles` to expose transcoding profile technical details for the UI.
+- **Validation**: Added `POST /api/v1/config/validate` for pre-flight configuration checks.
+
+#### 📢 Professional Logging & UI Upgrade
+- **Standardized Logs**: Refactored all log messages to a professional, high-signal technical tone with standardized key-value formatting.
+- **CLI Refresh**: Swapped emojis and casual phrasing for technical status reports in `monitor`, `transcode`, and `batch` commands.
+- **DRY API Models**: Consolidated job conversion logic into `JobResponse.from_queued_job()`.
+
+#### Technical Details
+- **Sync Wrapper**: Added `sync_execute()` to `TranscodeJob` to maintain consistent behavior for CLI tools while sharing the async core.
+- **Persistence Tracking**: `MonitorConfig` now tracks its `_original_path` for reliable configuration saving.
+
+---
+
 ### 🚀 Phase 3.1 - Web Dashboard API (Day 2 Complete - 2026-02-27)
 
 #### Added
@@ -618,13 +643,16 @@ All notable changes to bulletproof-video-playback are documented in this file.
 
 ## Version History Summary
 
-### Unreleased - Phase 3.1 Web Dashboard API (Day 1/15 Complete)
-- FastAPI REST API with 8 endpoints
-- WebSocket real-time streaming
-- Enhanced queue system with IDs, priorities, progress
-- Interactive Swagger documentation
-- Complete API quickstart guide
-- Ready for Day 2: Job control endpoints
+### Unreleased - Phase 3.1 Web Dashboard API (Day 3 Complete - 2026-03-06)
+- Architectural Refactor: Truly async core and concurrent monitor service
+- Live Configuration API with persistence and profile technical discovery
+- Professional logging upgrade across all layers (standardized technical tone)
+- Consolidated API response models (DRY)
+
+### Unreleased - Phase 3.1 Web Dashboard API (Day 2 Complete - 2026-02-27)
+- Job control endpoints (pause, resume, clear, cancel, retry)
+- MonitorService queuing bug fix
+- Added `CANCELLED` job status
 
 ### v2.4.1 - Phase 2.4 Bug Fix (2026-02-10)
 - Fixed MonitorService rule matching (Path vs string)
