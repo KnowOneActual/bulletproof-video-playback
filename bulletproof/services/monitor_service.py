@@ -442,14 +442,16 @@ class MonitorService:
             new_rules = []
             for r in updates["rules"]:
                 if isinstance(r, dict):
-                    new_rules.append(Rule(
-                        pattern=r["pattern"],
-                        profile=r["profile"],
-                        output_pattern=r.get("output_pattern", "{filename}"),
-                        pattern_type=PatternType(r.get("pattern_type", "glob")),
-                        delete_input=r.get("delete_input", True),
-                        priority=r.get("priority", 100),
-                    ))
+                    new_rules.append(
+                        Rule(
+                            pattern=r["pattern"],
+                            profile=r["profile"],
+                            output_pattern=r.get("output_pattern", "{filename}"),
+                            pattern_type=PatternType(r.get("pattern_type", "glob")),
+                            delete_input=r.get("delete_input", True),
+                            priority=r.get("priority", 100),
+                        )
+                    )
                 else:
                     new_rules.append(r)
 

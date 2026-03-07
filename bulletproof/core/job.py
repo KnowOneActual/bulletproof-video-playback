@@ -163,9 +163,7 @@ class TranscodeJob:
         if self.profile.keyframe_interval is not None:
             # Get source framerate (or use target framerate if specified)
             fps = (
-                self.profile.frame_rate
-                if self.profile.frame_rate
-                else await self._get_framerate()
+                self.profile.frame_rate if self.profile.frame_rate else await self._get_framerate()
             )
 
             if fps:
