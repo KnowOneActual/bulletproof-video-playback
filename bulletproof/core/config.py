@@ -27,6 +27,8 @@ class MonitorConfig:
     delete_input: bool = True  # Delete input after successful transcode
     log_level: str = "INFO"
     log_file: Optional[Path] = None
+    api_host: str = "127.0.0.1"
+    api_port: int = 8080
     _original_path: Optional[Path] = None
 
     def __post_init__(self):
@@ -62,6 +64,8 @@ class MonitorConfig:
             "delete_input": self.delete_input,
             "log_level": self.log_level,
             "log_file": str(self.log_file) if self.log_file else None,
+            "api_host": self.api_host,
+            "api_port": self.api_port,
             "rules": [
                 {
                     "pattern": r.pattern,
@@ -174,6 +178,8 @@ class MonitorConfig:
             delete_input=data.get("delete_input", True),
             log_level=data.get("log_level", "INFO"),
             log_file=resolve_path(data.get("log_file")),
+            api_host=data.get("api_host", "127.0.0.1"),
+            api_port=data.get("api_port", 8080),
             _original_path=config_dir / data.get("_filename", "")
             if data.get("_filename")
             else None,

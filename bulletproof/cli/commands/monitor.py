@@ -51,12 +51,26 @@ def monitor():
     default=None,
     help="Override log level",
 )
+@click.option(
+    "--api-host",
+    type=str,
+    default=None,
+    help="Host to bind for dashboard API (default: 127.0.0.1)",
+)
+@click.option(
+    "--api-port",
+    type=int,
+    default=None,
+    help="Port to bind for dashboard API (default: 8080)",
+)
 def start(
     config: str,
     watch: Optional[str],
     output: Optional[str],
     poll_interval: Optional[int],
     log_level: Optional[str],
+    api_host: Optional[str],
+    api_port: Optional[int],
 ):
     """Start monitoring a folder for new video files.
 
@@ -76,6 +90,9 @@ def start(
 
         # Run with debug logging
         bvp monitor start -c monitor.yaml -l DEBUG
+        
+        # Override API host and port
+        bvp monitor start -c monitor.yaml --api-host 0.0.0.0 --api-port 9000
     """
     config_path = Path(config)
 
@@ -89,6 +106,10 @@ def start(
         overrides["poll_interval"] = poll_interval
     if log_level:
         overrides["log_level"] = log_level.upper()
+    if api_host:
+        overrides["api_host"] = api_host
+    if api_port is not None:
+        overrides["api_port"] = api_port
 
     # Load config and create service
     try:

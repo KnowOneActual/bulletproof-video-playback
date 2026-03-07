@@ -135,19 +135,29 @@ def start_service_background(service: MonitorService):
 
 if __name__ == "__main__":
     # For development/testing
+    import argparse
+
     import uvicorn
 
+    parser = argparse.ArgumentParser(description="Start Bulletproof API server")
+    parser.add_argument("--host", default="127.0.0.1", help="Host to bind (default: 127.0.0.1)")
+    parser.add_argument("--port", type=int, default=8080, help="Port to bind (default: 8080)")
+    parser.add_argument(
+        "--log-level", default="info", help="Logging level (default: info)"
+    )
+    args = parser.parse_args()
+
     logging.basicConfig(
-        level=logging.INFO,
+        level=getattr(logging, args.log_level.upper()),
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
     app = create_app()
 
-    logger.info("Starting development server. port=8080 host=0.0.0.0")
+    logger.info(f"Starting development server. host={args.host} port={args.port}")
     uvicorn.run(
         app,
-        host="0.0.0.0",
-        port=8080,
-        log_level="info",
+        host=args.host,
+        port=args.port,
+        log_level=args.log_level.lower(),
     )

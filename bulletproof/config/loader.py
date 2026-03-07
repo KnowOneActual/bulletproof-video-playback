@@ -124,6 +124,8 @@ class ConfigLoader:
                 persist_path=config.persist_path,
                 log_level=config.log_level,
                 log_file=config.log_file,
+                api_host=config.api_host,
+                api_port=config.api_port,
             )
 
             # Create service

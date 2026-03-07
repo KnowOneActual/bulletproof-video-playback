@@ -30,6 +30,8 @@ class MonitorServiceConfig:
         persist_path: Optional[Path] = None,
         log_level: str = "INFO",
         log_file: Optional[Path] = None,
+        api_host: str = "127.0.0.1",
+        api_port: int = 8080,
     ):
         """Initialize service configuration.
 
@@ -42,6 +44,8 @@ class MonitorServiceConfig:
             persist_path: Path to persist queue state (JSON)
             log_level: Logging level (DEBUG, INFO, WARNING, ERROR)
             log_file: Optional file path for logging output
+            api_host: Host to bind for API server
+            api_port: Port to bind for API server
         """
         self.watch_directory = Path(watch_directory)
         self.output_directory = Path(output_directory)
@@ -51,6 +55,8 @@ class MonitorServiceConfig:
         self.persist_path = Path(persist_path) if persist_path else None
         self.log_level = log_level
         self.log_file = Path(log_file) if log_file else None
+        self.api_host = api_host
+        self.api_port = api_port
 
         # Validate
         if not self.watch_directory.exists():

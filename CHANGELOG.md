@@ -34,6 +34,27 @@ All notable changes to bulletproof-video-playback are documented in this file.
   - Updated to properly ignore `.ruff_cache/`, `test_videos/`, and local AI tooling files.
   - Standardized structure and comments.
 
+### [Unreleased] - Security Hardening (2026-03-07)
+
+#### 🛡️ Automated Security Pipeline
+- **Security CI/CD**: Added `.github/workflows/security.yml` implementing a multi-layered security audit on every push and PR:
+    - **Secret Scanning**: Integrated `gitleaks` to detect accidentally committed credentials and tokens.
+    - **Static Analysis (SAST)**: Integrated `bandit` to identify insecure Python coding patterns (e.g., shell injection, insecure bindings).
+    - **Dependency Auditing (SCA)**: Integrated `pip-audit` to scan third-party packages for known vulnerabilities (CVEs).
+- **Local Security Tooling**: Added `bandit` and `pip-audit` to `dev` dependencies in `pyproject.toml` for localized auditing.
+
+#### 🔒 API Server Hardening
+- **Secure by Default**: Changed the default API server host from `0.0.0.0` (all interfaces) to `127.0.0.1` (localhost only) to prevent unintentional network exposure.
+- **Configurable Binding**:
+    - Added `api_host` and `api_port` to `MonitorConfig` and `MonitorServiceConfig`.
+    - Added `--api-host` and `--api-port` options to the `bvp monitor start` command.
+    - Updated `bulletproof/api/server.py` to support CLI-based host/port configuration.
+
+#### 📝 Documentation
+- **Security Log**: Created `docs/SECURITY_LOG.md` to track security audits, findings, and remediation history.
+
+---
+
 ### 🚀 Phase 3.1 - Web Dashboard API (Day 3 Complete - 2026-03-06)
 
 #### 🛠️ Architectural Refactor: Truly Async Transcoding
