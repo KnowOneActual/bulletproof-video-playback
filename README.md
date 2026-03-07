@@ -127,8 +127,69 @@ bvp monitor start --config monitor.yaml
 
 ---
 
+## 🛡️ Security & Reliability
+
+This project is built for **live event production**, where "no show-day embarrassments" is the primary mandate. Security and reliability are core parts of the development process.
+
+### Automated Security Pipeline
+Every commit and pull request is automatically audited via a multi-layered security CI/CD pipeline:
+- **Secret Scanning ([Gitleaks](https://github.com/gitleaks/gitleaks))**: Automatically detects and prevents credentials, tokens, or private keys from being committed.
+- **Static Analysis (SAST - [Bandit](https://github.com/PyCQA/bandit))**: Scans the Python codebase for insecure patterns, such as shell injections or insecure network bindings.
+- **Dependency Auditing (SCA - [pip-audit](https://github.com/pypa/pip-audit))**: Checks all third-party packages against the PyPI vulnerability database (CVEs).
+
+### Secure by Default
+- **Local Binding**: The Dashboard API server defaults to `127.0.0.1` (localhost) to prevent unintentional network exposure.
+- **Configurable Access**: Use `--api-host` and `--api-port` to explicitly control where the service is accessible.
+- **Safe Cleanup**: Incomplete or interrupted transcodes are automatically cleaned up to prevent disk clutter or corrupted media playback.
+- **Persistence**: The transcode queue is persisted to disk, allowing the service to recover gracefully from crashes or power failures.
+
+👉 **Security History:** [docs/SECURITY_LOG.md](./docs/SECURITY_LOG.md)
+
+---
+
+## ✅ Quality Assurance
+
+We maintain a high standard of code quality to ensure stability in production environments.
+
+### Testing
+The project includes a comprehensive suite of **33+ automated tests** covering configuration, rule matching, job queuing, and profile validation.
+```bash
+# Run the test suite
+pytest -v
+
+# Check test coverage
+pytest --cov=bulletproof tests/
+```
+
+### Type Safety & Linting
+We use modern Python tooling to enforce strict coding standards:
+- **[Ruff](https://github.com/astral-sh/ruff)**: All-in-one fast linter and formatter (100-character line length).
+- **[Mypy](http://mypy-lang.org/)**: Static type checking to catch bugs before they reach production.
+
+---
+
+## 🛠️ Development Workflow
+
+To contribute or run local audits, install the development environment:
+
+```bash
+# Install with dev dependencies
+pip install -e ".[dev]"
+
+# Run a full local audit (Lint + Format + Type Check + Security + Tests)
+ruff check .
+ruff format .
+mypy .
+bandit -r bulletproof/ -ll
+pip-audit
+pytest -v
+```
+
+---
+
 ## Features
 
+✅ **Security Hardening** - Automated CI/CD audits + Secure by default (NEW!)  
 ✅ **REST API for Remote Monitoring** - WebSocket + FastAPI (NEW Phase 3.1!)  
 ✅ **MKV Profiles for Linux** - H.265 MKV for live events (NEW!)  
 ✅ **Keyframe Interval Control** - Professional GOP management (NEW v2.5.0!)  
@@ -612,5 +673,5 @@ Contributions welcome! Please:
 
 ---
 
-**Latest Update:** February 27, 2026  
-**Current Version:** 2.5.0 (API in development)
+**Latest Update:** March 7, 2026  
+**Current Version:** 3.1.0-sec (Security Hardening)
