@@ -36,17 +36,25 @@ All notable changes to bulletproof-video-playback are documented in this file.
 
 ## [3.2.0] - 2026-03-17
 
-### 🎭 QLab Performance Integration
+### 🎭 QLab Performance Integration & Enhanced WebSockets
 
 #### Added
-- **Dedicated Audio Profile**: Added `audio-qlab` profile for converting MP3/AAC/MP4 cues into uncompressed `pcm_s24le` 48kHz WAV audio, following official QLab performance advice.
-- **Resolution Override**: Added `--resolution` flag to `bvp transcode` and `bvp batch` to match exact projector/screen sizes and eliminate GPU scaling overhead.
-- **Audio Sample Rate Override**: Added `--audio-sample-rate` flag to `bvp transcode` and `bvp batch` to match hardware sample rates (e.g., 48000) and eliminate Core Audio resampling overhead.
-- **Enhanced `live-qlab` Profile**: Updated the default QLab profile to explicitly enforce a `48000` Hz sample rate.
+- **Enhanced WebSockets**: Refactored the dashboard API to be fully event-driven.
+    - **Broadcasting**: Added `ConnectionManager` to support multiple concurrent dashboard clients.
+    - **Real-time Events**: WebSocket now pushes instant notifications for `file_detected`, `job_queued`, `job_started`, `job_progress`, `job_complete`, and `job_error`.
+    - **Throttled Progress**: Job progress updates are now pushed frame-by-frame (throttled to 0.5% increments) for smooth UI updates without network congestion.
+- **Dedicated Audio Profile**: Added `audio-qlab` profile for converting MP3/AAC/MP4 cues into uncompressed `pcm_s24le` 48kHz WAV audio.
+- **Resolution Override**: Added `--resolution` flag to match exact projector/screen sizes.
+- **Audio Sample Rate Override**: Added `--audio-sample-rate` flag to match hardware sample rates.
+
+#### Fixed
+- **Double Logging**: Prevented `MonitorService` from creating redundant log handlers when integrated with FastAPI.
+- **Service Lifecycle**: Fixed a bug where the monitor service was not starting correctly within the FastAPI lifespan.
 
 #### Changed
+- **MonitorService Events**: Added a flexible callback-based event system to the core monitor service.
+- **FastAPI Lifespan**: The backend API now automatically manages the background monitor task using the standard FastAPI lifespan protocol.
 - **Profile Dataclass**: Expanded `TranscodeProfile` to support `audio_sample_rate` and `codec="none"` for audio-only workflows.
-- **Job Logic**: Updated FFmpeg command builder to handle audio-only transcodes (`-vn`) and explicit sample rate settings (`-ar`).
 
 ### [3.1.0] - 2026-03-07
 

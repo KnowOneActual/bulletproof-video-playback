@@ -65,10 +65,6 @@ def main():
         logger.info("Creating dashboard app...")
         app = create_app(monitor_service=service)
 
-        # Start monitor service in background
-        logger.info("Starting monitor service...")
-        start_service_background(service)
-
         # Run uvicorn
         logger.info(f"Starting dashboard at http://{args.host}:{args.port}")
         logger.info(f"API documentation: http://{args.host}:{args.port}/docs")

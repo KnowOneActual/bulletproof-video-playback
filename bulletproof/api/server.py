@@ -26,8 +26,9 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("API server initializing. version=3.1.0")
 
-    # Service will be set externally via set_service()
-    # or can be initialized here if config is available
+    # If service is already set, start it in the background
+    if _service:
+        start_service_background(_service)
 
     yield
 

@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -94,6 +95,9 @@ class MonitorService:
         self.queue = TranscodeQueue(config.persist_path)
         self.rule_engine = RuleEngine(config.rules)
 
+        # Event system for real-time updates
+        self.event_callback: Callable[[str, dict[str, Any]], None] | None = None
+
         # State tracking
         self._running = False
         self._paused = False
@@ -102,30 +106,45 @@ class MonitorService:
         self._start_time = datetime.now()
         self.logger.info(f"MonitorService initialized. watch_dir={config.watch_directory}")
 
+    def emit_event(self, event_type: str, data: dict[str, Any]) -> None:
+        """Emit an event via callback.
+
+        Args:
+            event_type: Type of event (e.g., "job_update", "status")
+            data: Event payload
+        """
+        if self.event_callback:
+            try:
+                self.event_callback(event_type, data)
+            except Exception as e:
+                self.logger.error(f"Event callback failure: {e}")
+
     def _setup_logging(self) -> None:
         """Set up logging."""
         self.logger = logging.getLogger("bvp.monitor")
         self.logger.setLevel(getattr(logging, self.config.log_level))
 
-        # Console handler
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(getattr(logging, self.config.log_level))
-        console_formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
-        console_handler.setFormatter(console_formatter)
-        self.logger.addHandler(console_handler)
-
-        # File handler if specified
-        if self.config.log_file:
-            self.config.log_file.parent.mkdir(parents=True, exist_ok=True)
-            file_handler = logging.FileHandler(self.config.log_file)
-            file_handler.setLevel(getattr(logging, self.config.log_level))
-            file_formatter = logging.Formatter(
+        # Only add handlers if they don't exist
+        if not self.logger.handlers:
+            # Console handler
+            console_handler = logging.StreamHandler()
+            console_handler.setLevel(getattr(logging, self.config.log_level))
+            console_formatter = logging.Formatter(
                 "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
             )
-            file_handler.setFormatter(file_formatter)
-            self.logger.addHandler(file_handler)
+            console_handler.setFormatter(console_formatter)
+            self.logger.addHandler(console_handler)
+
+            # File handler if specified
+            if self.config.log_file:
+                self.config.log_file.parent.mkdir(parents=True, exist_ok=True)
+                file_handler = logging.FileHandler(self.config.log_file)
+                file_handler.setLevel(getattr(logging, self.config.log_level))
+                file_formatter = logging.Formatter(
+                    "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+                )
+                file_handler.setFormatter(file_formatter)
+                self.logger.addHandler(file_handler)
 
     async def run(self) -> None:
         """Main service loop - runs until stop() is called.
@@ -189,6 +208,7 @@ class MonitorService:
             # Get stable files ready for processing
             stable_files = self.monitor.get_stable_files()
             for file_info in stable_files:
+                self.emit_event("file_detected", {"filename": file_info.path.name})
                 await self._create_job_for_file(file_info)
 
         except Exception as e:
@@ -222,6 +242,17 @@ class MonitorService:
 
             priority = rule.get("priority", 100)
             job = self.queue.add_from_file(file_info, output_file, profile_name, priority)
+
+            self.emit_event(
+                "job_queued",
+                {
+                    "job_id": job.id,
+                    "input_file": str(job.input_file),
+                    "output_file": str(job.output_file),
+                    "profile": job.profile_name,
+                    "priority": job.priority,
+                },
+            )
 
             self.logger.info(
                 f"Job queued: id={job.id} input={file_info.path.name} "
@@ -269,6 +300,15 @@ class MonitorService:
                 f"input={job.input_file.name} profile={job.profile_name}"
             )
 
+            self.emit_event(
+                "job_started",
+                {
+                    "job_id": job.id,
+                    "input_file": str(job.input_file),
+                    "profile": job.profile_name,
+                },
+            )
+
             # Execute transcode
             profile = BUILT_IN_PROFILES[job.profile_name]
             transcode_job = TranscodeJob(
@@ -278,14 +318,34 @@ class MonitorService:
             )
 
             # Define progress callback to update queued job status
+            last_p = -1.0
+
             def update_progress(p: float):
+                nonlocal last_p
                 job.progress = p
+                # Throttle updates: only emit if progress increased by > 0.5%
+                if p - last_p >= 0.5 or p >= 100.0:
+                    self.emit_event(
+                        "job_progress",
+                        {
+                            "job_id": job.id,
+                            "progress": round(p, 1),
+                        },
+                    )
+                    last_p = p
 
             # Execute asynchronously
             success = await transcode_job.execute(progress_callback=update_progress)
 
             if success:
                 self.queue.mark_complete(job)
+                self.emit_event(
+                    "job_complete",
+                    {
+                        "job_id": job.id,
+                        "output_file": str(job.output_file),
+                    },
+                )
                 self.logger.info(f"Worker completed: id={job.id} output={job.output_file.name}")
 
                 # Delete input if configured
@@ -298,6 +358,13 @@ class MonitorService:
             else:
                 error_msg = transcode_job.error_message or "Unknown error"
                 self.queue.mark_error(job, error_msg)
+                self.emit_event(
+                    "job_error",
+                    {
+                        "job_id": job.id,
+                        "error": error_msg,
+                    },
+                )
                 self.logger.error(
                     f"Worker failed: id={job.id} input={job.input_file.name} error={error_msg}"
                 )
@@ -306,21 +373,31 @@ class MonitorService:
             self.logger.info(f"Worker cancelled: id={job.id} input={job.input_file.name}")
             if job:
                 self.queue.mark_cancelled(job)
+                self.emit_event("job_cancelled", {"job_id": job.id})
             raise
         except Exception as e:
             error_msg = str(e)
             if job:
                 self.queue.mark_error(job, error_msg)
+                self.emit_event(
+                    "job_error",
+                    {
+                        "job_id": job.id,
+                        "error": error_msg,
+                    },
+                )
             self.logger.error(f"Worker execution exception: id={job.id} error={e}", exc_info=True)
 
     def pause(self) -> None:
         """Pause processing queue."""
         self._paused = True
+        self.emit_event("status_changed", {"paused": True})
         self.logger.info("Service PAUSED: Job processing suspended")
 
     def resume(self) -> None:
         """Resume processing queue."""
         self._paused = False
+        self.emit_event("status_changed", {"paused": False})
         self.logger.info("Service RESUMED: Job processing restored")
 
     def cancel_job(self, job_id: str) -> bool:

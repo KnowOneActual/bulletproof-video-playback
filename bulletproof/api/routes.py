@@ -19,6 +19,32 @@ from bulletproof.api.models import (
     WebSocketMessage,
 )
 
+class ConnectionManager:
+    """Manages active WebSocket connections and broadcasting."""
+
+    def __init__(self):
+        self.active_connections: list[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+
+    async def broadcast(self, message: dict):
+        """Broadcast JSON message to all connected clients."""
+        for connection in self.active_connections:
+            try:
+                await connection.send_json(message)
+            except Exception:
+                # Connection might be closed, disconnect will handle it
+                pass
+
+# Global connection manager instance
+manager = ConnectionManager()
+
 # Router for all API endpoints
 router = APIRouter()
 
@@ -27,9 +53,30 @@ _monitor_service = None
 
 
 def set_monitor_service(service):
-    """Set the global monitor service instance."""
+    """Set the global monitor service instance and register events."""
     global _monitor_service
     _monitor_service = service
+    
+    # Register event callback for WebSocket broadcasting
+    def monitor_event_handler(event_type: str, data: dict):
+        """Handle events from MonitorService and broadcast to WebSockets."""
+        message = WebSocketMessage(
+            type=event_type,
+            timestamp=datetime.now().isoformat(),
+            data=data
+        )
+        
+        # We need to run the broadcast in the main event loop
+        try:
+            loop = asyncio.get_running_loop()
+            if loop.is_running():
+                asyncio.create_task(manager.broadcast(message.model_dump()))
+        except RuntimeError:
+            # No running event loop
+            pass
+
+    if _monitor_service:
+        _monitor_service.event_callback = monitor_event_handler
 
 
 def get_monitor_service():
@@ -312,44 +359,38 @@ async def get_job(job_id: str):
 async def websocket_endpoint(websocket: WebSocket):
     """WebSocket endpoint for real-time updates.
 
-    Sends periodic status updates to connected clients.
+    Sends real-time event updates to connected clients using broadcast.
     """
-    await websocket.accept()
+    await manager.connect(websocket)
     service = get_monitor_service()
+
+    # Send initial status
+    status = service.get_status()
+    queue_status = status.get("queue", {})
+    initial_message = WebSocketMessage(
+        type="status",
+        timestamp=datetime.now().isoformat(),
+        data={
+            "running": status["running"],
+            "paused": status.get("paused", False),
+            "pending_jobs": queue_status.get("pending", 0),
+            "processing_jobs": queue_status.get("processing", 0),
+            "complete_jobs": queue_status.get("complete", 0),
+            "error_jobs": queue_status.get("error", 0),
+        },
+    )
+    await websocket.send_json(initial_message.model_dump())
 
     try:
         while True:
-            # Get current status
-            status = service.get_status()
-            queue_status = status.get("queue", {})
-
-            # Send status update
-            message = WebSocketMessage(
-                type="status",
-                timestamp=datetime.now().isoformat(),
-                data={
-                    "running": status["running"],
-                    "pending_jobs": queue_status.get("pending", 0),
-                    "processing_jobs": queue_status.get("processing", 0),
-                    "complete_jobs": queue_status.get("complete", 0),
-                    "error_jobs": queue_status.get("error", 0),
-                },
-            )
-            await websocket.send_json(message.model_dump())
-
-            # Wait before next update
-            await asyncio.sleep(2)
+            # Keep the connection open and listen for incoming messages (like ping)
+            # This also handles the heartbeat to keep the connection alive
+            data = await websocket.receive_text()
+            if data == "ping":
+                await websocket.send_text("pong")
 
     except WebSocketDisconnect:
-        pass
+        manager.disconnect(websocket)
     except Exception as e:
-        error_msg = WebSocketMessage(
-            type="error",
-            timestamp=datetime.now().isoformat(),
-            data={"error": str(e)},
-        )
-        try:
-            await websocket.send_json(error_msg.model_dump())
-        except Exception:
-            # Client disconnected, can't send error
-            pass
+        manager.disconnect(websocket)
+        print(f"WebSocket error: {e}")

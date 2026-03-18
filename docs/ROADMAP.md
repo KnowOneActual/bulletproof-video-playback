@@ -109,12 +109,12 @@ No complex charts, advanced analytics, or full config editor in v3.1.0—those w
   - [x] GET /api/v1/profiles - List available profiles
   - [x] **Ruthless Refactor:** Core job execution is now truly async/non-blocking.
 
-- [ ] **Day 4:** Enhanced WebSocket
-  - [ ] Job progress updates (frame-by-frame)
-  - [ ] File detection notifications
-  - [ ] Error alerts
-  - [ ] Multiple concurrent clients
-  - **Estimated:** 2-3 hours
+- [x] **Day 4:** Enhanced WebSocket ✅
+  - [x] Job progress updates (frame-by-frame)
+  - [x] File detection notifications
+  - [x] Error alerts
+  - [x] Multiple concurrent clients (broadcasting)
+  - [x] **Fix:** FastAPI lifespan integration for background monitor service.
 
 - [ ] **Day 5:** Polish & Testing
   - [ ] Unit tests for all endpoints
@@ -124,7 +124,7 @@ No complex charts, advanced analytics, or full config editor in v3.1.0—those w
   - [ ] Documentation updates
   - **Estimated:** 3-4 hours
 
-**Week 1 Status:** 3/5 days complete (60%)
+**Week 1 Status:** 4/5 days complete (80%)
 **Timeline:** Days 1-5
 **Expected:** Functional backend API with job controls
 
@@ -166,8 +166,8 @@ No complex charts, advanced analytics, or full config editor in v3.1.0—those w
 
 ## Phase 3.1 Decision Gate
 ...
-**Last Updated:** March 17, 2026, 10:00 AM CST  
-**Current Status:** Phase 3.1 Day 3 Complete ✅ (20% of Phase 3.1)  
-**Next Session:** Day 4 - Enhanced WebSocket  
-**Confidence Level:** 100% (Async foundation is solid)
+**Last Updated:** March 17, 2026, 11:00 AM CST  
+**Current Status:** Phase 3.1 Day 4 Complete ✅ (27% of Phase 3.1)  
+**Next Session:** Day 5 - Polish & Testing
+**Confidence Level:** 100% (Events are firing perfectly)
 

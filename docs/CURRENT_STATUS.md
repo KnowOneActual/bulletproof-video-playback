@@ -24,10 +24,11 @@
   └─ Impact: The folder monitor now correctly processes files end-to-end.
 ```
 
-## 📍 **PHASE 3.1 PROGRESS: DAY 3/15 COMPLETE ✅**
+## 📍 **PHASE 3.1 PROGRESS: DAY 4/15 COMPLETE ✅**
 ```
 ✅ [x] REST API Core Endpoints (Health, Status, History, Jobs)
-✅ [x] WebSocket Real-Time Streaming (Basic)
+✅ [x] Enhanced WebSocket: Event-driven broadcasting
+✅ [x] WebSocket Events: file_detected, job lifecycle, status changes
 ✅ [x] Job Control Endpoints (Pause, Resume, Cancel, Retry, Clear)
 ✅ [x] Configuration API (GET/PATCH config, List profiles)
 ✅ [x] Ruthless Refactor: Async-first core engine (No more blocking!)
@@ -36,24 +37,21 @@
 
 ## 🚀 **PRODUCTION READY (v3.2.0)**
 
-Phase 3.1 Week 1 (Backend API) is progressing perfectly. We've just shipped **v3.2.0** which integrates official QLab performance optimizations.
+Phase 3.1 Week 1 (Backend API) is nearly finished. We've just shipped **Enhanced WebSockets** which provide instant feedback to the dashboard.
 
 ```bash
 # Start the backend API dashboard
 python examples/dashboard_example.py --config monitor.yaml
-
-# New QLab Optimization Features
-bvp transcode video.mov --profile live-qlab --resolution 1920:1080 --audio-sample-rate 48000
 ```
 
-## 🎯 **NEXT STEPS: PHASE 3.1 DAY 4**
+## 🎯 **NEXT STEPS: PHASE 3.1 DAY 5**
 
-### Option 1: Enhanced WebSocket (Planned)
+### Option 1: Polish & Testing (Planned)
 ```
-- Frame-by-frame progress updates via WebSocket
-- File detection events
-- Broadcast mechanism for multiple concurrent dashboard clients
-- Error alerts pushed instantly
+- Unit tests for all API endpoints
+- Integration tests for WebSocket event flow
+- Error handling improvements
+- Performance optimization
 ```
 
 ### Option 2: Quick Wins (Incremental)
@@ -67,12 +65,12 @@ bvp transcode video.mov --profile live-qlab --resolution 1920:1080 --audio-sampl
 **Status:** Healthy ✅  
 **Test Coverage:** 33/33 passing ✓  
 **Known Bugs:** 0  
-**Documentation:** Complete (v3.2.0 added)
+**Documentation:** Complete (Day 4 added)
 **Production Ready:** v3.2.0 is stable.
 
 **Last Updated:** March 17, 2026
-**Phase 3.1 Status:** Day 3 of 15 complete (20%)
-**Next Phase:** Phase 3.1 Day 4 (Enhanced WebSocket)
+**Phase 3.1 Status:** Day 4 of 15 complete (27%)
+**Next Phase:** Phase 3.1 Day 5 (Polish & Testing)
 
 ---
 
