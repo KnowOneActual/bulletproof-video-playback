@@ -23,6 +23,7 @@ class TranscodeProfile:
     extension: str = "mov"  # Default output extension
     keyframe_interval: float | None = None  # Seconds between keyframes (None = source)
     force_keyframes: bool = False  # Strictly enforce keyframe interval
+    audio_sample_rate: str | None = None  # e.g., "48000", None for source
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
@@ -60,10 +61,28 @@ BUILT_IN_PROFILES = {
         scale=None,
         audio_codec="pcm_s24le",
         audio_bitrate="0",
+        audio_sample_rate="48000",
         description="ProRes Proxy for QLab on macOS (QLab recommended, smaller files)",
         extension="mov",
         keyframe_interval=5.0,  # 5 seconds for easy scrubbing
         force_keyframes=True,
+    ),
+    "audio-qlab": TranscodeProfile(
+        name="audio-qlab",
+        codec="none",
+        preset="none",
+        quality=0,
+        max_bitrate=None,
+        frame_rate=None,
+        pixel_format=None,
+        scale=None,
+        audio_codec="pcm_s24le",
+        audio_bitrate="0",
+        audio_sample_rate="48000",
+        description="Uncompressed 24-bit 48kHz WAV audio for QLab cues",
+        extension="wav",
+        keyframe_interval=None,
+        force_keyframes=False,
     ),
     "live-prores-lt": TranscodeProfile(
         name="live-prores-lt",

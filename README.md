@@ -410,6 +410,7 @@ else:
 | Name | Codec | Extension | Quality | Keyframe Interval | Use Case | Speed |
 |------|-------|-----------|---------|-------------------|----------|-------|
 | **live-qlab** | ProRes Proxy | .mov | Good | **5s** | QLab on Mac (instant scrubbing) | Medium |
+| **audio-qlab** | PCM (WAV) | .wav | Lossless | N/A | QLab audio-only cues (replaces MP3/AAC) | Fast |
 | live-prores-lt | ProRes LT | .mov | High | **5s** | Live playback (smaller, easy scrubbing) | Medium |
 | live-h264 | H.264 | .mp4 | High | **5s** | Cross-platform live (easy scrubbing) | Slow |
 | **live-linux-hevc-mkv** | H.265 | .mkv | High (CRF 20) | **5s** | Linux live events (mpv, Linux Show Player) | Medium |
@@ -471,6 +472,21 @@ bvp transcode input.mov --profile standard-playback --keyframe-interval 3.0
 - **Archive/preservation:** None (preserve source)
 
 👉 **Full technical guide:** [docs/features/KEYFRAME_FEATURE.md](./docs/features/KEYFRAME_FEATURE.md)
+
+### QLab Performance Optimization (NEW)
+
+Bulletproof explicitly integrates **QLab's official performance advice** to help you squeeze out every 0.01% of processing power for critical shows:
+
+1. **Avoid MP3 and MP4/AAC:** Compressed audio takes extra CPU overhead to decode on the fly. BVP's `live-qlab` profile automatically uses uncompressed 24-bit PCM (`pcm_s24le`) in a `.mov` container.
+2. **Dedicated Audio Cues:** Need to convert MP3/AAC files to QLab-friendly WAV? Use the new `audio-qlab` profile to instantly transcode them to 48kHz 24-bit WAV.
+   ```bash
+   bvp transcode audio.mp3 --profile audio-qlab
+   ```
+3. **Match Output Sample Rate & Resolution:** Core Audio resamples audio on the fly, and video cues scale dynamically. To remove this overhead, you can now explicitly tell BVP to match your exact display resolution and hardware sample rate:
+   ```bash
+   # Match your 1080p projector and 48kHz audio interface perfectly
+   bvp transcode video.mp4 --profile live-qlab --resolution 1920:1080 --audio-sample-rate 48000
+   ```
 
 ---
 

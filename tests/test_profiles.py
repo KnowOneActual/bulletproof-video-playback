@@ -6,10 +6,11 @@ from bulletproof.core import get_profile, list_profiles
 
 
 def test_list_profiles():
-    """Test that all 9 profiles are available (7 original + 2 new MKV profiles)."""
+    """Test that all 10 profiles are available."""
     profiles = list_profiles()
-    assert len(profiles) == 9
+    assert len(profiles) == 10
     assert "live-qlab" in profiles
+    assert "audio-qlab" in profiles
     assert "live-prores-lt" in profiles
     assert "live-h264" in profiles
     assert "live-linux-hevc-mkv" in profiles  # NEW

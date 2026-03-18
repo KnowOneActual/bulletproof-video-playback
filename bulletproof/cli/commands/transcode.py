@@ -32,6 +32,14 @@ from bulletproof.core import TranscodeJob, get_profile, list_profiles
     help="Speed preset: fast (quick, slight quality loss), normal (default), slow (best quality)",
 )
 @click.option(
+    "--resolution",
+    help="Override output resolution (e.g., 1920:1080) for exact size matching",
+)
+@click.option(
+    "--audio-sample-rate",
+    help="Override audio sample rate (e.g., 48000) for exact hardware matching",
+)
+@click.option(
     "--list-profiles",
     is_flag=True,
     help="Show available profiles and exit",
@@ -41,6 +49,8 @@ def transcode(
     profile: str,
     output: str,
     preset: str,
+    resolution: str | None,
+    audio_sample_rate: str | None,
     list_profiles_flag: bool,
 ):
     """Transcode a video file using a preset profile.
@@ -96,6 +106,13 @@ def transcode(
 
     try:
         prof = get_profile(profile)
+
+        # Apply overrides
+        if resolution:
+            prof.scale = resolution
+        if audio_sample_rate:
+            prof.audio_sample_rate = audio_sample_rate
+
         click.echo(f"\nProfile: {prof.name}")
         click.echo(f"Description: {prof.description}")
         click.echo(f"Speed Preset: {preset}")

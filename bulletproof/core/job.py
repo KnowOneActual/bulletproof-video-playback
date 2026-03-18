@@ -131,7 +131,9 @@ class TranscodeJob:
         ]
 
         # Video codec
-        if self.profile.codec == "prores":
+        if self.profile.codec == "none":
+            cmd.append("-vn")
+        elif self.profile.codec == "prores":
             cmd.extend(["-c:v", "prores"])
             if self.profile.preset == "hq":
                 cmd.extend(["-profile:v", "4"])  # ProRes 4444
@@ -160,48 +162,51 @@ class TranscodeJob:
             if self.profile.extension == "mp4":
                 cmd.extend(["-tag:v", "hvc1"])
 
-        # Keyframe interval settings
-        if self.profile.keyframe_interval is not None:
-            # Get source framerate (or use target framerate if specified)
-            fps = (
-                self.profile.frame_rate if self.profile.frame_rate else await self._get_framerate()
-            )
+        if self.profile.codec != "none":
+            # Keyframe interval settings
+            if self.profile.keyframe_interval is not None:
+                # Get source framerate (or use target framerate if specified)
+                fps = self.profile.frame_rate
+                if not fps:
+                    fps = await self._get_framerate()
 
-            if fps:
-                # Calculate GOP size: framerate × interval in seconds
-                gop_size = int(fps * self.profile.keyframe_interval)
+                if fps:
+                    # Calculate GOP size: framerate × interval in seconds
+                    gop_size = int(fps * self.profile.keyframe_interval)
 
-                # Set GOP size (-g flag)
-                cmd.extend(["-g", str(gop_size)])
+                    # Set GOP size (-g flag)
+                    cmd.extend(["-g", str(gop_size)])
 
-                # Set minimum keyframe interval to same as GOP
-                cmd.extend(["-keyint_min", str(gop_size)])
+                    # Set minimum keyframe interval to same as GOP
+                    cmd.extend(["-keyint_min", str(gop_size)])
 
-                # Force strict keyframe intervals if requested
-                if self.profile.force_keyframes:
-                    # Disable scene change detection
-                    cmd.extend(["-sc_threshold", "0"])
+                    # Force strict keyframe intervals if requested
+                    if self.profile.force_keyframes:
+                        # Disable scene change detection
+                        cmd.extend(["-sc_threshold", "0"])
 
-                    # Force keyframes at exact time intervals
-                    interval = self.profile.keyframe_interval
-                    cmd.extend(["-force_key_frames", f"expr:gte(t,n_forced*{interval})"])
+                        # Force keyframes at exact time intervals
+                        interval = self.profile.keyframe_interval
+                        cmd.extend(["-force_key_frames", f"expr:gte(t,n_forced*{interval})"])
 
-        # Pixel format
-        if self.profile.pixel_format:
-            cmd.extend(["-pix_fmt", self.profile.pixel_format])
+            # Pixel format
+            if self.profile.pixel_format:
+                cmd.extend(["-pix_fmt", self.profile.pixel_format])
 
-        # Frame rate
-        if self.profile.frame_rate:
-            cmd.extend(["-r", str(self.profile.frame_rate)])
+            # Frame rate
+            if self.profile.frame_rate:
+                cmd.extend(["-r", str(self.profile.frame_rate)])
 
-        # Scale
-        if self.profile.scale:
-            cmd.extend(["-vf", f"scale={self.profile.scale}"])
+            # Scale
+            if self.profile.scale:
+                cmd.extend(["-vf", f"scale={self.profile.scale}"])
 
         # Audio codec
         cmd.extend(["-c:a", self.profile.audio_codec])
         if self.profile.audio_bitrate != "0":
             cmd.extend(["-b:a", self.profile.audio_bitrate])
+        if getattr(self.profile, "audio_sample_rate", None):
+            cmd.extend(["-ar", self.profile.audio_sample_rate])
 
         # Add faststart flag for MP4/MKV streaming optimization
         if self.profile.extension in ["mp4", "mkv"]:

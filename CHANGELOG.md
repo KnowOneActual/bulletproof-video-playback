@@ -34,9 +34,23 @@ All notable changes to bulletproof-video-playback are documented in this file.
   - Updated to properly ignore `.ruff_cache/`, `test_videos/`, and local AI tooling files.
   - Standardized structure and comments.
 
-### [Unreleased] - Security & Modernization (2026-03-07)
+## [3.2.0] - 2026-03-17
 
-#### 🛡️ Security Hardening
+### 🎭 QLab Performance Integration
+
+#### Added
+- **Dedicated Audio Profile**: Added `audio-qlab` profile for converting MP3/AAC/MP4 cues into uncompressed `pcm_s24le` 48kHz WAV audio, following official QLab performance advice.
+- **Resolution Override**: Added `--resolution` flag to `bvp transcode` and `bvp batch` to match exact projector/screen sizes and eliminate GPU scaling overhead.
+- **Audio Sample Rate Override**: Added `--audio-sample-rate` flag to `bvp transcode` and `bvp batch` to match hardware sample rates (e.g., 48000) and eliminate Core Audio resampling overhead.
+- **Enhanced `live-qlab` Profile**: Updated the default QLab profile to explicitly enforce a `48000` Hz sample rate.
+
+#### Changed
+- **Profile Dataclass**: Expanded `TranscodeProfile` to support `audio_sample_rate` and `codec="none"` for audio-only workflows.
+- **Job Logic**: Updated FFmpeg command builder to handle audio-only transcodes (`-vn`) and explicit sample rate settings (`-ar`).
+
+### [3.1.0] - 2026-03-07
+
+### 🛡️ Security Hardening & Modernization
 - **Security CI/CD**: Added `.github/workflows/security.yml` implementing a multi-layered security audit on every push and PR:
     - **Secret Scanning**: Integrated `gitleaks` to detect accidentally committed credentials and tokens.
     - **Static Analysis (SAST)**: Integrated `bandit` to identify insecure Python coding patterns (e.g., shell injection, insecure bindings).
