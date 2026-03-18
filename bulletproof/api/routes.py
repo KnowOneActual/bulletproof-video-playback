@@ -19,6 +19,7 @@ from bulletproof.api.models import (
     WebSocketMessage,
 )
 
+
 class ConnectionManager:
     """Manages active WebSocket connections and broadcasting."""
 
@@ -42,6 +43,7 @@ class ConnectionManager:
                 # Connection might be closed, disconnect will handle it
                 pass
 
+
 # Global connection manager instance
 manager = ConnectionManager()
 
@@ -56,16 +58,12 @@ def set_monitor_service(service):
     """Set the global monitor service instance and register events."""
     global _monitor_service
     _monitor_service = service
-    
+
     # Register event callback for WebSocket broadcasting
     def monitor_event_handler(event_type: str, data: dict):
         """Handle events from MonitorService and broadcast to WebSockets."""
-        message = WebSocketMessage(
-            type=event_type,
-            timestamp=datetime.now().isoformat(),
-            data=data
-        )
-        
+        message = WebSocketMessage(type=event_type, timestamp=datetime.now().isoformat(), data=data)
+
         # We need to run the broadcast in the main event loop
         try:
             loop = asyncio.get_running_loop()

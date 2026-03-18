@@ -14,7 +14,7 @@ from pathlib import Path
 
 import uvicorn
 
-from bulletproof.api.server import create_app, start_service_background
+from bulletproof.api.server import create_app
 from bulletproof.config.loader import ConfigLoader
 
 
