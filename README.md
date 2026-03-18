@@ -6,7 +6,8 @@
 [![Version](https://img.shields.io/badge/version-3.2.0-green.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/releases)
 
 > [!NOTE]
-> BVP is in active development. This project is a focused toolkit for AV professionals. While we move quickly, our primary mandate is "no show-day embarrassments." Please check [ROADMAP.md](./docs/ROADMAP.md) for current phase details.
+> > [!NOTE]
+> BVP is still in active design and development. I’m using this project as a great opportunity to learn and improve my workflow, so things might change quickly and sometimes even break. I'm currently refactoring based on the feedback I've received. If you're trying it out, please be patient with some rough edges and occasional instability for now. Feel free to reach out with any issues or comments (good or bad ;)). Primary mandate is "no show-day embarrassments." Please check [ROADMAP.md](./docs/ROADMAP.md) for current phase details.
 
 Video transcoding for live playback, streaming, and archival. Uses ffmpeg under the hood with curated profiles optimized for professional AV workflows.
 
