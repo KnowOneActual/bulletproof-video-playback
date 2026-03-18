@@ -3,48 +3,48 @@
 [![Tests](https://github.com/KnowOneActual/bulletproof-video-playback/actions/workflows/test.yml/badge.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/actions/workflows/test.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-2.5.0-green.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/releases)
+[![Version](https://img.shields.io/badge/version-3.2.0-green.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/releases)
 
 > [!NOTE]
-> BVP is still in active design and development. I’m using this project as a great opportunity to learn and improve my workflow, so things might change quickly and sometimes even break. I'm currently refactoring based on the feedback I've received. If you're trying it out, please be patient with some rough edges and occasional instability for now. Feel free to reach out with any issues or comments (good or bad ;)).
+> BVP is in active development. This project is a focused toolkit for AV professionals. While we move quickly, our primary mandate is "no show-day embarrassments." Please check [ROADMAP.md](./docs/ROADMAP.md) for current phase details.
 
-Video transcoding for live playback, streaming, and archival. Uses ffmpeg under the hood with nine prebuilt profiles optimized for different use cases.
+Video transcoding for live playback, streaming, and archival. Uses ffmpeg under the hood with curated profiles optimized for professional AV workflows.
 
-**NEW v2.5.0:** **Professional Keyframe Control** - Customize GOP (Group of Pictures) intervals for frame-accurate seeking in QLab, video editors, and streaming workflows.
+**NEW v3.2.0:** **QLab & AV Performance Integration** - Explicit support for QLab's official performance advice, including uncompressed 48kHz audio and exact resolution matching to bypass system overhead.
 
-**NEW:** **MKV Profiles for Linux** - H.265 MKV profiles optimized for Linux live event workflows with mpv and Linux Show Player. ProRes 422 replacement with 10-bit color depth support.
+**NEW Phase 3.1:** **Enhanced WebSockets** - Event-driven dashboard API with instant file detection and frame-by-frame progress updates.
 
-**NEW:** **Folder Monitoring** - Automatically transcode videos based on filename patterns. Drop videos into a folder, and they'll auto-process. Perfect for live events, streaming, broadcast, and batch workflows.
+**Professional Keyframe Control** - Customize GOP intervals for frame-accurate seeking in QLab, video editors, and streaming workflows.
 
-**COMING SOON:** **Web Dashboard** - Phase 3.1 in progress! Real-time monitoring via REST API + WebSocket. See [ROADMAP.md](./docs/ROADMAP.md) for details.
+**MKV Profiles for Linux** - H.265 MKV profiles optimized for Linux live event workflows (mpv, Linux Show Player) with 10-bit color support.
+
+**Folder Monitoring** - Automated hot-folder transcoding with pattern-based rules and crash-safe persistence.
 
 ## 🚀 What You Get
 
 ### Three Ways to Use
 
 1. **CLI (Command Line)** - Fast, scriptable, automation-ready ⚡
-2. **Folder Monitor** - Watch directories, auto-transcode with rules 🔄
-3. **REST API** (NEW!) - Remote monitoring and control via web dashboard 🌐
-
-> **Note:** This project has shifted focus away from the Terminal UI (TUI) to concentrate on more practical automation tools (Folder Monitor) and modern web-based interfaces (Web Dashboard). The legacy TUI code remains in the codebase but is no longer actively developed.
+2. **Folder Monitor** - Watch directories, auto-transcode with pattern rules 🔄
+3. **Web API** - Remote monitoring and control via WebSocket + REST 🌐
 
 ### Platforms
 
-- **macOS** (Python) - Native ProRes support, recommended for ProRes workflows
-- **Linux** (Pure Bash + Python) - H.265 MKV profiles for live events, zero Python dependencies available
-- **Windows/WSL** - CLI and Monitor work everywhere Python runs
+- **macOS** (Python) - Native ProRes support, recommended for QLab and theater workflows.
+- **Linux** (Pure Bash + Python) - H.265 MKV profiles for live events; zero-dependency Bash mode available for restricted environments.
+- **Windows/WSL** - Full support for CLI and Folder Monitor.
 
 ---
 
 ## 🎯 Perfect for AV Techs
 
-### Professional Keyframe Control (NEW in v2.5.0)
+### Professional Keyframe Control
 
 All profiles support customizable **keyframe intervals** for professional GOP management:
-- **Frame-accurate seeking** - Jump to exact frames in QLab, Premiere, DaVinci
-- **Streaming optimization** - 2-second GOP for HLS/DASH responsive seeking
-- **Live event prep** - 5-second GOP for quick scrubbing during show setup
-- **Broadcast compliance** - Match network requirements for frame-accurate edits
+- **Frame-accurate seeking** - Jump to exact frames in QLab, Premiere, DaVinci.
+- **Streaming optimization** - 2-second GOP for responsive HLS/DASH seeking.
+- **Live event prep** - 5-second GOP for quick scrubbing during show setup.
+- **Broadcast compliance** - Match specific network delivery requirements.
 
 **Examples:**
 ```bash
@@ -95,13 +95,13 @@ bvp monitor start --config monitor.yaml
 
 ### 🍎 **macOS / Python Version** (Recommended)
 
-- **CLI** - Fast, scriptable command-line interface
-- **ProRes support** (native to macOS)
-- **Keyframe control** (NEW v2.5.0)
-- **Real-time progress tracking**
-- **Python API** for integration
-- **Folder Monitor** with async processing
-- **REST API** for remote monitoring (NEW!)
+- **CLI** - Fast, scriptable command-line interface.
+- **ProRes support** - Native to macOS.
+- **Keyframe control** - Professional GOP management.
+- **Real-time progress tracking**.
+- **Python API** for custom integration.
+- **Folder Monitor** with async processing.
+- **Web API** for remote monitoring.
 - Requires: Python 3.10+
 
 👉 See **Installation** section below
@@ -189,22 +189,19 @@ pytest -v
 
 ## Features
 
-✅ **Security Hardening** - Automated CI/CD audits + Secure by default (NEW!)  
-✅ **REST API for Remote Monitoring** - WebSocket + FastAPI (NEW Phase 3.1!)  
-✅ **MKV Profiles for Linux** - H.265 MKV for live events (NEW!)  
-✅ **Keyframe Interval Control** - Professional GOP management (NEW v2.5.0!)  
-✅ **Folder Monitoring** - Watch directories, auto-transcode based on patterns  
-✅ **Crash Recovery** - Queue persists to JSON, survives restarts  
-✅ **Real-Time Progress Tracking** - See live progress bar during transcoding  
-✅ **9 Transcoding Profiles** - Prebuilt profiles for live playback, streaming, and archival  
-✅ **CLI + Folder Monitor** - Command-line and automation interfaces  
-✅ **Smart Output Naming** - Auto-correct extensions, includes processing marker  
-✅ **Safety Features** - Prevents overwrites, auto-cleans incomplete files  
-✅ **Video Analysis** - Inspect codec, resolution, fps, audio specs  
-✅ **Professional Codecs** - ProRes Proxy/LT/HQ, H.264, H.265 (8/10-bit), FFv1  
-✅ **Speed Presets** - `--preset fast|normal|slow` for quality/time tradeoff  
-✅ **Config Support** - Save defaults, YAML/JSON configuration  
-✅ **CI/CD Ready** - GitHub Actions workflows included  
+✅ **QLab Performance Integration** - Uncompressed PCM audio & exact resolution matching (NEW v3.2.0!)  
+✅ **Event-Driven Dashboard API** - WebSocket broadcasting & frame-by-frame updates (Phase 3.1!)  
+✅ **Async Transcode Core** - Non-blocking execution with real-time progress parsing  
+✅ **Folder Monitoring** - Automated hot-folder transcoding with pattern rules  
+✅ **Professional Keyframe Control** - Customizable GOP intervals for frame-accurate seeking  
+✅ **MKV Profiles for Linux** - Optimized for mpv and Linux Show Player (10-bit H.265)  
+✅ **Automated Security Pipeline** - CI/CD audits with Bandit, Gitleaks, and pip-audit  
+✅ **Crash Recovery** - Persistent job queue survives service restarts  
+✅ **Smart Output Naming** - Automatic extension correction and processing markers  
+✅ **CLI & Batch Tools** - Powerful command-line interface for manual and batch jobs  
+✅ **Video Analysis** - Deep inspection of codec, resolution, and audio specs  
+✅ **Professional Codecs** - ProRes Proxy/LT/HQ, H.264, H.265, and FFv1  
+✅ **Speed Presets** - Control quality vs. time with `--preset` flags  
 
 ---
 
@@ -305,35 +302,23 @@ rules:
     priority: 100
 ```
 
-### REST API (NEW - Phase 3.1)
+### REST API & Dashboard (Phase 3.1)
 
-Monitor and control transcoding via REST API:
+Monitor and control transcoding remotely via an event-driven API:
 
 ```bash
 # Install API dependencies
-pip install fastapi uvicorn[standard] websockets pydantic
+pip install "bulletproof-video-playback[api]"
 
 # Start API server with monitoring
 python examples/dashboard_example.py --config monitor.yaml
-
-# API is now available at http://localhost:8080
-# Interactive docs at http://localhost:8080/docs
-
-# Test endpoints
-curl http://localhost:8080/api/v1/health | jq
-curl http://localhost:8080/api/v1/status | jq
-curl http://localhost:8080/api/v1/queue | jq
 ```
 
-**Available endpoints:**
-- `GET /api/v1/health` - Health check
-- `GET /api/v1/status` - Monitor status
-- `GET /api/v1/queue` - Queue status and jobs
-- `GET /api/v1/history` - Processing history
-- `GET /api/v1/rules` - Active rules
-- `GET /api/v1/jobs/{id}` - Job details
-- `WS /api/v1/stream` - Real-time WebSocket updates
-- `GET /docs` - Interactive API documentation
+**Key API Features:**
+- **Real-time Events**: WebSocket (`/stream`) pushes instant notifications for file detection, job starts, and errors.
+- **Smooth Progress**: Frame-by-frame progress updates (throttled for network efficiency).
+- **Remote Control**: Pause, resume, cancel, or retry jobs via REST endpoints.
+- **Interactive Docs**: Full OpenAPI/Swagger documentation at `/docs`.
 
 👉 **Full API guide:** [docs/API_QUICKSTART.md](./docs/API_QUICKSTART.md)
 
@@ -588,21 +573,21 @@ BUILT_IN_PROFILES["my-profile"] = TranscodeProfile(
 
 ## Architecture
 
-```
 bulletproof/
-├── api/               # REST API (NEW Phase 3.1!)
+├── api/               # Event-driven REST API & WebSocket server
 │   ├── models.py      # Pydantic response models
-│   ├── routes.py      # REST + WebSocket endpoints
-│   └── server.py      # FastAPI app
-├── core/              # Transcode logic
-│   ├── profile.py     # Profile definitions & codec mapping
-│   ├── monitor.py     # Folder watching and file detection
-│   ├── rules.py       # Pattern matching rules
-│   ├── queue.py       # Job queue with persistence
-│   └── job.py         # Transcode execution with keyframe control
-├── services/          # High-level services
-│   └── monitor_service.py  # Orchestration for folder monitoring
+│   ├── routes.py      # Broadcast-ready endpoints
+│   └── server.py      # FastAPI application & lifespan management
+├── core/              # Async Transcode Core
+│   ├── profile.py     # Profile definitions & QLab performance specs
+│   ├── monitor.py     # Folder watching & stability tracking
+│   ├── rules.py       # Pattern matching engine
+│   ├── queue.py       # Job queue with JSON persistence
+│   └── job.py         # Async transcode execution (non-blocking)
+├── services/          # Orchestration layer
+│   └── monitor_service.py  # Event-emitting monitor service
 ├── cli/               # Command-line interface
+...
 │   ├── main.py        # CLI entry point
 │   └── commands/      # Subcommands (transcode, monitor, analyze, batch, config)
 ├── config/            # Configuration management
@@ -664,17 +649,14 @@ Beau Bremer ([@KnowOneActual](https://github.com/KnowOneActual))
 > "What does this system need?" → Use that codec + keyframe strategy
 
 Instead of debating codecs, Bulletproof asks the question:
-- Live playback on Mac? → ProRes/H.264 with 5s keyframes
-- Live playback on Linux? → H.265 MKV with 5s keyframes (NEW!)
-- Streaming? → H.265 with 2s keyframes for HLS/DASH
-- Long-term storage? → ProRes HQ, preserve source keyframes
-- Linux archival? → H.265 10-bit MKV, visually lossless (NEW!)
-- Linux without Python? → H.264/H.265 with pure Bash
-- Automation? → Folder Monitor with pattern rules
-- Frame-accurate editing? → Custom keyframe intervals (NEW!)
-- Remote monitoring? → REST API + WebSocket (NEW Phase 3.1!)
+- **QLab on Mac?** → ProRes with 5s keyframes & 48kHz PCM audio.
+- **Live events on Linux?** → H.265 MKV with 5s keyframes.
+- **Responsive Streaming?** → H.265 with 2s keyframes for HLS/DASH.
+- **Long-term storage?** → ProRes HQ or 10-bit H.265 MKV.
+- **Automation?** → Folder Monitor with pattern rules.
+- **Remote Monitoring?** → Event-driven REST API + WebSockets.
 
-Each profile and tool is a prepackaged answer to that question.
+Each profile and tool is a prepackaged answer to a real-world AV requirement.
 
 ## Contributing
 
@@ -689,5 +671,5 @@ Contributions welcome! Please:
 
 ---
 
-**Latest Update:** March 7, 2026  
-**Current Version:** 3.1.0-sec (Security Hardening)
+**Latest Update:** March 17, 2026  
+**Current Version:** 3.2.0 (QLab & Enhanced WebSocket Release)
