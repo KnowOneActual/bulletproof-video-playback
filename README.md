@@ -213,18 +213,39 @@ pytest -v
 - ffmpeg (`brew install ffmpeg` on macOS, `apt install ffmpeg` on Linux)
 - ffprobe (usually included with ffmpeg)
 
-### From PyPI
+### 🚀 Recommended: Install with pipx (Global Tool)
+
+`pipx` is the best way to install BVP. It creates an isolated environment for the tool while making the `bvp` command available globally, preventing dependency conflicts with other Python apps.
 
 ```bash
-pip install bulletproof-video-playback
+# Install pipx if you don't have it
+brew install pipx  # macOS
+# or: python3 -m pip install --user pipx
+
+# Install BVP directly from GitHub
+pipx install git+https://github.com/KnowOneActual/bulletproof-video-playback.git
+
+# Optional: Install with API dashboard support
+pipx install "bulletproof-video-playback[api] @ git+https://github.com/KnowOneActual/bulletproof-video-playback.git"
 ```
 
-### From GitHub (Development)
+### From GitHub (Development / Local)
+
+If you want to contribute or run BVP locally:
 
 ```bash
 git clone https://github.com/KnowOneActual/bulletproof-video-playback
 cd bulletproof-video-playback
-pip install -e ".[dev]"
+pip install -e ".[dev,api]"
+```
+
+### From PyPI (Coming Soon)
+
+BVP will soon be available directly on PyPI:
+
+```bash
+# Not yet active - use pipx or GitHub for now
+# pip install bulletproof-video-playback
 ```
 
 ### Linux (Pure Bash, No Python)
