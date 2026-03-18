@@ -24,51 +24,42 @@
   └─ Impact: The folder monitor now correctly processes files end-to-end.
 ```
 
-## 📍 **PHASE 3.1 PROGRESS: DAY 2/15 COMPLETE ✅**
+## 📍 **PHASE 3.1 PROGRESS: DAY 3/15 COMPLETE ✅**
 ```
 ✅ [x] REST API Core Endpoints (Health, Status, History, Jobs)
-✅ [x] WebSocket Real-Time Streaming
+✅ [x] WebSocket Real-Time Streaming (Basic)
 ✅ [x] Job Control Endpoints (Pause, Resume, Cancel, Retry, Clear)
-✅ [x] Queue State Enhancements (CANCELLED state)
-✅ [x] Comprehensive Testing of Service Layer Logic
+✅ [x] Configuration API (GET/PATCH config, List profiles)
+✅ [x] Ruthless Refactor: Async-first core engine (No more blocking!)
+✅ [x] QLab Performance Integration (v3.2.0)
 ```
 
-## 🚀 **PRODUCTION READY (API Backend)**
+## 🚀 **PRODUCTION READY (v3.2.0)**
 
-Phase 3.1 Week 1 (Backend API) is progressing perfectly. Day 1 and Day 2 are shipped.
+Phase 3.1 Week 1 (Backend API) is progressing perfectly. We've just shipped **v3.2.0** which integrates official QLab performance optimizations.
 
 ```bash
 # Start the backend API dashboard
 python examples/dashboard_example.py --config monitor.yaml
 
-# Test API Controls
-curl -X POST http://localhost:8080/api/v1/queue/pause
-curl -X POST http://localhost:8080/api/v1/queue/resume
+# New QLab Optimization Features
+bvp transcode video.mov --profile live-qlab --resolution 1920:1080 --audio-sample-rate 48000
 ```
 
-## 🎯 **NEXT STEPS: PHASE 3.1 DAY 3**
+## 🎯 **NEXT STEPS: PHASE 3.1 DAY 4**
 
-### Option 1: Configuration Management API (Planned)
+### Option 1: Enhanced WebSocket (Planned)
 ```
-- GET /api/v1/config - Get current monitor.yaml settings
-- PUT /api/v1/config - Update rules/settings remotely
-- POST /api/v1/config/validate - Test new config before applying
-- GET /api/v1/profiles - Expose transcode profiles for the UI dropdown
+- Frame-by-frame progress updates via WebSocket
+- File detection events
+- Broadcast mechanism for multiple concurrent dashboard clients
+- Error alerts pushed instantly
 ```
 
 ### Option 2: Quick Wins (Incremental)
 ```
-- Custom keyframe interval CLI flag (1-2 hours)
-- Hardware acceleration support (2-3 hours)
-- Notification system (webhooks/Slack) (2-3 hours)
-```
-
-### Option 3: Documentation & Polish
-```
-- End-to-end usage guide
-- Video tutorials
-- Example workflows
-- Performance optimization
+- Hardware acceleration support (NVENC/QSV/Metal)
+- Notification system (webhooks/Slack)
 ```
 
 ## 📊 **PROJECT HEALTH**
@@ -76,12 +67,12 @@ curl -X POST http://localhost:8080/api/v1/queue/resume
 **Status:** Healthy ✅  
 **Test Coverage:** 33/33 passing ✓  
 **Known Bugs:** 0  
-**Documentation:** Complete  
-**Production Ready:** Phase 2.4 core is ready, Phase 3.1 API in progress.
+**Documentation:** Complete (v3.2.0 added)
+**Production Ready:** v3.2.0 is stable.
 
-**Last Updated:** February 27, 2026
-**Phase 3.1 Status:** Day 2 of 15 complete (13%)
-**Next Phase:** Phase 3.1 Day 3 (Configuration Management)
+**Last Updated:** March 17, 2026
+**Phase 3.1 Status:** Day 3 of 15 complete (20%)
+**Next Phase:** Phase 3.1 Day 4 (Enhanced WebSocket)
 
 ---
 
