@@ -51,8 +51,8 @@ yaml = [
     "pyyaml>=6.0,<7.0",
 ]
 dev = [
-    "pytest>=7.0,<8.0",
-    "pytest-cov>=4.0,<5.0",
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
     "pytest-asyncio>=0.21.0,<1.0",
     "pytest-mock>=3.0,<4.0",
     "ruff>=0.1.0,<1.0",
@@ -75,12 +75,8 @@ bvp = "bulletproof.cli:cli"
 packages = [
     "bulletproof",
     "bulletproof.api",
-    "bulletproof.api.routes",
-    "bulletproof.api.models",
-    "bulletproof.api.server",
     "bulletproof.core",
     "bulletproof.cli",
-    "bulletproof.cli.commands",
     "bulletproof.config",
     "bulletproof.services",
     "bulletproof.utils",
