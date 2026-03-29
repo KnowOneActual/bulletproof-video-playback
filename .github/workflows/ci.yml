@@ -24,44 +24,24 @@ jobs:
     - name: Install dependencies
       run: |
         python -m venv venv
-        source venv/bin/activate
-        python -m pip install --upgrade pip
-        pip install -e ".[dev,yaml,api]"
-        # Ensure pip-audit is installed and available
-        pip install pip-audit>=2.0.0
+        ./venv/bin/pip install --upgrade pip
+        ./venv/bin/pip install -e ".[dev,yaml,api]"
+        ./venv/bin/pip install pip-audit>=2.0.0
 
     - name: Lint with ruff
       run: |
-        source venv/bin/activate
-        ruff check .
-        ruff format --check .
+        ./venv/bin/ruff check .
+        ./venv/bin/ruff format --check .
 
     - name: Run tests with pytest
       run: |
-        source venv/bin/activate
-        pytest -v --cov=bulletproof --cov-report=xml
+        ./venv/bin/pytest -v --cov=bulletproof --cov-report=xml
 
-    - name: Verify pip-audit installation
-      run: |
-        . venv/bin/activate
-        python -m pip list | grep pip-audit
-        which pip-audit || echo "pip-audit not in PATH"
-        python -c "import pkg_resources; print(pkg_resources.get_distribution('pip-audit'))"
-        # Try to run pip-audit as a module to verify it works
-        python -m pip_audit --version || echo "pip-audit module not found"
-    
     - name: Run pip-audit
-      run: |
-        if [ -f "./venv/bin/python" ]; then
-          ./venv/bin/python -m pip_audit
-        else
-          echo "Python interpreter not found at ./venv/bin/python"
-          ls -la ./venv/bin/ || echo "venv/bin does not exist"
-          exit 1
-        fi
+      run: ./venv/bin/pip-audit
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
       with:
         file: ./coverage.xml
-        fail_ci_if_error: true
+        fail_ci_if_error: false
