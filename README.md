@@ -3,13 +3,15 @@
 [![Tests](https://github.com/KnowOneActual/bulletproof-video-playback/actions/workflows/test.yml/badge.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/actions/workflows/test.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-3.2.0-green.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/releases)
+[![Version](https://img.shields.io/badge/version-3.2.1-green.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/releases)
 
 > [!NOTE]
 > > [!NOTE]
 > BVP is still in active design and development. I’m using this project as a great opportunity to learn and improve my workflow, so things might change quickly and sometimes even break. I'm currently refactoring based on the feedback I've received. If you're trying it out, please be patient with some rough edges and occasional instability for now. Feel free to reach out with any issues or comments (good or bad ;)). Primary mandate is "no show-day embarrassments." Please check [ROADMAP.md](./docs/ROADMAP.md) for current phase details.
 
 Video transcoding for live playback, streaming, and archival. Uses ffmpeg under the hood with curated profiles optimized for professional AV workflows.
+
+**NEW v3.2.1:** **CI/CD Pipeline Stabilization** - Fixed security workflow, formatting issues, test dependencies, and version consistency across the codebase.
 
 **NEW v3.2.0:** **QLab & AV Performance Integration** - Explicit support for QLab's official performance advice, including uncompressed 48kHz audio and exact resolution matching to bypass system overhead.
 
@@ -694,4 +696,4 @@ Contributions welcome! Please:
 ---
 
 **Latest Update:** March 29, 2026  
-**Current Version:** 3.2.0 (QLab & Enhanced WebSocket Release)
+**Current Version:** 3.2.1 (CI/CD Pipeline Stabilization)

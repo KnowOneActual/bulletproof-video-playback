@@ -56,6 +56,33 @@ All notable changes to bulletproof-video-playback are documented in this file.
 - **FastAPI Lifespan**: The backend API now automatically manages the background monitor task using the standard FastAPI lifespan protocol.
 - **Profile Dataclass**: Expanded `TranscodeProfile` to support `audio_sample_rate` and `codec="none"` for audio-only workflows.
 
+### [3.2.1] - 2026-03-29
+
+#### 🛡️ CI/CD Pipeline Stabilization & Security Hardening
+
+##### CI/CD Pipeline Fixes
+- **Security Workflow Activation**: Fixed `pip-audit: command not found` error by adding proper virtual environment activation in `.github/workflows/security.yml`.
+- **Formatting Enforcement**: Fixed `ruff format --check` failures by reformatting 3 files:
+  - `bulletproof/api/models.py` - Fixed ConfigDict indentation
+  - `bulletproof/api/server.py` - Fixed inline comment spacing  
+  - `tests/test_api.py` - Fixed string quotes and line length
+- **Test Dependencies**: Added `httpx>=0.27.0,<1.0` to dev dependencies to fix `ModuleNotFoundError: No module named 'httpx'` in API tests.
+- **Version Consistency**: Updated API code to use `__version__` from package instead of hardcoded `"3.1.0"`:
+  - `bulletproof/api/models.py` - HealthResponse now uses dynamic version
+  - `bulletproof/api/server.py` - FastAPI app and root endpoint use dynamic version
+  - `bulletproof/api/routes.py` - Health endpoint returns correct version
+
+##### Security & Tooling
+- **AGENTS.md**: Created comprehensive guide for agentic coding assistants with build/lint/test commands, code style guidelines, and project structure.
+- **Gitignore Updates**: Added `AGENTS.md` to `.gitignore` under "AI Tooling (Local Only)" section.
+- **Environment Variables**: Added `.env` file template with `DEEPSEEK_API_KEY` placeholder for AI tooling integration.
+
+##### Test Results
+- **All Tests Passing**: 57/57 tests pass after fixes
+- **Security Pipeline**: All security checks pass (gitleaks, bandit, pip-audit)
+- **Formatting**: 33/33 files properly formatted with ruff
+- **Linting**: All checks pass with ruff
+
 ### [3.1.0] - 2026-03-07
 
 ### 🛡️ Security Hardening & Modernization
