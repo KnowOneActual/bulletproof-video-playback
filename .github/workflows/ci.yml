@@ -51,11 +51,7 @@ jobs:
         python -m pip_audit --version || echo "pip-audit module not found"
     
     - name: Run pip-audit
-      run: |
-        source venv/bin/activate
-        which python
-        python -c "import pip_audit; print('pip_audit module found')"
-        python -m pip_audit
+      run: ./venv/bin/python -m pip_audit
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
