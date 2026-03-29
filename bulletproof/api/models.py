@@ -6,6 +6,8 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from bulletproof import __version__
+
 
 class JobStatus(str, Enum):
     """Job status values."""
@@ -253,7 +255,7 @@ class HealthResponse(BaseModel):
 
     status: str = "healthy"
     timestamp: str = Field(default_factory=lambda: datetime.now().isoformat())
-    version: str = "3.1.0"
+    version: str = __version__
     uptime_seconds: float | None = None
 
     model_config = ConfigDict(
@@ -261,7 +263,7 @@ class HealthResponse(BaseModel):
             "example": {
                 "status": "healthy",
                 "timestamp": "2026-02-10T17:00:00",
-                "version": "3.1.0",
+                "version": __version__,
                 "uptime_seconds": 3600.5,
             }
         }

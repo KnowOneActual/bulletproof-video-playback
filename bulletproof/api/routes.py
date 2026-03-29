@@ -5,6 +5,7 @@ from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
+from bulletproof import __version__
 from bulletproof.api.models import (
     ConfigResponse,
     ConfigUpdate,
@@ -99,7 +100,7 @@ async def health_check():
     return HealthResponse(
         status="healthy",
         timestamp=datetime.now().isoformat(),
-        version="3.1.0",
+        version=__version__,
         uptime_seconds=uptime,
     )
 

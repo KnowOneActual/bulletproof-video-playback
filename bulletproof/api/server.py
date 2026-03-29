@@ -10,6 +10,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from bulletproof import __version__
 from bulletproof.api.routes import router, set_monitor_service
 from bulletproof.services.monitor_service import MonitorService
 
@@ -24,7 +25,7 @@ _service_task: asyncio.Task | None = None
 async def lifespan(app: FastAPI):
     """Manage application lifespan (startup/shutdown)."""
     # Startup
-    logger.info("API server initializing. version=3.1.0")
+    logger.info(f"API server initializing. version={__version__}")
 
     # If service is already set, start it in the background
     if _service:
@@ -62,7 +63,7 @@ def create_app(
     app = FastAPI(
         title="Bulletproof Video Playback Dashboard",
         description="Monitor and control video transcoding workflows",
-        version="3.1.0",
+        version=__version__,
         lifespan=lifespan,
     )
 
@@ -92,7 +93,7 @@ def create_app(
         """Root endpoint."""
         return {
             "name": "Bulletproof Video Playback Dashboard",
-            "version": "3.1.0",
+            "version": __version__,
             "api": "/api/v1",
             "docs": "/docs",
             "timestamp": datetime.now().isoformat(),
