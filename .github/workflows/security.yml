@@ -45,11 +45,11 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      - name: Install dependencies
+      - name: Create and activate virtual environment
         run: |
+          python -m venv venv
+          source venv/bin/activate
           python -m pip install --upgrade pip
-          # Set environment variable to bypass virtualenv requirement
-          export PIP_REQUIRE_VIRTUALENV=0
           pip install .[api,yaml]
           pip install pip-audit
       - name: Run pip-audit

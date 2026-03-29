@@ -29,29 +29,36 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
       
+      - name: Create virtual environment
+        run: |
+          python -m venv venv
+      
       - name: Install dependencies
         run: |
+          . venv/bin/activate
           python -m pip install --upgrade pip
-          # Set environment variable to bypass virtualenv requirement
-          export PIP_REQUIRE_VIRTUALENV=0
           pip install -e ".[dev,api,yaml]"
           # Verify pytest is installed
           python -c "import pytest; print(f'pytest version: {pytest.__version__}')"
       
       - name: Verify imports
         run: |
+          . venv/bin/activate
           python -c "import bulletproof; print(f'Successfully imported bulletproof version: {bulletproof.__version__}')"
       
       - name: Lint with ruff
         run: |
+          . venv/bin/activate
           ruff check .
       
       - name: Check formatting with ruff
         run: |
+          . venv/bin/activate
           ruff format --check .
       
       - name: Test with pytest
         run: |
+          . venv/bin/activate
           pytest -v --cov=bulletproof tests/ --asyncio-mode=auto
       
       - name: Upload coverage
