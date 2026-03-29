@@ -51,9 +51,9 @@ def mock_monitor_service(mocker):
     }
 
     # Patch Path.exists and Path.is_dir for the duration of the fixture
-    mocker.patch.object(Path, 'exists', lambda p: str(p) in ["/mock/watch", "/mock/output"])
-    mocker.patch.object(Path, 'is_dir', lambda p: str(p) in ["/mock/watch", "/mock/output"])
-    mocker.patch.object(Path, 'mkdir', MagicMock())
+    mocker.patch.object(Path, "exists", lambda p: str(p) in ["/mock/watch", "/mock/output"])
+    mocker.patch.object(Path, "is_dir", lambda p: str(p) in ["/mock/watch", "/mock/output"])
+    mocker.patch.object(Path, "mkdir", MagicMock())
 
     service.config = MonitorConfig(
         watch_directory="/mock/watch",
@@ -80,6 +80,7 @@ def mock_monitor_service(mocker):
                 service.config.rules = updated_rules
             elif hasattr(service.config, key):
                 setattr(service.config, key, value)
+
     service.update_config.side_effect = _mock_update_config
 
     set_monitor_service(service)
@@ -228,7 +229,11 @@ class TestApiEndpoints:
         mock_monitor_service.queue.get_all.return_value = [mock_job1, mock_job2]
         mock_monitor_service.queue.get_current.return_value = mock_job2
         mock_monitor_service.get_status.return_value["queue"] = {
-            "total_jobs": 2, "pending": 1, "processing": 1, "complete": 0, "error": 0
+            "total_jobs": 2,
+            "pending": 1,
+            "processing": 1,
+            "complete": 0,
+            "error": 0,
         }
 
         response = client.get("/api/v1/queue")
@@ -348,9 +353,7 @@ class TestApiEndpoints:
         assert config_data.delete_input is True
         mock_monitor_service.update_config.assert_called_once()
         assert mock_monitor_service.update_config.call_args[0][0] == update_payload
-        assert (
-            mock_monitor_service.update_config.call_args[1]["persist"] is True
-        )
+        assert mock_monitor_service.update_config.call_args[1]["persist"] is True
 
     def test_patch_config_with_rules_update(
         self, client: TestClient, mock_monitor_service: MagicMock

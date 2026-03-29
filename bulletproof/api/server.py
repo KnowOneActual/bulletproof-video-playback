@@ -156,12 +156,12 @@ if __name__ == "__main__":
     # For development, we set the service directly
     # In a real deployment, the service would be initialized and
     # passed to create_app.
-    dev_service = MonitorService() # Placeholder service for dev
-    set_service(api_app, dev_service) # Use api_app here
+    dev_service = MonitorService()  # Placeholder service for dev
+    set_service(api_app, dev_service)  # Use api_app here
 
     logger.info(f"Starting development server. host={args.host} port={args.port}")
     uvicorn.run(
-        api_app, # Use api_app here
+        api_app,  # Use api_app here
         host=args.host,
         port=args.port,
         log_level=args.log_level.lower(),
