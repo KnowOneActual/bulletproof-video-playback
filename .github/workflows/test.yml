@@ -21,10 +21,22 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       
+      - name: Cache pip packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev,api,yaml]"
+          # Verify pytest is installed
+          python -c "import pytest; print(f'pytest version: {pytest.__version__}')"
+          # Verify pytest is installed
+          python -c "import pytest; print(f'pytest version: {pytest.__version__}')"
       
       - name: Verify imports
         run: |
@@ -40,17 +52,7 @@ jobs:
       
       - name: Test with pytest
         run: |
-          pytest -v --cov=bulletproof tests/ --asyncio-mode=auto || echo "Some tests failed"
-        continue-on-error: true
-      
-      - name: Check test results
-        if: always()
-        run: |
-          # Check if pytest actually ran successfully
-          if [ -f .pytest_cache/v/cache/lastfailed ]; then
-            echo "Tests failed"
-            exit 1
-          fi
+          pytest -v --cov=bulletproof tests/ --asyncio-mode=auto
       
       - name: Upload coverage
         uses: codecov/codecov-action@v3
