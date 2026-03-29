@@ -51,7 +51,14 @@ jobs:
         python -m pip_audit --version || echo "pip-audit module not found"
     
     - name: Run pip-audit
-      run: ./venv/bin/python -m pip_audit
+      run: |
+        if [ -f "./venv/bin/python" ]; then
+          ./venv/bin/python -m pip_audit
+        else
+          echo "Python interpreter not found at ./venv/bin/python"
+          ls -la ./venv/bin/ || echo "venv/bin does not exist"
+          exit 1
+        fi
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
