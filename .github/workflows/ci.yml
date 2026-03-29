@@ -23,6 +23,8 @@ jobs:
 
     - name: Install dependencies
       run: |
+        python -m venv venv
+        source venv/bin/activate
         python -m pip install --upgrade pip
         pip install -e ".[dev,yaml,api]"
         # Ensure pip-audit is installed and available
@@ -30,15 +32,18 @@ jobs:
 
     - name: Lint with ruff
       run: |
+        source venv/bin/activate
         ruff check .
         ruff format --check .
 
     - name: Run tests with pytest
       run: |
+        source venv/bin/activate
         pytest -v --cov=bulletproof --cov-report=xml
 
     - name: Verify pip-audit installation
       run: |
+        source venv/bin/activate
         python -m pip list | grep pip-audit
         which pip-audit || echo "pip-audit not in PATH"
         python -c "import pkg_resources; print(pkg_resources.get_distribution('pip-audit'))"
@@ -47,6 +52,7 @@ jobs:
     
     - name: Run pip-audit
       run: |
+        source venv/bin/activate
         python -m pip_audit
 
     - name: Upload coverage to Codecov
