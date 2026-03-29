@@ -53,6 +53,9 @@ jobs:
     - name: Run pip-audit
       run: |
         source venv/bin/activate
+        echo "Python path: $(which python)"
+        echo "Python version: $(python --version)"
+        echo "pip-audit path: $(which pip-audit || echo 'not found')"
         python -m pip_audit
 
     - name: Upload coverage to Codecov
