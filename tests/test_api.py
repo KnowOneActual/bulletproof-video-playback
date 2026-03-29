@@ -401,7 +401,11 @@ class TestApiEndpoints:
     def test_get_job_success(self, client: TestClient, mock_monitor_service: MagicMock):
         """Test GET /jobs/{job_id} for success."""
         test_job = QueuedJob(
-            id="job_detail_1", input_file="test.mov", output_file="out.mov", profile_name="test_profile", status=JobStatus.PENDING
+            id="job_detail_1",
+            input_file="test.mov",
+            output_file="out.mov",
+            profile_name="test_profile",
+            status=JobStatus.PENDING,
         )
         mock_monitor_service.queue.get_job.return_value = test_job
 
