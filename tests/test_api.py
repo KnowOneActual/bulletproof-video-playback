@@ -261,7 +261,11 @@ class TestApiEndpoints:
             status=JobStatus.COMPLETE,
         )
         mock_job_error = QueuedJob(
-            id="hist2", input_file="in_h2.mov", output_file="out_h2.mov", profile_name="p_h2", status=JobStatus.ERROR
+            id="hist2",
+            input_file="in_h2.mov",
+            output_file="out_h2.mov",
+            profile_name="p_h2",
+            status=JobStatus.ERROR,
         )
         mock_monitor_service.queue.get_history.return_value = [mock_job_complete, mock_job_error]
 
@@ -284,7 +288,14 @@ class TestApiEndpoints:
     def test_get_rules_with_rules(self, client: TestClient, mock_monitor_service: MagicMock):
         """Test GET /rules with some rules configured."""
         mock_rule_data = [
-            {"pattern": "*.mov", "profile": "live-qlab", "output_pattern": "{filename}", "pattern_type": "glob", "priority": 100, "delete_input": True}
+            {
+                "pattern": "*.mov",
+                "profile": "live-qlab",
+                "output_pattern": "{filename}",
+                "pattern_type": "glob",
+                "priority": 100,
+                "delete_input": True,
+            }
         ]
         mock_monitor_service.rule_engine.get_status.return_value = {"rules": mock_rule_data}
 
@@ -340,10 +351,19 @@ class TestApiEndpoints:
         assert mock_monitor_service.update_config.call_args[0][0] == update_payload
         assert mock_monitor_service.update_config.call_args[1]["persist"] is True
 
-    def test_patch_config_with_rules_update(self, client: TestClient, mock_monitor_service: MagicMock):
+    def test_patch_config_with_rules_update(
+        self, client: TestClient, mock_monitor_service: MagicMock
+    ):
         """Test PATCH /config with rules update."""
         new_rules = [
-            {"pattern": "*.mp4", "profile": "new-profile", "output_pattern": "{filename}.mp4", "pattern_type": "glob", "priority": 100, "delete_input": True},
+            {
+                "pattern": "*.mp4",
+                "profile": "new-profile",
+                "output_pattern": "{filename}.mp4",
+                "pattern_type": "glob",
+                "priority": 100,
+                "delete_input": True,
+            },
         ]
         update_payload = {"rules": new_rules}
         response = client.patch("/api/v1/config", json=update_payload)
