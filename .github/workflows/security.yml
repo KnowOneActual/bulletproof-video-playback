@@ -56,4 +56,6 @@ jobs:
           pip install .[api,yaml]
           pip install pip-audit
       - name: Run pip-audit
-        run: pip-audit
+        run: |
+          . venv/bin/activate
+          pip-audit
