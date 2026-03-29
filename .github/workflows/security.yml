@@ -48,6 +48,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          # Set environment variable to bypass virtualenv requirement
+          export PIP_REQUIRE_VIRTUALENV=0
           pip install .[api,yaml]
           pip install pip-audit
       - name: Run pip-audit
