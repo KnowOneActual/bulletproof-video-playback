@@ -51,13 +51,7 @@ jobs:
         python -m pip_audit --version || echo "pip-audit module not found"
     
     - name: Run pip-audit
-      run: |
-        echo "Current directory: $(pwd)"
-        echo "VENV path: $(realpath venv/bin/activate 2>/dev/null || echo 'not found')"
-        . venv/bin/activate
-        echo "Python path after activation: $(which python)"
-        echo "pip-audit path after activation: $(which pip-audit || echo 'not found')"
-        python -m pip_audit
+      run: ./venv/bin/python -m pip_audit
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
