@@ -43,7 +43,7 @@ jobs:
 
     - name: Verify pip-audit installation
       run: |
-        source venv/bin/activate
+        . venv/bin/activate
         python -m pip list | grep pip-audit
         which pip-audit || echo "pip-audit not in PATH"
         python -c "import pkg_resources; print(pkg_resources.get_distribution('pip-audit'))"
@@ -53,9 +53,6 @@ jobs:
     - name: Run pip-audit
       run: |
         . venv/bin/activate
-        echo "Python path: $(which python)"
-        echo "Python version: $(python --version)"
-        echo "pip-audit path: $(which pip-audit || echo 'not found')"
         python -m pip_audit
 
     - name: Upload coverage to Codecov
