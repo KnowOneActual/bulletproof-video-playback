@@ -1,23 +1,29 @@
 """Tests for the Bulletproof Video Playback API endpoints."""
 
-import pytest
-from fastapi.testclient import TestClient
-from unittest.mock import MagicMock, patch
-from fastapi import HTTPException
 from datetime import datetime
 from pathlib import Path
+from unittest.mock import MagicMock
 
-from bulletproof.api.server import api_app
-from bulletproof.api.routes import set_monitor_service
+import pytest
+from fastapi.testclient import TestClient
+
 from bulletproof.api.models import (
-    HealthResponse, MonitorStatusResponse, QueueStatusResponse, JobResponse,
-    JobStatus, RuleResponse, ConfigResponse, ConfigUpdate, ProfileResponse,
-    HistoryResponse
+    ConfigResponse,
+    HealthResponse,
+    HistoryResponse,
+    JobResponse,
+    JobStatus,
+    MonitorStatusResponse,
+    ProfileResponse,
+    QueueStatusResponse,
+    RuleResponse,
 )
+from bulletproof.api.routes import set_monitor_service
+from bulletproof.api.server import api_app
 from bulletproof.core.config import MonitorConfig
-from bulletproof.core.rules import Rule, PatternType
+from bulletproof.core.profile import BUILT_IN_PROFILES
 from bulletproof.core.queue import QueuedJob
-from bulletproof.core.profile import TranscodeProfile, BUILT_IN_PROFILES
+from bulletproof.core.rules import PatternType, Rule
 
 
 # Fixture for a mock MonitorService
@@ -47,7 +53,7 @@ def mock_monitor_service(mocker):
     mocker.patch.object(Path, 'exists', lambda p: str(p) in ["/mock/watch", "/mock/output"])
     mocker.patch.object(Path, 'is_dir', lambda p: str(p) in ["/mock/watch", "/mock/output"])
     mocker.patch.object(Path, 'mkdir', MagicMock())
-    
+
     service.config = MonitorConfig(
         watch_directory="/mock/watch",
         output_directory="/mock/output",
