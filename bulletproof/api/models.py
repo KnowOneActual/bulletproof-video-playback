@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class JobStatus(str, Enum):
@@ -59,8 +59,7 @@ class JobResponse(BaseModel):
             progress=job.progress,
         )
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(json_schema_extra={
             "example": {
                 "id": "job_123",
                 "input_file": "/incoming/video.mov",
@@ -74,7 +73,7 @@ class JobResponse(BaseModel):
                 "error_message": None,
                 "progress": 45.5,
             }
-        }
+        })
 
 
 class QueueStatusResponse(BaseModel):
@@ -88,26 +87,25 @@ class QueueStatusResponse(BaseModel):
     current_job: JobResponse | None = None
     jobs: list[JobResponse] = Field(default_factory=list)
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "total_jobs": 10,
-                "pending_jobs": 3,
-                "processing_jobs": 1,
-                "complete_jobs": 5,
-                "error_jobs": 1,
-                "current_job": {
-                    "id": "job_123",
-                    "input_file": "/incoming/video.mov",
-                    "output_file": "/output/video_qlab.mov",
-                    "profile_name": "live-qlab",
-                    "status": "processing",
-                    "priority": 100,
-                    "progress": 45.5,
-                },
-                "jobs": [],
-            }
+    model_config = ConfigDict(json_schema_extra={
+        "example": {
+            "total_jobs": 10,
+            "pending_jobs": 3,
+            "processing_jobs": 1,
+            "complete_jobs": 5,
+            "error_jobs": 1,
+            "current_job": {
+                "id": "job_123",
+                "input_file": "/incoming/video.mov",
+                "output_file": "/output/video_qlab.mov",
+                "profile_name": "live-qlab",
+                "status": "processing",
+                "priority": 100,
+                "progress": 45.5,
+            },
+            "jobs": [],
         }
+    })
 
 
 class MonitorStatusResponse(BaseModel):
@@ -123,8 +121,7 @@ class MonitorStatusResponse(BaseModel):
     stable_files: int = 0
     processing_files: int = 0
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(json_schema_extra={
             "example": {
                 "running": True,
                 "paused": False,
@@ -136,7 +133,7 @@ class MonitorStatusResponse(BaseModel):
                 "stable_files": 1,
                 "processing_files": 1,
             }
-        }
+        })
 
 
 class RuleResponse(BaseModel):
@@ -193,15 +190,14 @@ class HistoryResponse(BaseModel):
     failed: int
     jobs: list[JobResponse] = Field(default_factory=list)
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(json_schema_extra={
             "example": {
                 "total_processed": 100,
                 "successful": 95,
                 "failed": 5,
                 "jobs": [],
             }
-        }
+        })
 
 
 class WebSocketMessage(BaseModel):
@@ -211,8 +207,7 @@ class WebSocketMessage(BaseModel):
     timestamp: str
     data: dict[str, Any] = Field(default_factory=dict)
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(json_schema_extra={
             "example": {
                 "type": "job_update",
                 "timestamp": "2026-02-10T17:00:00",
@@ -222,7 +217,7 @@ class WebSocketMessage(BaseModel):
                     "progress": 45.5,
                 },
             }
-        }
+        })
 
 
 class ErrorResponse(BaseModel):
@@ -232,14 +227,13 @@ class ErrorResponse(BaseModel):
     detail: str | None = None
     timestamp: str = Field(default_factory=lambda: datetime.now().isoformat())
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(json_schema_extra={
             "example": {
                 "error": "Job not found",
                 "detail": "No job with ID 'job_999' exists",
                 "timestamp": "2026-02-10T17:00:00",
             }
-        }
+        })
 
 
 class HealthResponse(BaseModel):
@@ -250,12 +244,11 @@ class HealthResponse(BaseModel):
     version: str = "3.1.0"
     uptime_seconds: float | None = None
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(json_schema_extra={
             "example": {
                 "status": "healthy",
                 "timestamp": "2026-02-10T17:00:00",
                 "version": "3.1.0",
                 "uptime_seconds": 3600.5,
             }
-        }
+        })

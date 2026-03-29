@@ -211,10 +211,18 @@ class TestApiEndpoints:
     def test_get_queue_with_jobs(self, client: TestClient, mock_monitor_service: MagicMock):
         """Test GET /queue with some jobs in various states."""
         mock_job1 = QueuedJob(
-            id="job1", input_file="in1.mov", output_file="out1.mov", profile_name="p1", status=JobStatus.PENDING
+            id="job1",
+            input_file="in1.mov",
+            output_file="out1.mov",
+            profile_name="p1",
+            status=JobStatus.PENDING,
         )
         mock_job2 = QueuedJob(
-            id="job2", input_file="in2.mov", output_file="out2.mov", profile_name="p2", status=JobStatus.PROCESSING
+            id="job2",
+            input_file="in2.mov",
+            output_file="out2.mov",
+            profile_name="p2",
+            status=JobStatus.PROCESSING,
         )
         mock_monitor_service.queue.get_all.return_value = [mock_job1, mock_job2]
         mock_monitor_service.queue.get_current.return_value = mock_job2
@@ -246,7 +254,11 @@ class TestApiEndpoints:
     def test_get_history_with_jobs(self, client: TestClient, mock_monitor_service: MagicMock):
         """Test GET /history with some historical jobs."""
         mock_job_complete = QueuedJob(
-            id="hist1", input_file="in_h1.mov", output_file="out_h1.mov", profile_name="p_h1", status=JobStatus.COMPLETE
+            id="hist1",
+            input_file="in_h1.mov",
+            output_file="out_h1.mov",
+            profile_name="p_h1",
+            status=JobStatus.COMPLETE,
         )
         mock_job_error = QueuedJob(
             id="hist2", input_file="in_h2.mov", output_file="out_h2.mov", profile_name="p_h2", status=JobStatus.ERROR

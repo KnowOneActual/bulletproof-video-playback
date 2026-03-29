@@ -148,3 +148,4 @@ test_videos/
 GEMINI.md
 .gemini/
 temp_logs
+.aider*
