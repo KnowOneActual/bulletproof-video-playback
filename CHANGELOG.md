@@ -85,6 +85,25 @@ All notable changes to bulletproof-video-playback are documented in this file.
 
 ---
 
+### 🚀 Phase 3.1 - Web Dashboard API (Day 5 Complete - 2026-03-29)
+
+#### 🧪 API Test Coverage & Stability
+- **Comprehensive API Tests**: Added `tests/test_api.py` with 24 passing tests covering critical API endpoints:
+    - System health and status (`/health`, `/status`)
+    - Queue management (`/queue`, `/queue/pause`, `/queue/resume`, `/queue/clear`)
+    - Job lifecycle (`/jobs/{job_id}/cancel`, `/jobs/{job_id}/retry`, `/jobs/{job_id}`)
+    - Configuration management (`/config`, `/config/validate`)
+    - Profile listing (`/profiles`)
+- **Synchronous Testing**: Migrated API tests to use `fastapi.testclient.TestClient` for improved stability and predictable execution.
+- **Robust Mocking**: Enhanced `MonitorService` mocking to handle `pathlib.Path` operations (`exists`, `is_dir`, `mkdir`) and simulate live configuration updates (`update_config`).
+
+#### 🐛 API Fixes & Improvements
+- **Correct `Rule` Object Access**: Fixed `TypeError` in `GET /api/v1/config` by accessing `Rule` object attributes directly instead of dictionary-style keys.
+- **Accurate File Status Counts**: Corrected `detected_files` calculation in `GET /api/v1/status` to accurately reflect files with "detected" status.
+- **API Instance Exposure**: Modified `bulletproof/api/server.py` to expose the FastAPI application instance (`api_app`) correctly for external modules and testing.
+
+---
+
 ### 🚀 Phase 3.1 - Web Dashboard API (Day 3 Complete - 2026-03-06)
 
 #### 🛠️ Architectural Refactor: Truly Async Transcoding

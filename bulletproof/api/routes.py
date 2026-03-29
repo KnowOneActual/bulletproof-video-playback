@@ -124,7 +124,9 @@ async def get_status():
         output_directory=status["output_directory"],
         poll_interval=status["poll_interval"],
         timestamp=status["timestamp"],
-        detected_files=len(monitor_status.get("files", [])),
+        detected_files=len(
+            [f for f in monitor_status.get("files", []) if f.get("status") == "detected"]
+        ),
         stable_files=len(
             [f for f in monitor_status.get("files", []) if f.get("status") == "stable"]
         ),
@@ -275,12 +277,12 @@ async def get_config():
         persist_path=str(config.persist_path) if config.persist_path else None,
         rules=[
             RuleResponse(
-                pattern=r["pattern"],
-                profile=r["profile"],
-                output_pattern=r.get("output_pattern", "{filename}"),
-                pattern_type=r.get("pattern_type", "glob"),
-                priority=r.get("priority", 100),
-                delete_input=r.get("delete_input", True),
+                pattern=r.pattern,
+                profile=r.profile,
+                output_pattern=r.output_pattern,
+                pattern_type=r.pattern_type.value,
+                priority=r.priority,
+                delete_input=r.delete_input,
             )
             for r in config.rules
         ],

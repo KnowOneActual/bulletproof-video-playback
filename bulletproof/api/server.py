@@ -101,6 +101,9 @@ def create_app(
     return app
 
 
+api_app = create_app()
+
+
 def set_service(app: FastAPI, service: MonitorService):
     """Set the monitor service for the application.
 
@@ -150,11 +153,15 @@ if __name__ == "__main__":
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
-    app = create_app()
+    # For development, we set the service directly
+    # In a real deployment, the service would be initialized and
+    # passed to create_app.
+    dev_service = MonitorService() # Placeholder service for dev
+    set_service(api_app, dev_service) # Use api_app here
 
     logger.info(f"Starting development server. host={args.host} port={args.port}")
     uvicorn.run(
-        app,
+        api_app, # Use api_app here
         host=args.host,
         port=args.port,
         log_level=args.log_level.lower(),

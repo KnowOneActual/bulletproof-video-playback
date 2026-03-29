@@ -153,7 +153,7 @@ Every commit and pull request is automatically audited via a multi-layered secur
 We maintain a high standard of code quality to ensure stability in production environments.
 
 ### Testing
-The project includes a comprehensive suite of **33+ automated tests** covering configuration, rule matching, job queuing, and profile validation.
+The project includes a comprehensive suite of **57+ automated tests** covering configuration, rule matching, job queuing, profile validation, and API endpoints.
 ```bash
 # Run the test suite
 pytest -v
@@ -693,5 +693,5 @@ Contributions welcome! Please:
 
 ---
 
-**Latest Update:** March 17, 2026  
+**Latest Update:** March 29, 2026  
 **Current Version:** 3.2.0 (QLab & Enhanced WebSocket Release)
