@@ -31,6 +31,10 @@ jobs:
           ruff check .
           ruff format --check .
       
+      - name: Verify imports
+        run: |
+          python -c "import bulletproof; print(f'Successfully imported bulletproof version: {bulletproof.__version__}')"
+      
       - name: Test with pytest
         run: |
           pytest -v --cov=bulletproof tests/ --asyncio-mode=auto
