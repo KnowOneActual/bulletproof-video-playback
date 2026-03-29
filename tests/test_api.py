@@ -349,7 +349,9 @@ class TestApiEndpoints:
         mock_monitor_service.update_config.assert_called_once()
         # Verify call arguments match the payload and persist=True
         assert mock_monitor_service.update_config.call_args[0][0] == update_payload
-        assert mock_monitor_service.update_config.call_args[1]["persist"] is True
+        assert (
+            mock_monitor_service.update_config.call_args[1]["persist"] is True
+        )
 
     def test_patch_config_with_rules_update(
         self, client: TestClient, mock_monitor_service: MagicMock
