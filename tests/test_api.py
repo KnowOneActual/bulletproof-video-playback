@@ -7,6 +7,7 @@ from unittest.mock import MagicMock
 import pytest
 from fastapi.testclient import TestClient
 
+from bulletproof import __version__
 from bulletproof.api.models import (
     ConfigResponse,
     HealthResponse,
@@ -105,7 +106,7 @@ class TestApiEndpoints:
         assert response.status_code == 200
         health_data = HealthResponse(**response.json())
         assert health_data.status == "healthy"
-        assert health_data.version == "3.1.0"
+        assert health_data.version == __version__
         assert health_data.uptime_seconds is not None
 
     def test_get_status(self, client: TestClient, mock_monitor_service: MagicMock):
@@ -121,7 +122,7 @@ class TestApiEndpoints:
                 "files": [
                     {"path": "file1.mov", "status": "detected"},
                     {"path": "file2.mov", "status": "detected"},
-                    {"path": "file3.mov", "status": "detected"}, # Added one more detected file
+                    {"path": "file3.mov", "status": "detected"},
                     {"path": "file4.mov", "status": "stable"},
                     {"path": "file5.mov", "status": "processing"},
                 ]
@@ -334,7 +335,6 @@ class TestApiEndpoints:
         assert config_data.poll_interval == 15
         assert config_data.log_level == "WARNING"
         mock_monitor_service.update_config.assert_called_once()
-        # Verify call arguments match the payload and persist=False by default
         assert mock_monitor_service.update_config.call_args[0][0] == update_payload
         assert mock_monitor_service.update_config.call_args[1]["persist"] is False
 
@@ -347,7 +347,6 @@ class TestApiEndpoints:
         config_data = ConfigResponse(**response.json())
         assert config_data.delete_input is True
         mock_monitor_service.update_config.assert_called_once()
-        # Verify call arguments match the payload and persist=True
         assert mock_monitor_service.update_config.call_args[0][0] == update_payload
         assert (
             mock_monitor_service.update_config.call_args[1]["persist"] is True
@@ -378,13 +377,11 @@ class TestApiEndpoints:
 
     def test_validate_config(self, client: TestClient):
         """Test POST /config/validate endpoint."""
-        # ConfigUpdate already performs basic validation through Pydantic
         valid_config = {"log_level": "DEBUG"}
         response = client.post("/api/v1/config/validate", json=valid_config)
         assert response.status_code == 200
         assert response.json() == {"valid": True, "message": "Configuration is valid"}
 
-        # Test with an invalid field that Pydantic should catch
         invalid_config = {"poll_interval": "not_an_int"}
         response = client.post("/api/v1/config/validate", json=invalid_config)
         assert response.status_code == 422  # Pydantic validation error
@@ -395,7 +392,6 @@ class TestApiEndpoints:
         assert response.status_code == 200
         profiles_data = [ProfileResponse(**p) for p in response.json()]
         assert len(profiles_data) == len(BUILT_IN_PROFILES)
-        # Check if a known profile exists
         assert any(p.name == "live-qlab" for p in profiles_data)
 
     def test_get_job_success(self, client: TestClient, mock_monitor_service: MagicMock):
