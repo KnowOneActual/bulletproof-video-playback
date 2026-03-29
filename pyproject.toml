@@ -38,7 +38,7 @@ dependencies = [
     "pydantic>=2.0,<3.0",
     "watchdog>=3.0,<4.0",
     "aiofiles>=23.0,<24.0",
-    "pip-audit>=2.7.0,<3.0",
+    "pip-audit>=2.0.0",
 ]
 
 [project.optional-dependencies]
@@ -58,7 +58,7 @@ dev = [
     "ruff>=0.1.0,<1.0",
     "mypy>=1.0,<2.0",
     "bandit>=1.7.0,<2.0",
-    "pip-audit>=2.7.0,<3.0",
+    "pip-audit>=2.0.0",
     "requests>=2.31.0,<3.0",
     "watchdog>=3.0,<4.0",
     "aiofiles>=23.0,<24.0",
