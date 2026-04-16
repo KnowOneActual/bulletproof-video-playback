@@ -51,7 +51,7 @@ yaml = [
     "pyyaml>=6.0,<7.0",
 ]
 dev = [
-    "pytest>=7.0",
+    "pytest>=9.0.3,<10.0",
     "pytest-cov>=4.0",
     "pytest-asyncio>=0.21.0,<1.0",
     "pytest-mock>=3.0,<4.0",
@@ -116,3 +116,8 @@ minversion = "7.0"
 addopts = "-v --strict-markers --asyncio-mode=auto"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+]
