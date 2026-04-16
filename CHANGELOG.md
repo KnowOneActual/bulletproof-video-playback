@@ -77,11 +77,30 @@ All notable changes to bulletproof-video-playback are documented in this file.
 - **Gitignore Updates**: Added `AGENTS.md` to `.gitignore` under "AI Tooling (Local Only)" section.
 - **Environment Variables**: Added `.env` file template with `DEEPSEEK_API_KEY` placeholder for AI tooling integration.
 
-##### Test Results
+ ##### Test Results
 - **All Tests Passing**: 57/57 tests pass after fixes
 - **Security Pipeline**: All security checks pass (gitleaks, bandit, pip-audit)
 - **Formatting**: 33/33 files properly formatted with ruff
 - **Linting**: All checks pass with ruff
+
+### [3.2.2] - 2026-04-15
+
+#### 🔒 Security Vulnerability Patch: pytest CVE-2025-XXXX
+
+##### Security Fixes
+- **pytest Vulnerability**: Updated pytest from <9.0.3 to 9.0.3 to fix directory traversal vulnerability (CVE-2025-XXXX).
+- **Dependabot Compatibility**: Added `pyproject.lock` lockfile for Dependabot security updates.
+- **Version Pinning**: Updated `pyproject.toml`, `requirements-dev.txt`, and `requirements.txt` to pin pytest>=9.0.3,<10.0.
+
+##### Dependency Management
+- **Lockfile Generation**: Regenerated `pyproject.lock` with `uv lock` to include patched pytest 9.0.3.
+- **Dependabot Visibility**: Added pytest to `requirements.txt` to ensure Dependabot can detect installed version.
+
+##### Changes Made
+1. `pyproject.toml`: Updated dev dependencies from `pytest>=7.0` to `pytest>=9.0.3,<10.0`
+2. `requirements-dev.txt`: Updated from `pytest>=7.0,<8.0` to `pytest>=9.0.3,<10.0`
+3. `requirements.txt`: Added `pytest>=9.0.3,<10.0` for Dependabot visibility
+4. `pyproject.lock`: Regenerated with uv to include pytest 9.0.3
 
 ### [3.1.0] - 2026-03-07
 
