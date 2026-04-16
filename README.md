@@ -3,13 +3,15 @@
 [![Tests](https://github.com/KnowOneActual/bulletproof-video-playback/actions/workflows/test.yml/badge.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/actions/workflows/test.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-3.2.1-green.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/releases)
+[![Version](https://img.shields.io/badge/version-3.2.2-green.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/releases)
 
 > [!NOTE]
 > > [!NOTE]
 > BVP is still in active design and development. I’m using this project as a great opportunity to learn and improve my workflow, so things might change quickly and sometimes even break. I'm currently refactoring based on the feedback I've received. If you're trying it out, please be patient with some rough edges and occasional instability for now. Feel free to reach out with any issues or comments (good or bad ;)). Primary mandate is "no show-day embarrassments." Please check [ROADMAP.md](./docs/ROADMAP.md) for current phase details.
 
 Video transcoding for live playback, streaming, and archival. Uses ffmpeg under the hood with curated profiles optimized for professional AV workflows.
+
+**NEW v3.2.2:** **Security Vulnerability Patch** - Updated pytest to 9.0.3 to fix directory traversal vulnerability (CVE-2025-XXXX). Added lockfile for Dependabot security updates.
 
 **NEW v3.2.1:** **CI/CD Pipeline Stabilization** - Fixed security workflow, formatting issues, test dependencies, and version consistency across the codebase.
 
@@ -607,6 +609,7 @@ BUILT_IN_PROFILES["my-profile"] = TranscodeProfile(
 
 ## Architecture
 
+```
 bulletproof/
 ├── api/               # Event-driven REST API & WebSocket server
 │   ├── models.py      # Pydantic response models
@@ -621,27 +624,31 @@ bulletproof/
 ├── services/          # Orchestration layer
 │   └── monitor_service.py  # Event-emitting monitor service
 ├── cli/               # Command-line interface
-...
 │   ├── main.py        # CLI entry point
 │   └── commands/      # Subcommands (transcode, monitor, analyze, batch, config)
 ├── config/            # Configuration management
-│   └── loader.py      # Config file handling
-└── utils/             # Utilities (validation, etc)
+│   ├── loader.py      # Config file handling
+│   └── manager.py     # Configuration manager
+├── utils/             # Utilities (validation, etc)
+│   └── validation.py  # File validation utilities
+├── static/            # Web dashboard static assets
+└── tui/               # Legacy TUI (deprecated)
 
 docs/
 ├── features/          # Feature documentation
 │   └── KEYFRAME_FEATURE.md
-├── API_QUICKSTART.md # REST API guide (NEW!)
+├── API_QUICKSTART.md  # REST API guide
 ├── ROADMAP.md         # Project roadmap
+├── SECURITY_LOG.md    # Security audit history
 └── phase-3.1/        # Web Dashboard planning
 
 examples/
-└── dashboard_example.py  # API server example (NEW!)
+└── dashboard_example.py  # API server example
 
 linux/                # Pure Bash implementation (no Python)
 scripts/              # Universal tools (work on any OS)
-tests/                # Test suite (33 tests passing)
-.github/workflows/    # CI/CD
+tests/                # Test suite (57 tests passing)
+.github/workflows/    # CI/CD pipelines
 ```
 
 ## Troubleshooting
