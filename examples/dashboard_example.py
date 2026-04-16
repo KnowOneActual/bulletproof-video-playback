@@ -41,6 +41,11 @@ def main():
         help="Port to bind to (default: 8080)",
     )
     parser.add_argument(
+        "--static-dir",
+        type=Path,
+        help="Path to static directory (default: built-in dashboard)",
+    )
+    parser.add_argument(
         "--log-level",
         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
         default="INFO",
@@ -61,9 +66,22 @@ def main():
         logger.info(f"Loading configuration from {args.config}")
         service = ConfigLoader.load_and_create(args.config)
 
+        # Determine static directory (default: built-in dashboard)
+        static_dir = args.static_dir
+        if static_dir is None:
+            # Default to project_root/bulletproof/static/dashboard
+            project_root = Path(__file__).parent.parent
+            static_dir = project_root / "bulletproof" / "static" / "dashboard"
+
+        if static_dir.exists():
+            logger.info(f"Serving static files from {static_dir}")
+        else:
+            logger.warning(f"Static directory not found: {static_dir}")
+            static_dir = None
+
         # Create FastAPI app
         logger.info("Creating dashboard app...")
-        app = create_app(monitor_service=service)
+        app = create_app(monitor_service=service, static_dir=static_dir)
 
         # Run uvicorn
         logger.info(f"Starting dashboard at http://{args.host}:{args.port}")

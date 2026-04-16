@@ -2,11 +2,11 @@
 
 ## What We Built Today
 
-A production-ready **REST API + WebSocket** backend for the bvp dashboard! 🚀
+A production-ready **REST API + WebSocket** backend **with built-in web dashboard UI** for the bvp dashboard! 🚀
 
-**Date:** March 29, 2026  
-**Phase:** 3.1 - Week 1, Day 5  
-**Status:** MVP Backend Fully Tested & Stable ✅
+**Date:** April 15, 2026  
+**Phase:** 3.1 - Week 2, Day 6  
+**Status:** MVP Backend + Frontend Fully Tested & Stable ✅
 
 ---
 
@@ -33,6 +33,14 @@ A production-ready **REST API + WebSocket** backend for the bvp dashboard! 🚀
 ### Interactive Docs
 - `GET /docs` - Swagger UI (interactive API testing)
 - `GET /redoc` - ReDoc (alternative documentation)
+
+### Web Dashboard UI
+- `GET /` - Built-in responsive dashboard with real-time queue monitoring
+- Real-time job progress bars and status indicators
+- Job control buttons (Cancel, Retry, Details)
+- Monitor controls (Pause, Resume, Clear Queue)
+- WebSocket connection status with auto-reconnect
+- Job details modal with full job information
 
 ### Stability & Test Coverage (Phase 3.1 - Day 5 Complete)
 - **Comprehensive Test Suite**: All critical API endpoints are now covered by unit and integration tests (`tests/test_api.py`).

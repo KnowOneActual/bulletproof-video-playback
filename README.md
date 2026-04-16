@@ -15,7 +15,7 @@ Video transcoding for live playback, streaming, and archival. Uses ffmpeg under 
 
 **NEW v3.2.0:** **QLab & AV Performance Integration** - Explicit support for QLab's official performance advice, including uncompressed 48kHz audio and exact resolution matching to bypass system overhead.
 
-**NEW Phase 3.1:** **Enhanced WebSockets** - Event-driven dashboard API with instant file detection and frame-by-frame progress updates.
+**NEW Phase 3.1:** **Web Dashboard UI** - Built-in web interface for real‑time monitoring, job controls, and live WebSocket updates.
 
 **Professional Keyframe Control** - Customize GOP intervals for frame-accurate seeking in QLab, video editors, and streaming workflows.
 
@@ -29,7 +29,7 @@ Video transcoding for live playback, streaming, and archival. Uses ffmpeg under 
 
 1. **CLI (Command Line)** - Fast, scriptable, automation-ready ⚡
 2. **Folder Monitor** - Watch directories, auto-transcode with pattern rules 🔄
-3. **Web API** - Remote monitoring and control via WebSocket + REST 🌐
+3. **Web Dashboard & API** - Real‑time monitoring, job controls, and remote management via browser 🌐
 
 ### Platforms
 
@@ -193,7 +193,7 @@ pytest -v
 ## Features
 
 ✅ **QLab Performance Integration** - Uncompressed PCM audio & exact resolution matching (NEW v3.2.0!)  
-✅ **Event-Driven Dashboard API** - WebSocket broadcasting & frame-by-frame updates (Phase 3.1!)  
+✅ **Web Dashboard UI** - Built‑in browser interface with real‑time monitoring, job controls, and live WebSocket updates (Phase 3.1!)  
 ✅ **Async Transcode Core** - Non-blocking execution with real-time progress parsing  
 ✅ **Folder Monitoring** - Automated hot-folder transcoding with pattern rules  
 ✅ **Professional Keyframe Control** - Customizable GOP intervals for frame-accurate seeking  
@@ -328,15 +328,24 @@ rules:
 
 ### REST API & Dashboard (Phase 3.1)
 
-Monitor and control transcoding remotely via an event-driven API:
+Monitor and control transcoding remotely via an event-driven API with built-in web dashboard:
 
 ```bash
 # Install API dependencies
 pip install "bulletproof-video-playback[api]"
 
-# Start API server with monitoring
+# Start API server with monitoring and web dashboard
 python examples/dashboard_example.py --config monitor.yaml
+
+# Or start dashboard without monitor (standalone API)
+python -m bulletproof.api.server --host 127.0.0.1 --port 8000
 ```
+
+**Web Dashboard UI** (NEW!):
+- **Real-time Monitoring**: Live job queue, progress bars, and status updates.
+- **Interactive Controls**: Cancel, retry, and view job details directly in the browser.
+- **Responsive Design**: Works on desktop, tablet, and mobile.
+- **WebSocket Live Updates**: Instant notifications for job state changes.
 
 **Key API Features:**
 - **Real-time Events**: WebSocket (`/stream`) pushes instant notifications for file detection, job starts, and errors.
@@ -344,7 +353,8 @@ python examples/dashboard_example.py --config monitor.yaml
 - **Remote Control**: Pause, resume, cancel, or retry jobs via REST endpoints.
 - **Interactive Docs**: Full OpenAPI/Swagger documentation at `/docs`.
 
-👉 **Full API guide:** [docs/API_QUICKSTART.md](./docs/API_QUICKSTART.md)
+👉 **Full API guide:** [docs/API_QUICKSTART.md](./docs/API_QUICKSTART.md)  
+👉 **Dashboard guide:** [docs/DASHBOARD_GUIDE.md](./docs/DASHBOARD_GUIDE.md)
 
 ### Config Management
 
@@ -655,6 +665,7 @@ tests/                # Test suite (33 tests passing)
 - **[CHANGELOG.md](./CHANGELOG.md)** - Version history and release notes
 - **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)** - Common commands quick reference
 - **[docs/API_QUICKSTART.md](./docs/API_QUICKSTART.md)** - REST API guide (NEW!)
+- **[docs/DASHBOARD_GUIDE.md](./docs/DASHBOARD_GUIDE.md)** - Web dashboard quick start (NEW!)
 - **[docs/features/KEYFRAME_FEATURE.md](./docs/features/KEYFRAME_FEATURE.md)** - Keyframe control guide
 - **[docs/ROADMAP.md](./docs/ROADMAP.md)** - Project roadmap and future plans
 - **[docs/SCRIPTS_STRUCTURE.md](./docs/SCRIPTS_STRUCTURE.md)** - Architecture overview
@@ -695,5 +706,5 @@ Contributions welcome! Please:
 
 ---
 
-**Latest Update:** March 29, 2026  
-**Current Version:** 3.2.1 (CI/CD Pipeline Stabilization)
+**Latest Update:** April 15, 2026  
+**Current Version:** 3.2.2 (Web Dashboard UI)
