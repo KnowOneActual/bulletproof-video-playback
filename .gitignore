@@ -150,3 +150,7 @@ GEMINI.md
 temp_logs
 .aider*
 AGENTS.md
+
+# SQLite database files
+*.db
+*.db-*
