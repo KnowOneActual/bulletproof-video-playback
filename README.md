@@ -632,7 +632,7 @@ bulletproof/
 ├── utils/             # Utilities (validation, etc)
 │   └── validation.py  # File validation utilities
 ├── static/            # Web dashboard static assets
-└── tui/               # Legacy TUI (deprecated)
+└── gui/               # Legacy TUI (deprecated)
 
 docs/
 ├── features/          # Feature documentation
