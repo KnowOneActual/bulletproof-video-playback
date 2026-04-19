@@ -1,6 +1,5 @@
 """Transcode command implementation."""
 
-import sys
 from pathlib import Path
 
 import click

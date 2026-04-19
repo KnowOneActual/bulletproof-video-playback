@@ -5,14 +5,13 @@ import logging
 from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from bulletproof.core.job import TranscodeJob
 from bulletproof.core.monitor import FileInfo, FolderMonitor
 from bulletproof.core.profile import BUILT_IN_PROFILES
 from bulletproof.core.queue import QueuedJob, TranscodeQueue
 from bulletproof.core.rules import PatternType, Rule, RuleEngine
-from typing import cast
 
 
 class MonitorServiceError(Exception):
