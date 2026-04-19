@@ -302,6 +302,8 @@ class TranscodeQueue:
 
     def _load(self) -> None:
         """Load queue from JSON file."""
+        if not self.persist_path:
+            return
         try:
             with open(self.persist_path) as f:
                 data = json.load(f)

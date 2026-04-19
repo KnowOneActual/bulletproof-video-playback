@@ -202,11 +202,13 @@ class TranscodeJob:
                 cmd.extend(["-vf", f"scale={self.profile.scale}"])
 
         # Audio codec
-        cmd.extend(["-c:a", self.profile.audio_codec])
-        if self.profile.audio_bitrate != "0":
+        audio_codec = self.profile.audio_codec or "aac"
+        cmd.extend(["-c:a", audio_codec])
+        if self.profile.audio_bitrate and self.profile.audio_bitrate != "0":
             cmd.extend(["-b:a", self.profile.audio_bitrate])
-        if getattr(self.profile, "audio_sample_rate", None):
-            cmd.extend(["-ar", self.profile.audio_sample_rate])
+        audio_sample_rate = getattr(self.profile, "audio_sample_rate", None)
+        if audio_sample_rate:
+            cmd.extend(["-ar", str(audio_sample_rate)])
 
         # Add faststart flag for MP4/MKV streaming optimization
         if self.profile.extension in ["mp4", "mkv"]:
@@ -245,7 +247,10 @@ class TranscodeJob:
             time_pattern = re.compile(r"out_time_ms=(\d+)")
 
             while True:
-                line = await process.stdout.readline()
+                stdout = process.stdout
+                if stdout is None:
+                    break
+                line = await stdout.readline()
                 if not line:
                     break
 
@@ -263,10 +268,14 @@ class TranscodeJob:
             return_code = await process.wait()
 
             if return_code != 0:
-                stderr = await process.stderr.read()
-                self.error_message = (
-                    stderr.decode().strip() or f"FFmpeg exited with code {return_code}"
-                )
+                stderr_pipe = process.stderr
+                if stderr_pipe is not None:
+                    stderr = await stderr_pipe.read()
+                    self.error_message = (
+                        stderr.decode().strip() or f"FFmpeg exited with code {return_code}"
+                    )
+                else:
+                    self.error_message = f"FFmpeg exited with code {return_code}"
                 self.status = "error"
                 return False
 
