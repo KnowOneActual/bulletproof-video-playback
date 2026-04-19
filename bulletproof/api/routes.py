@@ -304,8 +304,8 @@ async def update_config(update: ConfigUpdate, persist: bool = False):
     update_dict = update.model_dump(exclude_unset=True)
 
     # Convert rules back to dicts if present
-    if "rules" in update_dict:
-        update_dict["rules"] = [r.model_dump() for r in update.rules]
+    if update_dict.get("rules"):
+        update_dict["rules"] = [r.model_dump() for r in (update.rules or [])]
 
     # Perform update
     service.update_config(update_dict, persist=persist)

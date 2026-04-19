@@ -276,7 +276,7 @@ def clear_queue(queue: str):
 
     try:
         # Create empty queue structure
-        data = {
+        data: dict[str, list[object] | None] = {
             "queued": [],
             "history": [],
             "saved_at": None,

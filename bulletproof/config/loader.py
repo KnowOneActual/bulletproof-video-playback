@@ -1,9 +1,10 @@
 """Configuration loader for folder monitor."""
 
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from bulletproof.core.config import MonitorConfig
+from bulletproof.core.rules import Rule
 from bulletproof.services.monitor_service import MonitorService, MonitorServiceConfig
 
 
@@ -115,10 +116,11 @@ class ConfigLoader:
             ]
 
             # Create service config
+            typed_rules = cast("list[Rule | dict[str, Any]]", rules_dicts)
             service_config = MonitorServiceConfig(
                 watch_directory=config.watch_directory,
                 output_directory=config.output_directory,
-                rules=rules_dicts,
+                rules=typed_rules,
                 poll_interval=config.poll_interval,
                 delete_input=config.delete_input,
                 persist_path=config.persist_path,

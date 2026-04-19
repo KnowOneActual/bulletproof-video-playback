@@ -75,7 +75,7 @@ def set_default_profile(profile: str):
 
 
 @config.command()
-@click.argument("output_dir", type=click.Path(path_type=Path))
+@click.argument("output_dir", type=click.Path())
 def set_output_dir(output_dir: Path):
     """Set your default output directory.
 
