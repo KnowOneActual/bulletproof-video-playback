@@ -96,7 +96,7 @@ def start(
     config_path = Path(config)
 
     # Build overrides dict
-    overrides = {}
+    overrides: dict[str, Path | int | str] = {}
     if watch:
         overrides["watch_directory"] = Path(watch)
     if output:

@@ -59,7 +59,7 @@ class ConfigManager:
     @classmethod
     def get_default_profile(cls) -> str:
         """Get user's default profile."""
-        return cls.get("default_profile", "standard-playback")
+        return str(cls.get("default_profile", "standard-playback"))
 
     @classmethod
     def set_default_profile(cls, profile_name: str) -> None:
@@ -80,7 +80,7 @@ class ConfigManager:
     @classmethod
     def get_speed_preset(cls) -> str:
         """Get user's speed preset preference."""
-        return cls.get("speed_preset", "normal")
+        return str(cls.get("speed_preset", "normal"))
 
     @classmethod
     def set_speed_preset(cls, preset: str) -> None:
