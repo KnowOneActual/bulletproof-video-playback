@@ -77,6 +77,31 @@ All notable changes to bulletproof-video-playback are documented in this file.
 - **Gitignore Updates**: Added `AGENTS.md` to `.gitignore` under "AI Tooling (Local Only)" section.
 - **Environment Variables**: Added `.env` file template with `DEEPSEEK_API_KEY` placeholder for AI tooling integration.
 
+## [3.2.2] - 2026-04-19
+
+### 🔧 Mypy Type Fixing & CI Improvements
+
+#### Fixed
+- **Mypy Type Errors**: Fixed all 23 mypy type errors across the codebase (100% reduction):
+  - `job.py`: Added None guards for `process.stdout/stderr` in async subprocess execution
+  - `queue.py`: Added `persist_path` None check before loading from disk
+  - `config/manager.py`: Added str() casts for `get_default_profile` and `get_speed_preset`
+  - `monitor_service.py`: Fixed rules type annotation for RuleEngine
+  - CLI commands: Replaced `click.Exit` with `SystemExit` for better typing
+  - `config.py`: Fixed Path type in click argument
+  - `api/routes.py`: Fixed None handling for rules iteration
+  - `api/server.py`: Added type ignore for dev service creation
+
+#### CI/CD Improvements
+- **pytest-asyncio**: Fixed compatibility issue by pinning to `>=0.24.0` (0.23.3 broken with pytest 9.x)
+- **Dependency Updates**: Added `types-click` and `types-PyYAML` stubs for better type checking
+- **Mypy Config**: Added `ignore_missing_imports = true` to pyproject.toml
+
+#### Testing
+- All 57 tests passing
+- Mypy: 0 errors (was 23)
+- Ruff: All checks passed
+
  ##### Test Results
 - **All Tests Passing**: 57/57 tests pass after fixes
 - **Security Pipeline**: All security checks pass (gitleaks, bandit, pip-audit)
