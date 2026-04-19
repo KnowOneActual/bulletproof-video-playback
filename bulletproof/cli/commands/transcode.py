@@ -1,6 +1,7 @@
 """Transcode command implementation."""
 
 from pathlib import Path
+from typing import Literal
 
 import click
 
@@ -120,7 +121,11 @@ def transcode(
         click.echo(f"Output: {output_path}")
         click.echo("\nStarting transcode...")
 
-        job = TranscodeJob(input_path, output_path, prof, speed_preset=preset)
+        valid_preset: Literal["fast", "normal", "slow"] = "normal"  # type: ignore[literal]
+        if preset in ("fast", "normal", "slow"):
+            valid_preset = preset  # type: ignore[assignment]
+
+        job = TranscodeJob(input_path, output_path, prof, speed_preset=valid_preset)
         success = job.sync_execute()
 
         if success:

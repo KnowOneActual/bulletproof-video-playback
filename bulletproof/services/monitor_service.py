@@ -539,8 +539,9 @@ class MonitorService:
                     new_rules.append(r)
 
             # Update RuleEngine and Config
-            self.rule_engine = RuleEngine(cast("list[Rule | dict[str, Any]]", new_rules))
-            self.config.rules = new_rules
+            typed_rules = cast("list[Rule | dict[str, Any]]", new_rules)
+            self.rule_engine = RuleEngine(typed_rules)
+            self.config.rules = typed_rules
             self.logger.info(f"Configuration updated: rules_count={len(new_rules)}")
 
         if "poll_interval" in updates:
