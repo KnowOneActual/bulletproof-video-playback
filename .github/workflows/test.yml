@@ -38,6 +38,8 @@ jobs:
           . venv/bin/activate
           python -m pip install --upgrade pip
           pip install -e ".[dev,api,yaml]"
+          # Fix pytest-asyncio compatibility issue (0.23.3 broken with pytest 9.x)
+          pip install pytest-asyncio==0.24.0
           # Verify pytest is installed
           python -c "import pytest; print(f'pytest version: {pytest.__version__}')"
       
