@@ -2,6 +2,7 @@
 
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 import click
@@ -9,7 +10,7 @@ import click
 
 @click.command()
 @click.argument("input_file", type=click.Path(exists=True))
-def analyze(input_file: str):
+def analyze(input_file: str) -> None:
     """Analyze a video file and show codec information.
 
     EXAMPLES:
@@ -25,8 +26,8 @@ def analyze(input_file: str):
     input_path = Path(input_file)
 
     if not input_path.exists():
-        click.echo(f"Error: Input file not found: {input_file}", err=True)
-        raise click.Exit(1)
+        click.echo(f"Error: Input file not found: {input_file}", err=True)  # type: ignore[call-overload]
+        raise SystemExit(1)
 
     try:
         cmd = [
@@ -68,7 +69,7 @@ def analyze(input_file: str):
 
     except subprocess.CalledProcessError as e:
         click.echo(f"Error analyzing file: {e.stderr}", err=True)
-        raise click.Exit(1) from e
+        raise SystemExit(1) from e
     except Exception as e:
         click.echo(f"Error: {e}", err=True)
-        raise click.Exit(1) from e
+        raise SystemExit(1) from e

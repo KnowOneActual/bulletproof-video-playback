@@ -1,5 +1,6 @@
 """Transcode command implementation."""
 
+import sys
 from pathlib import Path
 
 import click
@@ -94,7 +95,7 @@ def transcode(
     input_path = Path(input_file)
     if not input_path.exists():
         click.echo(f"Error: Input file not found: {input_file}", err=True)
-        raise click.Exit(1)
+        raise SystemExit(1)
 
     if output is None:
         prof = get_profile(profile)
@@ -127,8 +128,8 @@ def transcode(
             click.echo(f"Transcode successful: {output_path}")
         else:
             click.echo(f"Transcode failed: {job.error_message}", err=True)
-            raise click.Exit(1)
+            raise SystemExit(1)
 
     except ValueError as e:
         click.echo(f"Error: {e}", err=True)
-        raise click.Exit(1) from e
+        raise SystemExit(1) from e

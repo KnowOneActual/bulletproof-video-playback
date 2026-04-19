@@ -1,5 +1,6 @@
 """Batch processing command implementation."""
 
+import sys
 from pathlib import Path
 
 import click
@@ -49,7 +50,7 @@ def batch(
 
     if not input_path.is_dir():
         click.echo(f"Error: Input directory not found: {input_dir}", err=True)
-        raise click.Exit(1)
+        raise SystemExit(1)
 
     if not output_path.exists():
         output_path.mkdir(parents=True, exist_ok=True)
@@ -96,4 +97,4 @@ def batch(
 
     except ValueError as e:
         click.echo(f"Error: {e}", err=True)
-        raise click.Exit(1) from e
+        raise SystemExit(1) from e

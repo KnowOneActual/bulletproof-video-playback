@@ -12,6 +12,7 @@ from bulletproof.core.monitor import FileInfo, FolderMonitor
 from bulletproof.core.profile import BUILT_IN_PROFILES
 from bulletproof.core.queue import QueuedJob, TranscodeQueue
 from bulletproof.core.rules import PatternType, Rule, RuleEngine
+from typing import cast
 
 
 class MonitorServiceError(Exception):
@@ -539,7 +540,7 @@ class MonitorService:
                     new_rules.append(r)
 
             # Update RuleEngine and Config
-            self.rule_engine = RuleEngine(new_rules)
+            self.rule_engine = RuleEngine(cast("list[Rule | dict[str, Any]]", new_rules))
             self.config.rules = new_rules
             self.logger.info(f"Configuration updated: rules_count={len(new_rules)}")
 
