@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
 if TYPE_CHECKING:
-    from bulletproof.services.monitor_service import MonitorService
+    pass
 
 from bulletproof import __version__
 from bulletproof.api.models import (

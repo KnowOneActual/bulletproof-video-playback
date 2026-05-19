@@ -13,17 +13,20 @@ from bulletproof.api.models import (
     HealthResponse,
     HistoryResponse,
     JobResponse,
-    JobStatus as ApiJobStatus,
     MonitorStatusResponse,
     ProfileResponse,
     QueueStatusResponse,
     RuleResponse,
 )
+from bulletproof.api.models import (
+    JobStatus as ApiJobStatus,
+)
 from bulletproof.api.routes import set_monitor_service
 from bulletproof.api.server import api_app
 from bulletproof.core.config import MonitorConfig
 from bulletproof.core.profile import BUILT_IN_PROFILES
-from bulletproof.core.queue import JobStatus as QueueJobStatus, QueuedJob
+from bulletproof.core.queue import JobStatus as QueueJobStatus
+from bulletproof.core.queue import QueuedJob
 from bulletproof.core.rules import PatternType, Rule
 
 
