@@ -1,6 +1,27 @@
 # Changelog
 
 All notable changes to bulletproof-video-playback are documented in this file.
+
+## [3.2.3] - 2026-05-18
+
+### 🔧 API Type Safety & Environment Stabilization
+
+#### Added
+- **API Type Hints**: Added explicit return type hints to all FastAPI endpoints and `ConnectionManager` in `bulletproof/api/routes.py`.
+- **WebSocket Type Safety**: Improved `ConnectionManager` with proper type annotations for `active_connections` and broadcasting methods.
+- **TYPE_CHECKING**: Introduced `TYPE_CHECKING` guards in `api/routes.py` for cleaner service imports.
+
+#### Fixed
+- **API Test Suite**: Fixed 16+ mypy type errors in `tests/test_api.py` caused by `JobStatus` enum ambiguity and `QueuedJob` type mismatches.
+- **Path Handling**: Ensured `watch_directory` and `output_directory` use proper `Path` objects in API tests and service configuration.
+- **Null Safety**: Added explicit `None` guards for `current_job` in `tests/test_api.py`.
+- **Test Dependencies**: Identified and documented `httpx` and `types-PyYAML` as required development dependencies.
+
+#### Technical
+- **Mypy**: 0 errors with `--check-untyped-defs` across all 33 source files.
+- **Ruff**: 100% compliance with existing linting rules.
+- **Testing**: All 57 tests passing on Python 3.14.
+
 ## [3.0.0] - 2026-02-28
 
 ### ⚡️ CLI Command Renamed: `bulletproof` → `bvp`

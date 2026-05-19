@@ -3,13 +3,15 @@
 [![Tests](https://github.com/KnowOneActual/bulletproof-video-playback/actions/workflows/test.yml/badge.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/actions/workflows/test.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-3.2.2-green.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/releases)
+[![Version](https://img.shields.io/badge/version-3.2.3-green.svg)](https://github.com/KnowOneActual/bulletproof-video-playback/releases)
 
 > [!NOTE]
 > > [!NOTE]
 > BVP is still in active design and development. I’m using this project as a great opportunity to learn and improve my workflow, so things might change quickly and sometimes even break. I'm currently refactoring based on the feedback I've received. If you're trying it out, please be patient with some rough edges and occasional instability for now. Feel free to reach out with any issues or comments (good or bad ;)). Primary mandate is "no show-day embarrassments." Please check [ROADMAP.md](./docs/ROADMAP.md) for current phase details.
 
 Video transcoding for live playback, streaming, and archival. Uses ffmpeg under the hood with curated profiles optimized for professional AV workflows.
+
+**NEW v3.2.3:** **API Type Safety & Stability** - Added explicit type hints to all API endpoints and fixed critical mypy errors in the test suite. Improved WebSocket safety and environment dependencies.
 
 **NEW v3.2.2:** **Security Vulnerability Patch** - Updated pytest to 9.0.3 to fix directory traversal vulnerability (CVE-2025-XXXX). Added lockfile for Dependabot security updates.
 

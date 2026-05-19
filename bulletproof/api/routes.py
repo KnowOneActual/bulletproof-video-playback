@@ -2,8 +2,12 @@
 
 import asyncio
 from datetime import datetime
+from typing import TYPE_CHECKING, Any
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
+
+if TYPE_CHECKING:
+    from bulletproof.services.monitor_service import MonitorService
 
 from bulletproof import __version__
 from bulletproof.api.models import (
@@ -24,18 +28,18 @@ from bulletproof.api.models import (
 class ConnectionManager:
     """Manages active WebSocket connections and broadcasting."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.active_connections: list[WebSocket] = []
 
-    async def connect(self, websocket: WebSocket):
+    async def connect(self, websocket: WebSocket) -> None:
         await websocket.accept()
         self.active_connections.append(websocket)
 
-    def disconnect(self, websocket: WebSocket):
+    def disconnect(self, websocket: WebSocket) -> None:
         if websocket in self.active_connections:
             self.active_connections.remove(websocket)
 
-    async def broadcast(self, message: dict):
+    async def broadcast(self, message: dict) -> None:
         """Broadcast JSON message to all connected clients."""
         for connection in self.active_connections:
             try:
@@ -55,13 +59,13 @@ router = APIRouter()
 _monitor_service = None
 
 
-def set_monitor_service(service):
+def set_monitor_service(service: Any) -> None:
     """Set the global monitor service instance and register events."""
     global _monitor_service
     _monitor_service = service
 
     # Register event callback for WebSocket broadcasting
-    def monitor_event_handler(event_type: str, data: dict):
+    def monitor_event_handler(event_type: str, data: dict[str, Any]) -> None:
         """Handle events from MonitorService and broadcast to WebSockets."""
         message = WebSocketMessage(type=event_type, timestamp=datetime.now().isoformat(), data=data)
 
@@ -78,7 +82,7 @@ def set_monitor_service(service):
         _monitor_service.event_callback = monitor_event_handler
 
 
-def get_monitor_service():
+def get_monitor_service() -> Any:
     """Get the monitor service or raise error if not available."""
     if _monitor_service is None:
         raise HTTPException(status_code=503, detail="Monitor service not available")
@@ -86,7 +90,7 @@ def get_monitor_service():
 
 
 @router.get("/health", response_model=HealthResponse, tags=["System"])
-async def health_check():
+async def health_check() -> HealthResponse:
     """Health check endpoint.
 
     Returns:
@@ -106,7 +110,7 @@ async def health_check():
 
 
 @router.get("/status", response_model=MonitorStatusResponse, tags=["Monitor"])
-async def get_status():
+async def get_status() -> MonitorStatusResponse:
     """Get current monitor service status.
 
     Returns:
@@ -138,7 +142,7 @@ async def get_status():
 
 
 @router.post("/queue/pause", tags=["Queue"])
-async def pause_queue():
+async def pause_queue() -> dict[str, str]:
     """Pause transcode queue processing."""
     service = get_monitor_service()
     service.pause()
@@ -146,7 +150,7 @@ async def pause_queue():
 
 
 @router.post("/queue/resume", tags=["Queue"])
-async def resume_queue():
+async def resume_queue() -> dict[str, str]:
     """Resume transcode queue processing."""
     service = get_monitor_service()
     service.resume()
@@ -154,7 +158,7 @@ async def resume_queue():
 
 
 @router.post("/queue/clear", tags=["Queue"])
-async def clear_queue():
+async def clear_queue() -> dict[str, str]:
     """Clear all pending jobs from the queue."""
     service = get_monitor_service()
     service.clear_queue()
@@ -162,7 +166,7 @@ async def clear_queue():
 
 
 @router.post("/jobs/{job_id}/cancel", tags=["Jobs"])
-async def cancel_job(job_id: str):
+async def cancel_job(job_id: str) -> dict[str, str]:
     """Cancel a pending job."""
     service = get_monitor_service()
     success = service.cancel_job(job_id)
@@ -177,7 +181,7 @@ async def cancel_job(job_id: str):
 
 
 @router.post("/jobs/{job_id}/retry", tags=["Jobs"])
-async def retry_job(job_id: str):
+async def retry_job(job_id: str) -> dict[str, str]:
     """Retry a failed or completed job."""
     service = get_monitor_service()
     success = service.retry_job(job_id)
@@ -192,7 +196,7 @@ async def retry_job(job_id: str):
 
 
 @router.get("/queue", response_model=QueueStatusResponse, tags=["Queue"])
-async def get_queue():
+async def get_queue() -> QueueStatusResponse:
     """Get current queue status."""
     service = get_monitor_service()
     status = service.get_status()
@@ -220,7 +224,7 @@ async def get_queue():
 
 
 @router.get("/history", response_model=HistoryResponse, tags=["History"])
-async def get_history(limit: int = 10):
+async def get_history(limit: int = 10) -> HistoryResponse:
     """Get processing history."""
     service = get_monitor_service()
     history_jobs = service.queue.get_history(limit=limit)
@@ -244,7 +248,7 @@ async def get_history(limit: int = 10):
 
 
 @router.get("/rules", response_model=list[RuleResponse], tags=["Configuration"])
-async def get_rules():
+async def get_rules() -> list[RuleResponse]:
     """Get current rule configuration."""
     service = get_monitor_service()
     rule_status = service.rule_engine.get_status()
@@ -263,7 +267,7 @@ async def get_rules():
 
 
 @router.get("/config", response_model=ConfigResponse, tags=["Configuration"])
-async def get_config():
+async def get_config() -> ConfigResponse:
     """Get current service configuration."""
     service = get_monitor_service()
     config = service.config
@@ -291,7 +295,7 @@ async def get_config():
 
 
 @router.patch("/config", response_model=ConfigResponse, tags=["Configuration"])
-async def update_config(update: ConfigUpdate, persist: bool = False):
+async def update_config(update: ConfigUpdate, persist: bool = False) -> ConfigResponse:
     """Update service configuration live.
 
     Args:
@@ -315,7 +319,7 @@ async def update_config(update: ConfigUpdate, persist: bool = False):
 
 
 @router.post("/config/validate", tags=["Configuration"])
-async def validate_config(update: ConfigUpdate):
+async def validate_config(update: ConfigUpdate) -> dict[str, Any]:
     """Validate configuration without applying it."""
     # This is a bit complex as we'd need to mock the service
     # For now, we'll just check if the rules and basic fields are valid types
@@ -324,7 +328,7 @@ async def validate_config(update: ConfigUpdate):
 
 
 @router.get("/profiles", response_model=list[ProfileResponse], tags=["Configuration"])
-async def list_available_profiles():
+async def list_available_profiles() -> list[ProfileResponse]:
     """List all available transcoding profiles."""
     from bulletproof.core.profile import BUILT_IN_PROFILES
 
@@ -344,7 +348,7 @@ async def list_available_profiles():
 
 
 @router.get("/jobs/{job_id}", response_model=JobResponse, tags=["Jobs"])
-async def get_job(job_id: str):
+async def get_job(job_id: str) -> JobResponse:
     """Get specific job details."""
     service = get_monitor_service()
     job = service.queue.get_job(job_id)
@@ -357,7 +361,7 @@ async def get_job(job_id: str):
 
 # WebSocket endpoint for real-time updates
 @router.websocket("/stream")
-async def websocket_endpoint(websocket: WebSocket):
+async def websocket_endpoint(websocket: WebSocket) -> None:
     """WebSocket endpoint for real-time updates.
 
     Sends real-time event updates to connected clients using broadcast.

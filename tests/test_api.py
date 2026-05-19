@@ -13,7 +13,7 @@ from bulletproof.api.models import (
     HealthResponse,
     HistoryResponse,
     JobResponse,
-    JobStatus,
+    JobStatus as ApiJobStatus,
     MonitorStatusResponse,
     ProfileResponse,
     QueueStatusResponse,
@@ -23,7 +23,7 @@ from bulletproof.api.routes import set_monitor_service
 from bulletproof.api.server import api_app
 from bulletproof.core.config import MonitorConfig
 from bulletproof.core.profile import BUILT_IN_PROFILES
-from bulletproof.core.queue import QueuedJob
+from bulletproof.core.queue import JobStatus as QueueJobStatus, QueuedJob
 from bulletproof.core.rules import PatternType, Rule
 
 
@@ -56,8 +56,8 @@ def mock_monitor_service(mocker):
     mocker.patch.object(Path, "mkdir", MagicMock())
 
     service.config = MonitorConfig(
-        watch_directory="/mock/watch",
-        output_directory="/mock/output",
+        watch_directory=Path("/mock/watch"),
+        output_directory=Path("/mock/output"),
         poll_interval=5,
         delete_input=False,
         log_level="INFO",
@@ -214,17 +214,17 @@ class TestApiEndpoints:
         """Test GET /queue with some jobs in various states."""
         mock_job1 = QueuedJob(
             id="job1",
-            input_file="in1.mov",
-            output_file="out1.mov",
+            input_file=Path("in1.mov"),
+            output_file=Path("out1.mov"),
             profile_name="p1",
-            status=JobStatus.PENDING,
+            status=QueueJobStatus.PENDING,
         )
         mock_job2 = QueuedJob(
             id="job2",
-            input_file="in2.mov",
-            output_file="out2.mov",
+            input_file=Path("in2.mov"),
+            output_file=Path("out2.mov"),
             profile_name="p2",
-            status=JobStatus.PROCESSING,
+            status=QueueJobStatus.PROCESSING,
         )
         mock_monitor_service.queue.get_all.return_value = [mock_job1, mock_job2]
         mock_monitor_service.queue.get_current.return_value = mock_job2
@@ -242,6 +242,7 @@ class TestApiEndpoints:
         assert queue_data.total_jobs == 2
         assert queue_data.pending_jobs == 1
         assert queue_data.processing_jobs == 1
+        assert queue_data.current_job is not None
         assert queue_data.current_job.id == "job2"
         assert len(queue_data.jobs) == 2
         assert queue_data.jobs[0].id == "job1"
@@ -261,17 +262,17 @@ class TestApiEndpoints:
         """Test GET /history with some historical jobs."""
         mock_job_complete = QueuedJob(
             id="hist1",
-            input_file="in_h1.mov",
-            output_file="out_h1.mov",
+            input_file=Path("in_h1.mov"),
+            output_file=Path("out_h1.mov"),
             profile_name="p_h1",
-            status=JobStatus.COMPLETE,
+            status=QueueJobStatus.COMPLETE,
         )
         mock_job_error = QueuedJob(
             id="hist2",
-            input_file="in_h2.mov",
-            output_file="out_h2.mov",
+            input_file=Path("in_h2.mov"),
+            output_file=Path("out_h2.mov"),
             profile_name="p_h2",
-            status=JobStatus.ERROR,
+            status=QueueJobStatus.ERROR,
         )
         mock_monitor_service.queue.get_history.return_value = [mock_job_complete, mock_job_error]
 
@@ -401,10 +402,10 @@ class TestApiEndpoints:
         """Test GET /jobs/{job_id} for success."""
         test_job = QueuedJob(
             id="job_detail_1",
-            input_file="test.mov",
-            output_file="out.mov",
+            input_file=Path("test.mov"),
+            output_file=Path("out.mov"),
             profile_name="test_profile",
-            status=JobStatus.PENDING,
+            status=QueueJobStatus.PENDING,
         )
         mock_monitor_service.queue.get_job.return_value = test_job
 
@@ -413,7 +414,7 @@ class TestApiEndpoints:
         job_data = JobResponse(**response.json())
         assert job_data.id == "job_detail_1"
         assert job_data.input_file == "test.mov"
-        assert job_data.status == JobStatus.PENDING
+        assert job_data.status == ApiJobStatus.PENDING
 
     def test_get_job_not_found(self, client: TestClient, mock_monitor_service: MagicMock):
         """Test GET /jobs/{job_id} when job is not found."""
