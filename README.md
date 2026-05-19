@@ -715,5 +715,5 @@ Contributions welcome! Please:
 
 ---
 
-**Latest Update:** April 15, 2026  
-**Current Version:** 3.2.2 (Web Dashboard UI)
+**Latest Update:** May 18, 2026  
+**Current Version:** 3.2.3 (Web Dashboard UI)
